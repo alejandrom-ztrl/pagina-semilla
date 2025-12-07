@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Coste, Trazabilidad y Beneficio (V39 - Desglose de Costes)</title>
+    <style>
+        /* Estilos CSS (Mantenidos) */
+        body { font-family: sans-serif; max-width: 1200px; margin: 2rem auto; padding: 1rem; background-color: #f4f4f9; display: flex; gap: 20px; }
+        .module { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .cost-container { flex: 1.2; display: flex; flex-direction: column; gap: 20px; } 
+        .traceability-module { flex: 2; }
+        .input-section { padding: 0; border-radius: 0; }
+        
+        h1 { color: #2c3e50; text-align: center; font-size: 1.8rem; }
+        h2 { color: #34495e; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px; margin-top: 0; font-size: 1.4rem; }
+        label { display: block; margin-top: 0.8rem; font-weight: bold; color: #34495e; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Botones */
+        .btn-calculate { width: 100%; background-color: #27ae60; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 1rem; margin-top: 1rem; cursor: pointer; transition: 0.3s; }
+        .btn-calculate:hover { background-color: #219150; }
+        .btn-trace { background-color: #3498db; }
+        .btn-trace:hover { background-color: #2980b9; }
+        .btn-export { background-color: #f39c12; margin-top: 10px; }
+        .btn-export:hover { background-color: #e67e22; }
+        .btn-delete { background-color: #e74c3c; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
+        .btn-delete:hover { background-color: #c0392b; }
+        .btn-reset-counter { 
+            background-color: #7f8c8d; /* Gris para evitar confusión con Exportar/Generar */
+            margin-top: 10px;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+        .btn-reset-counter:hover { 
+            background-color: #5d6d7e; 
+        }
+
+        /* Resultados */
+        .result { margin-top: 1rem; padding: 1.2rem; border-radius: 4px; text-align: center; }
+        .cost-result { background-color: #e8f8f5; border: 1px solid #27ae60; }
+        .sales-result { background-color: #f5e8ff; border: 1px solid #8e44ad; margin-top: 15px;}
+        
+        .price-big { font-size: 2rem; font-weight: bold; color: #27ae60; }
+        .sales-price-big { font-size: 2rem; font-weight: bold; color: #8e44ad; }
+
+        .details { font-size: 0.85rem; color: #7f8c8d; margin-top: 8px; }
+        
+        .batch-input-group { display: flex; gap: 10px; align-items: flex-end; }
+        .batch-input-group input { flex-grow: 1; }
+
+        /* Etiqueta Imprimible */
+        .label-output { margin-top: 15px; padding: 15px; background-color: #f0f8ff; border: 2px dashed #3498db; border-radius: 4px; font-size: 1.1rem; text-align: center; }
+        .label-output .id { font-size: 1.5rem; font-weight: bold; color: #c0392b; display: block; margin-bottom: 5px; }
+
+        /* Tabla de Registro */
+        .registry-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+        .registry-table th, .registry-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .registry-table th { background-color: #ecf0f1; font-weight: bold; color: #2c3e50; }
+        .registry-table input { width: 90%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; }
+        
+        .message { margin-top: 10px; padding: 10px; border-radius: 4px; font-weight: bold; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+        /* Ficha Técnica y Desglose de Coste */
+        .tech-table, .cost-detail-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        .tech-table th, .tech-table td, .cost-detail-table th, .cost-detail-table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+        .tech-table th, .cost-detail-table th { background-color: #ecf0f1; width: 40%; font-weight: bold; color: #2c3e50; }
+        .cost-detail-table th { width: 60%; }
+        .cost-detail-table td { text-align: right; font-weight: bold; }
+
+        /* Aviso de Persistencia */
+        .persistence-info { padding: 10px; background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; border-radius: 4px; font-size: 0.9em; margin-bottom: 15px; }
+
+        /* Nuevo Wrapper para la sección de Trazabilidad */
+        .trace-input-legend-wrapper { display: flex; gap: 15px; margin-bottom: 20px; }
+        .trace-input-section { flex: 2; border: 1px solid #3498db; padding: 15px; border-radius: 4px; }
+        .trace-input-section h3 { margin-top: 0; }
+
+        /* Estilos de Leyenda */
+        .legend-section { 
+            flex: 1; 
+            background-color: #ecf0f1; 
+            padding: 15px; 
+            border-radius: 4px; 
+            font-size: 0.9em; 
+            max-height: 400px; 
+            overflow-y: auto; 
+        }
+        .legend-section h3 { color: #34495e; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 0; font-size: 1.1rem; }
+        .legend-section ul { list-style: none; padding: 0; margin-top: 10px; column-count: 1; }
+        .legend-section li { margin-bottom: 4px; padding-bottom: 2px; }
+        .legend-section strong { font-weight: bold; color: #c0392b; margin-right: 5px; }
+        
+    </style>
+</head>
+<body>
+
+<div class="cost-container module">
+    <h2>💰 Cálculo de Coste y Margen (V39)</h2>
+    
+    <div class="cost-input-section input-section">
+        <label for="product_cost">Selecciona la Semilla:</label>
+        <select id="product_cost" onchange="updateTechData('product_cost')">
+            <option value="">-- Elige un producto --</option>
+            <option value="Nasturtium Indian Cress">1. Capuchina India</option>
+            <option value="Radish Pink">2. Rábano Rosa</option>
+            <option value="Chickpea">3. Garbanzo</option>
+            <option value="Carrot">4. Zanahoria</option>
+            <option value="Sunflower">5. Girasol</option>
+            <option value="Amaranth Red">6. Amaranto Rojo</option>
+            <option value="Borage">7. Borraja</option>
+            <option value="Basil Lemon">8. Albahaca Limón</option>
+            <option value="Shiso Red">9. Shiso Roja</option>
+            <option value="Mung Bean">10. Judía (Mung)</option>
+            <option value="Basil Genovese">11. Albahaca Genovesa</option>
+            <option value="Radish Red Rambo">12. Rábano Rambo</option>
+            <option value="Chinese Mahogany">13. Chinese Mahogany</option>
+            <option value="Pea">14. Guisante</option>
+            <option value="Coriander">15. Cilantro</option>
+            <option value="Adzuki">16. Adzuki Rojo</option>
+            <option value="Shungiku">17. Shunguiku</option>
+            <option value="Beet Red">18. Remolacha</option>
+            <option value="Fennel">19. Hinojo</option>
+            <option value="Parsley">20. Perejil</option>
+            <option value="Nasturtium">21. Capuchina Alaska</option>
+        </select>
+        
+        <label>Dimensiones y Lote:</label>
+        <div class="batch-input-group">
+            <input type="number" id="tray_width" placeholder="Ancho (cm)" step="any" value="25">
+            <input type="number" id="tray_length" placeholder="Largo (cm)" step="any" value="50">
+            <input type="number" id="batch_size_cost" placeholder="Lote (N)" step="1" value="1">
+        </div>
+
+        <label for="sales_price_input">Precio de Venta/Bandeja (€):</label>
+        <input type="number" id="sales_price_input" value="10.00" step="0.01">
+        
+        <button class="btn-calculate" onclick="calculateCost()">Calcular Coste y Margen</button>
+    </div>
+    
+    <div id="costResultBox" class="result cost-result" style="display: none;">
+        <div>Coste **TOTAL ESTIMADO** de Producción por **LOTE** ($C_{Lote}$):</div>
+        <div id="finalPrice" class="price-big">0.00€</div>
+        <div id="costDetails" class="details"></div>
+    </div>
+
+    <div id="costDetailTableContainer">
+        </div>
+
+    <div id="salesResultBox" class="result sales-result" style="display: none;">
+        <div>Margen de Beneficio Aplicado al Lote:</div>
+        <div id="profitMargin" class="sales-price-big">0.0%</div>
+        <div id="profitDetails" class="details"></div>
+    </div>
+    
+    <div id="techDataResult" style="margin-top: 30px;">
+        </div>
+</div>
+
+<div class="traceability-module module">
+    <h2>🏷️ Gestión de Siembra y Trazabilidad (V39)</h2>
+    <div class="persistence-info">
+        💾 **Persistencia:** Los datos se guardan en la memoria local (`localStorage`). Usa **Exportar CSV** para crear una copia de seguridad externa.
+        <br>
+        ✨ **Lotes No Reutilizables:** La secuencia de lote (ej: `-01`, `-02`, `-03`) ya **no se recicla** aunque el lote anterior haya sido eliminado. El ID incluye la fecha.
+    </div>
+
+    <div class="trace-input-legend-wrapper">
+        
+        <div class="trace-input-section">
+            <h3>Generar Nuevo Lote Sembrado</h3>
+            <label for="product_trace">Selecciona la Semilla:</label>
+            <select id="product_trace" onchange="updateTechData('product_trace')">
+                <option value="">-- Elige un producto --</option>
+                <option value="Nasturtium Indian Cress">1. Capuchina India</option>
+                <option value="Radish Pink">2. Rábano Rosa</option>
+                <option value="Chickpea">3. Garbanzo</option>
+                <option value="Carrot">4. Zanahoria</option>
+                <option value="Sunflower">5. Girasol</option>
+                <option value="Amaranth Red">6. Amaranto Rojo</option>
+                <option value="Borage">7. Borraja</option>
+                <option value="Basil Lemon">8. Albahaca Limón</option>
+                <option value="Shiso Red">9. Shiso Roja</option>
+                <option value="Mung Bean">10. Judía (Mung)</option>
+                <option value="Basil Genovese">11. Albahaca Genovesa</option>
+                <option value="Radish Red Rambo">12. Rábano Rambo</option>
+                <option value="Chinese Mahogany">13. Chinese Mahogany</option>
+                <option value="Pea">14. Guisante</option>
+                <option value="Coriander">15. Cilantro</option>
+                <option value="Adzuki">16. Adzuki Rojo</option>
+                <option value="Shungiku">17. Shunguiku</option>
+                <option value="Beet Red">18. Remolacha</option>
+                <option value="Fennel">19. Hinojo</option>
+                <option value="Parsley">20. Perejil</option>
+                <option value="Nasturtium">21. Capuchina Alaska</option>
+            </select>
+            
+            <label for="batch_size_trace">Tamaño del Lote (N° Bandejas):</label>
+            <input type="number" id="batch_size_trace" value="1" min="1" step="1">
+            
+            <button class="btn-calculate btn-trace" onclick="generateAndSaveLot()">Generar y Registrar Lote (ID y Fechas)</button>
+
+            <div id="lotMessage" class="message" style="display: none;"></div>
+
+            <div id="labelOutput" class="label-output" style="display: none;">
+                **ETIQUETA PARA BANDEJA**
+                <span class="id" id="loteIdValue"></span>
+                Producto: <span id="labelProduct"></span><br>
+                Fecha Siembra: <span id="labelDateStart"></span><br>
+                Fecha Cosecha Estimada: <span id="labelDateEnd"></span>
+            </div>
+        </div>
+
+        <div class="legend-section">
+            <h3>📖 Códigos de Producto (Memoria)</h3>
+            <ul id="codeLegendList">
+                </ul>
+        </div>
+        
+    </div>
+    
+    <h3 style="margin-top: 25px;">Registro de Lotes Sembrados (Histórico)</h3>
+    <button class="btn-calculate btn-export" onclick="exportLotRegistryToCSV()">Exportar Trazabilidad (CSV)</button>
+    <button class="btn-calculate btn-reset-counter" onclick="resetLotCounters()">⚠️ REINICIAR CONTADORES DE LOTE (Empezar de 0)</button>
+
+    <div id="lotRegistryContainer">
+        </div>
+</div>
+
+<script>
+    const REF_AREA_CM2 = 25; 
+    let currentTotalCostPerTray = 0; 
+    
+    // --- DATOS DEL PRODUCTO Y CÓDIGOS ---
+    const PRODUCT_CODES = {
+        "Nasturtium Indian Cress": "NIC", "Radish Pink": "RDP", "Chickpea": "CHP", "Carrot": "CAR", "Sunflower": "SUN",
+        "Amaranth Red": "AMA", "Borage": "BOR", "Basil Lemon": "BLL", "Shiso Red": "SHR", "Mung Bean": "MNG",
+        "Basil Genovese": "BLG", "Radish Red Rambo": "RDR", "Chinese Mahogany": "CHM", "Pea": "PEA", "Coriander": "COR",
+        "Adzuki": "ADZ", "Shungiku": "SHG", "Beet Red": "BTR", "Fennel": "FEN", "Parsley": "PAR", "Nasturtium": "NAA", 
+    };
+
+    // --- MAPA DE NOMBRES EN ESPAÑOL PARA LA LEYENDA ---
+    const PRODUCT_NAMES_ES = {
+        "Nasturtium Indian Cress": "Capuchina India", "Radish Pink": "Rábano Rosa", "Chickpea": "Garbanzo", "Carrot": "Zanahoria", "Sunflower": "Girasol",
+        "Amaranth Red": "Amaranto Rojo", "Borage": "Borraja", "Basil Lemon": "Albahaca Limón", "Shiso Red": "Shiso Roja", "Mung Bean": "Judía (Mung)",
+        "Basil Genovese": "Albahaca Genovesa", "Radish Red Rambo": "Rábano Rambo", "Chinese Mahogany": "Chinese Mahogany", "Pea": "Guisante", "Coriander": "Cilantro",
+        "Adzuki": "Adzuki Rojo", "Shungiku": "Shunguiku", "Beet Red": "Remolacha", "Fennel": "Hinojo", "Parsley": "Perejil", "Nasturtium": "Capuchina Alaska",
+    };
+
+
+    const PRODUCTS_DATA = {
+        "Nasturtium Indian Cress": { PPG: 0.0490, G5x5: 3.60, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "360 g", CosechaTotal: 17, Sabor: "Picante/Pimienta", ReqAgua: "Alto (Tolerante)", Remojo: "8-12h", Blackout: 6, Nutricion: "A, B, C, E, K, P, Ca, Fe, Mg, Zn" }},
+        "Radish Pink": { PPG: 0.0240, G5x5: 0.64, T: { Dificultad: "3 puntos (Fácil)", TasaSiembra: "64 g", CosechaTotal: 5, Sabor: "Rábano picante", ReqAgua: "Alto (Rápida absorción)", Remojo: "No", Blackout: 3, Nutricion: "A, C, E, K, P, Ca, Fe, Mg, Zn" }}, 
+        "Chickpea": { PPG: 0.0067, G5x5: 5.00, T: { Dificultad: "2 puntos (Fácil)", TasaSiembra: "500 g", CosechaTotal: 10, Sabor: "Suave/Cremoso", ReqAgua: "Medio", Remojo: "8-12h", Blackout: 6, Nutricion: "Proteína, Fibra, K, Fe" }},
+        "Carrot": { PPG: 0.0290, G5x5: 0.52, T: { Dificultad: "4 puntos (Difícil)", TasaSiembra: "52 g", CosechaTotal: 15, Sabor: "Zanahoria fresca/Terroso", ReqAgua: "Medio (Sensible a saturación)", Remojo: "No", Blackout: 7, Nutricion: "A, K, C" }},
+        "Sunflower": { PPG: 0.0080, G5x5: 3.00, T: { Dificultad: "3 puntos (Fácil)", TasaSiembra: "300 g", CosechaTotal: 8, Sabor: "Nuez esencial", ReqAgua: "Alto (Necesita mucha agua)", Remojo: "8h", Blackout: 4, Nutricion: "A, B, C, D, E, K, P, Ca, Fe, Mg, Zn" }}, 
+        "Amaranth Red": { PPG: 0.0849, G5x5: 0.32, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "32 g", CosechaTotal: 7, Sabor: "Sabor esencial", ReqAgua: "Bajo/Medio (Muy sensible al exceso)", Remojo: "No", Blackout: 3, Nutricion: "A, B, C, E, K, P, Ca, Fe, Mg, Zn" }}, 
+        "Borage": { PPG: 0.0600, G5x5: 1.40, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "140 g", CosechaTotal: 15, Sabor: "Pepino suave", ReqAgua: "Medio/Alto", Remojo: "8-12h", Blackout: 1.5, Nutricion: "A, C, K, Ca, Fe, Mg" }},
+        "Basil Lemon": { PPG: 0.1170, G5x5: 0.30, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "30 g", CosechaTotal: 12, Sabor: "Sabor a limón", ReqAgua: "Bajo (Semilla mucilaginosa, evitar saturación)", Remojo: "No", Blackout: 5.5, Nutricion: "A, C, K, Fe" }},
+        "Shiso Red": { PPG: 0.4629, G5x5: 0.20, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "20 g", CosechaTotal: 18, Sabor: "Canela / Anís", ReqAgua: "Bajo (Semilla mucilaginosa, evitar saturación)", Remojo: "No", Blackout: 7, Nutricion: "A, C, K, Ca, Fe" }},
+        "Mung Bean": { PPG: 0.0072, G5x5: 4.00, T: { Dificultad: "2 puntos (Fácil)", TasaSiembra: "400 g", CosechaTotal: 4, Sabor: "Fresco", ReqAgua: "Alto (Rápida absorción)", Remojo: "8-12h", Blackout: 1.5, Nutricion: "A, B, C, E, K, P, Ca, Fe, Mg, Zn" }},
+        "Basil Genovese": { PPG: 0.0568, G5x5: 0.30, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "30 g", CosechaTotal: 12, Sabor: "Albahaca fuerte", ReqAgua: "Bajo (Semilla mucilaginosa, evitar saturación)", Remojo: "No", Blackout: 5.5, Nutricion: "A, C, K, Fe" }},
+        "Radish Red Rambo": { PPG: 0.0286, G5x5: 0.64, T: { Dificultad: "3 puntos (Fácil)", TasaSiembra: "64 g", CosechaTotal: 5, Sabor: "Rábano picante", ReqAgua: "Alto (Rápida absorción)", Remojo: "No", Blackout: 3, Nutricion: "A, C, E, K, P, Ca, Fe, Mg, Zn" }}, 
+        "Chinese Mahogany": { PPG: 0.1560, G5x5: 0.30, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "30 g", CosechaTotal: 25, Sabor: "Ajo/Cebolla", ReqAgua: "Medio (Necesita monitoreo)", Remojo: "No", Blackout: 12.5, Nutricion: "A, C, E, K" }},
+        "Pea": { PPG: 0.0060, G5x5: 5.00, T: { Dificultad: "3 puntos (Fácil)", TasaSiembra: "500 g", CosechaTotal: 10, Sabor: "Guisante dulce", ReqAgua: "Alto (Gran consumidor de agua)", Remojo: "8h", Blackout: 4, Nutricion: "A, B, C, E, K, Ca, Fe, Mg" }}, 
+        "Coriander": { PPG: 0.0284, G5x5: 0.68, T: { Dificultad: "4 puntos (Difícil)", TasaSiembra: "68 g", CosechaTotal: 15, Sabor: "Cilantro suave", ReqAgua: "Medio (Evitar saturación prolongada)", Remojo: "8-12h", Blackout: 6, Nutricion: "A, C, K, Ca, Fe" }}, 
+        "Adzuki": { PPG: 0.0104, G5x5: 3.00, T: { Dificultad: "2 puntos (Fácil)", TasaSiembra: "300 g", CosechaTotal: 4, Sabor: "Dulce", ReqAgua: "Alto (Rápida absorción)", Remojo: "8-12h", Blackout: 1.5, Nutricion: "A, B, C, E, K, P, Ca, Fe, Mg, Zn" }},
+        "Shungiku": { PPG: 0.0599, G5x5: 0.20, T: { Dificultad: "3 puntos (Fácil)", TasaSiembra: "20 g", CosechaTotal: 12, Sabor: "Sabor a nuez", ReqAgua: "Medio (Evitar saturación prolongada)", Remojo: "No", Blackout: 6, Nutricion: "A, C, K, Ca, Fe" }},
+        "Beet Red": { PPG: 0.0300, G5x5: 2.10, T: { Dificultad: "4 puntos (Difícil)", TasaSiembra: "210 g", CosechaTotal: 15, Sabor: "Remolacha suave", ReqAgua: "Medio/Alto (Requiere humedad constante)", Remojo: "8-12h", Blackout: 5, Nutricion: "A, C, E, K, P, Ca, Fe, Mg, Zn" }},
+        "Fennel": { PPG: 0.0349, G5x5: 0.30, T: { Dificultad: "4 puntos (Difícil)", TasaSiembra: "30 g", CosechaTotal: 20, Sabor: "Anís/Suave", ReqAgua: "Bajo/Medio (Sensible a saturación)", Remojo: "No", Blackout: 7, Nutricion: "A, C, E, K, P, Ca, Fe, Mg, Zn" }},
+        "Parsley": { PPG: 0.0340, G5x5: 0.30, T: { Dificultad: "4 puntos (Difícil)", TasaSiembra: "30 g", CosechaTotal: 20, Sabor: "Perejil fuerte", ReqAgua: "Medio (Necesita humedad constante)", Remojo: "No", Blackout: 7, Nutricion: "A, B, C, E, K, Ca, Fe, Mg" }},
+        "Nasturtium": { PPG: 0.0360, G5x5: 3.60, T: { Dificultad: "5 puntos (Experto)", TasaSiembra: "360 g", CosechaTotal: 17, Sabor: "Picante/Pimienta", ReqAgua: "Alto (Tolerante)", Remojo: "8-12h", Blackout: 6, Nutricion: "A, B, C, E, K, P, Ca, Fe, Mg, Zn" }},
+    };
+
+    const COSTS_PER_CM2 = {
+        TRAY: 0.000240, 
+        SUBSTRATE: 0.000400, 
+        ELECTRICITY_PER_DAY: 0.00001152, 
+        WATER_PER_DAY: 0.0000032,        
+    };
+    
+    // --- LEYENDA DE CÓDIGOS (Mantenida) ---
+    function renderCodeLegend() {
+        const list = document.getElementById('codeLegendList');
+        let htmlContent = '';
+        const sortedEnglishKeys = Object.keys(PRODUCT_CODES).sort();
+
+        sortedEnglishKeys.forEach(englishKey => {
+            const code = PRODUCT_CODES[englishKey];
+            const spanishName = PRODUCT_NAMES_ES[englishKey]; 
+            htmlContent += `<li><strong>${code}</strong>: ${spanishName}</li>`;
+        });
+        list.innerHTML = htmlContent;
+    }
+
+    // --- FUNCIONES DE TRAZABILIDAD Y PERSISTENCIA (Mantenidas de V38) ---
+
+    function getLotRegistry() {
+        try {
+            const registry = localStorage.getItem('LOT_REGISTRY');
+            return registry ? JSON.parse(registry) : [];
+        } catch (e) {
+            console.error("Error al leer el registro de lotes:", e);
+            return [];
+        }
+    }
+
+    function saveLotRegistry(registry) {
+        try {
+            localStorage.setItem('LOT_REGISTRY', JSON.stringify(registry));
+        } catch (e) {
+            console.error("Error al guardar el registro de lotes:", e);
+        }
+    }
+
+    // Funciones para manejar el contador persistente
+    function getMaxSequentialCounters() {
+        try {
+            const counters = localStorage.getItem('MAX_SEQUENTIAL_COUNTERS');
+            return counters ? JSON.parse(counters) : {};
+        } catch (e) {
+            console.error("Error al leer el contador máximo:", e);
+            return {};
+        }
+    }
+
+    function saveMaxSequentialCounters(counters) {
+        try {
+            localStorage.setItem('MAX_SEQUENTIAL_COUNTERS', JSON.stringify(counters));
+        } catch (e) {
+            console.error("Error al guardar el contador máximo:", e);
+        }
+    }
+
+
+    function getNextSequential(datePrefix, productCode) {
+        const counters = getMaxSequentialCounters();
+        const key = datePrefix + '-' + productCode; 
+        
+        const nextSequential = (counters[key] || 0) + 1;
+        
+        return nextSequential;
+    }
+
+    function generateAndSaveLot() {
+        const productSelect = document.getElementById('product_trace');
+        const productKey = productSelect.value;
+        const productDisplayName = PRODUCT_NAMES_ES[productKey] || productKey; 
+        const batchSize = parseInt(document.getElementById('batch_size_trace').value) || 1;
+        const productData = PRODUCTS_DATA[productKey];
+        const lotMessage = document.getElementById('lotMessage');
+
+        if (!productKey || !productData || batchSize <= 0) {
+            lotMessage.className = 'message';
+            lotMessage.innerHTML = '⚠️ Por favor, selecciona un producto e introduce un tamaño de lote válido.';
+            lotMessage.style.display = 'block';
+            document.getElementById('labelOutput').style.display = 'none';
+            return;
+        }
+
+        // 1. Generar Fechas y Códigos
+        const now = new Date();
+        const harvestDate = new Date();
+        harvestDate.setDate(now.getDate() + productData.T.CosechaTotal);
+
+        const year = String(now.getFullYear()).slice(-2);
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const datePrefix = year + month + day; 
+        
+        const dayHarvest = String(harvestDate.getDate()).padStart(2, '0');
+        const monthHarvest = String(harvestDate.getMonth() + 1).padStart(2, '0');
+        const yearHarvest = String(harvestDate.getFullYear()).slice(-2);
+
+        const productCode = PRODUCT_CODES[productKey];
+
+        // 2. Generar Secuencial No Reutilizable
+        const sequential = getNextSequential(datePrefix, productCode); 
+        const sequentialStr = String(sequential).padStart(2, '0'); 
+        
+        // Formato: [YYMMDD]-[CÓDIGO]-[SECUENCIAL]
+        const lotId = `${datePrefix}-${productCode}-${sequentialStr}`; 
+
+        // 3. Crear Registro
+        const newRecord = {
+            id: lotId,
+            product: productDisplayName, 
+            batchSize: batchSize,
+            dateSown: `${day}/${month}/${year}`,
+            dateHarvestEstimate: `${dayHarvest}/${monthHarvest}/${yearHarvest}`,
+            destination: ''
+        };
+
+        // 4. Guardar Registro
+        const registry = getLotRegistry(); 
+        registry.push(newRecord);
+        saveLotRegistry(registry);
+        
+        // 5. ACTUALIZAR CONTADOR PERSISTENTE
+        const counters = getMaxSequentialCounters();
+        const key = datePrefix + '-' + productCode;
+        counters[key] = sequential; 
+        saveMaxSequentialCounters(counters);
+
+
+        // 6. Mostrar Resultados
+        document.getElementById('loteIdValue').innerText = lotId;
+        document.getElementById('labelProduct').innerText = productDisplayName;
+        document.getElementById('labelDateStart').innerText = newRecord.dateSown;
+        document.getElementById('labelDateEnd').innerText = newRecord.dateHarvestEstimate;
+
+        lotMessage.className = 'message success';
+        lotMessage.innerHTML = `✅ **Lote ${lotId}** registrado con éxito. ¡A sembrar ${batchSize} bandejas!`;
+        lotMessage.style.display = 'block';
+        document.getElementById('labelOutput').style.display = 'block';
+
+        // 7. Actualizar Tabla Histórica
+        renderLotRegistry();
+    }
+    
+    function resetLotCounters() {
+        if (confirm("⚠️ ADVERTENCIA: Esta acción BORRARÁ TODO el historial de contadores de lote en tu navegador. Los nuevos lotes comenzarán desde -01, lo que podría causar duplicados con lotes antiguos si no se borran también. ¿Deseas continuar?")) {
+            localStorage.removeItem('MAX_SEQUENTIAL_COUNTERS'); 
+            
+            const lotMessage = document.getElementById('lotMessage');
+            lotMessage.className = 'message success';
+            lotMessage.innerHTML = `🎉 **Contadores de lote reiniciados con éxito.** Los próximos lotes generados comenzarán desde **-01**.`;
+            lotMessage.style.display = 'block';
+            setTimeout(() => lotMessage.style.display = 'none', 5000);
+        }
+    }
+
+
+    function renderLotRegistry() {
+        const registry = getLotRegistry();
+        const container = document.getElementById('lotRegistryContainer');
+
+        if (registry.length === 0) {
+            container.innerHTML = '<p style="color: #7f8c8d;">Aún no has registrado ningún lote. ¡Genera el primero!</p>';
+            return;
+        }
+
+        let tableHTML = `
+            <table class="registry-table">
+                <thead>
+                    <tr>
+                        <th>ID Lote</th>
+                        <th>Producto</th>
+                        <th>N° Bandejas</th>
+                        <th>Siembra</th>
+                        <th>Cosecha Est.</th>
+                        <th>Destino / Factura</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        [...registry].reverse().forEach((record) => {
+            const uniqueId = record.id; 
+
+            tableHTML += `
+                <tr>
+                    <td>${record.id}</td>
+                    <td>${record.product}</td>
+                    <td>${record.batchSize}</td>
+                    <td>${record.dateSown}</td>
+                    <td>${record.dateHarvestEstimate}</td>
+                    <td>
+                        <input type="text" 
+                               value="${record.destination}" 
+                               placeholder="Restaurante / N° Factura"
+                               onchange="updateLotDestination('${uniqueId}', this.value)">
+                    </td>
+                    <td>
+                        <button class="btn-delete" onclick="deleteLot('${uniqueId}')">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableHTML += '</tbody></table>';
+        container.innerHTML = tableHTML;
+    }
+
+    function updateLotDestination(lotId, newValue) {
+        const registry = getLotRegistry();
+        const index = registry.findIndex(r => r.id === lotId);
+
+        if (index !== -1) {
+            registry[index].destination = newValue;
+            saveLotRegistry(registry);
+            const lotMessage = document.getElementById('lotMessage');
+            lotMessage.className = 'message success';
+            lotMessage.innerHTML = `✅ Destino actualizado para el lote **${lotId}**.`;
+            lotMessage.style.display = 'block';
+            setTimeout(() => lotMessage.style.display = 'none', 3000); 
+        }
+    }
+
+    function deleteLot(lotId) {
+        if (confirm(`¿Estás seguro de que quieres eliminar el lote ${lotId}? Esta acción es permanente en tu navegador (usa CSV si necesitas recuperarlo).`)) {
+            let registry = getLotRegistry();
+            const initialLength = registry.length;
+            
+            registry = registry.filter(record => record.id !== lotId);
+
+            if (registry.length < initialLength) {
+                saveLotRegistry(registry);
+                renderLotRegistry();
+                const lotMessage = document.getElementById('lotMessage');
+                lotMessage.className = 'message success';
+                lotMessage.innerHTML = `🗑️ Lote **${lotId}** eliminado. La secuencia de nuevos códigos continuará con el siguiente número único.`;
+                lotMessage.style.display = 'block';
+                setTimeout(() => lotMessage.style.display = 'none', 5000);
+            } else {
+                alert(`Error: No se encontró el lote ${lotId} para eliminar.`);
+            }
+        }
+    }
+    
+    function exportLotRegistryToCSV() {
+        const registry = getLotRegistry();
+        if (registry.length === 0) {
+            alert("No hay lotes para exportar.");
+            return;
+        }
+
+        const headers = ["ID_Lote", "Producto", "N_Bandejas", "Fecha_Siembra", "Fecha_Cosecha_Estimada", "Destino_Factura"];
+        let csvContent = headers.join(";") + "\n"; 
+
+        registry.forEach(record => {
+            const destinationClean = `"${record.destination.replace(/"/g, '""')}"`; 
+            const row = [
+                record.id,
+                record.product,
+                record.batchSize,
+                record.dateSown,
+                record.dateHarvestEstimate,
+                destinationClean 
+            ].join(";");
+            csvContent += row + "\n";
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Trazabilidad_Lotes_Backup_${dateStr}.csv`);
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert("✅ Archivo CSV generado. Por favor, revisa tus descargas para la copia de seguridad.");
+    }
+
+    function calculateSupplyCost(areaCm2, totalDays, blackoutDays, unitCostKey) {
+        if (unitCostKey === 'TRAY') return COSTS_PER_CM2.TRAY * areaCm2;
+        if (unitCostKey === 'SUBSTRATE') return COSTS_PER_CM2.SUBSTRATE * areaCm2;
+
+        const daysInCycle = totalDays;
+        const daysOfLight = Math.max(0, daysInCycle - blackoutDays);
+
+        if (unitCostKey === 'ELECTRICITY') {
+            return COSTS_PER_CM2.ELECTRICITY_PER_DAY * areaCm2 * daysOfLight;
+        }
+        if (unitCostKey === 'WATER') {
+            return COSTS_PER_CM2.WATER_PER_DAY * areaCm2 * daysInCycle;
+        }
+    }
+
+    // --- NUEVA FUNCIÓN PARA GENERAR LA TABLA DE DESGLOSE DE COSTES (V39) ---
+    function generateCostDetailTable(costs, totalCostPerTray) {
+        const costDetailTableContainer = document.getElementById('costDetailTableContainer');
+        
+        let tableHTML = `
+            <h3 style="margin-top: 25px;">Detalle de Coste por Bandeja/Unidad</h3>
+            <table class="cost-detail-table">
+                <thead>
+                    <tr><th>Concepto</th><th style="text-align: right;">Coste (€)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>1. Semilla (${costs.requiredGramsPerTray.toFixed(1).replace('.', ',')} g)</th><td>${costs.costSeed.toFixed(3).replace('.', ',')}</td></tr>
+                    <tr><th>2. Bandeja (Amortización)</th><td>${costs.costTray.toFixed(3).replace('.', ',')}</td></tr>
+                    <tr><th>3. Sustrato</th><td>${costs.costSubstrate.toFixed(3).replace('.', ',')}</td></tr>
+                    <tr><th>4. Electricidad (Luz)</th><td>${costs.costElectricity.toFixed(3).replace('.', ',')}</td></tr>
+                    <tr><th>5. Agua</th><td>${costs.costWater.toFixed(3).replace('.', ',')}</td></tr>
+                    <tr><th style="background-color: #d4edda; color: #155724;">TOTAL COSTE/BANDEJA</th><td style="background-color: #d4edda; color: #155724;">${totalCostPerTray.toFixed(3).replace('.', ',')}€</td></tr>
+                </tbody>
+            </table>
+        `;
+        costDetailTableContainer.innerHTML = tableHTML;
+    }
+
+
+    function calculateCost() {
+        const productKey = document.getElementById('product_cost').value;
+        const data = PRODUCTS_DATA[productKey];
+        const width = parseFloat(document.getElementById('tray_width').value);
+        const length = parseFloat(document.getElementById('tray_length').value);
+        const batchSize = parseInt(document.getElementById('batch_size_cost').value) || 1;
+        const salesPricePerTray = parseFloat(document.getElementById('sales_price_input').value);
+        
+        if (!data || isNaN(width) || isNaN(length) || width <= 0 || length <= 0 || batchSize <= 0 || isNaN(salesPricePerTray) || salesPricePerTray <= 0) {
+            alert("Por favor, revisa todos los campos: producto, dimensiones, lote y precio de venta deben ser válidos.");
+            return;
+        }
+
+        const newArea = width * length;
+        const totalDays = data.T.CosechaTotal;
+        const blackoutDays = data.T.Blackout; 
+        const daysOfLight = Math.max(0, totalDays - blackoutDays);
+
+        const densityPerCm2 = data.G5x5 / REF_AREA_CM2;
+        const requiredGramsPerTray = densityPerCm2 * newArea;
+        
+        const costSeed = data.PPG * requiredGramsPerTray;
+        const costTray = calculateSupplyCost(newArea, totalDays, blackoutDays, 'TRAY');
+        const costSubstrate = calculateSupplyCost(newArea, totalDays, blackoutDays, 'SUBSTRATE');
+        const costElectricity = calculateSupplyCost(newArea, totalDays, blackoutDays, 'ELECTRICITY');
+        const costWater = calculateSupplyCost(newArea, totalDays, blackoutDays, 'WATER');
+
+        const totalCostPerTray = costSeed + costTray + costSubstrate + costElectricity + costWater;
+        currentTotalCostPerTray = totalCostPerTray; 
+        
+        const totalCostBatch = totalCostPerTray * batchSize;
+        const requiredGramsTotal = requiredGramsPerTray * batchSize;
+
+        const totalSalesBatch = salesPricePerTray * batchSize;
+        const absoluteProfitBatch = totalSalesBatch - totalCostBatch;
+        const profitMarginPercentage = (absoluteProfitBatch / totalCostBatch) * 100;
+
+        // 1. GENERAR TABLA DE DESGLOSE DE COSTES POR BANDEJA
+        const costsData = {
+            requiredGramsPerTray, costSeed, costTray, costSubstrate, costElectricity, costWater
+        };
+        generateCostDetailTable(costsData, totalCostPerTray);
+        
+        // 2. MOSTRAR RESULTADOS DE COSTE
+        document.getElementById('finalPrice').innerText = totalCostBatch.toFixed(2).replace('.', ',') + "€";
+        document.getElementById('costDetails').innerHTML = 
+            `Coste **POR BANDEJA**: ${totalCostPerTray.toFixed(3).replace('.', ',')}€ | ` +
+            `Gramos totales Lote: ${requiredGramsTotal.toFixed(1).replace('.', ',')}g`;
+            
+        document.getElementById('costResultBox').style.display = "block";
+
+        // 3. MOSTRAR RESULTADOS DE MARGEN
+        document.getElementById('profitMargin').innerText = profitMarginPercentage.toFixed(1).replace('.', ',') + "%";
+        document.getElementById('profitDetails').innerHTML = 
+            `Beneficio NETO del LOTE: ${absoluteProfitBatch.toFixed(2).replace('.', ',')}€ | ` +
+            `Precio Venta/Bandeja: ${salesPricePerTray.toFixed(2).replace('.', ',')}€`;
+        document.getElementById('salesResultBox').style.display = "block";
+    }
+
+    function generateTechnicalTable(data) {
+        if (!data || !data.T.Dificultad) {
+             return '<p style="color: red; text-align: center;">⛔ Datos técnicos no disponibles.</p>';
+        }
+        const daysOfLight = Math.max(0, data.T.CosechaTotal - data.T.Blackout);
+        let tableHTML = `
+            <table class="tech-table">
+                <thead>
+                    <tr><th colspan="2" style="text-align: center;">Ficha Técnica de Producción</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>Dificultad</th><td>${data.T.Dificultad}</td></tr>
+                    <tr><th>Tasa de Siembra (g/25cm²)</th><td>${data.G5x5} g</td></tr>
+                    <tr><th>Remojo de Semilla</th><td>${data.T.Remojo}</td></tr>
+                    <tr><th>Días de Oscuridad (Blackout)</th><td>${data.T.Blackout} días</td></tr>
+                    <tr><th>Días de LUZ (Cálculo)</th><td>${daysOfLight.toFixed(1)} días</td></tr> 
+                    <tr><th>Días Totales de Cosecha</th><td>${data.T.CosechaTotal} días</td></tr>
+                    <tr><th>Sabor Dominante</th><td>${data.T.Sabor}</td></tr>
+                    <tr><th>Requerimiento de Agua</th><td>${data.T.ReqAgua}</td></tr>
+                    <tr><th>Nutrición Principal</th><td>${data.T.Nutricion}</td></tr>
+                </tbody>
+            </table>
+        `;
+        return tableHTML;
+    }
+
+    function updateTechData(callerId) {
+        let productKey;
+        if (callerId === 'product_cost') {
+            productKey = document.getElementById('product_cost').value;
+        } else if (callerId === 'product_trace') {
+            productKey = document.getElementById('product_trace').value;
+        } else {
+            productKey = document.getElementById('product_cost').value || document.getElementById('product_trace').value;
+        }
+        
+        const data = PRODUCTS_DATA[productKey];
+        document.getElementById('techDataResult').innerHTML = data ? generateTechnicalTable(data) : '';
+    }
+    
+    // --- INICIALIZACIÓN ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderLotRegistry();
+        updateTechData('product_cost');
+        renderCodeLegend(); 
+        document.getElementById('costDetailTableContainer').innerHTML = ''; // Limpiar al cargar
+    });
+
+</script>
+
+</body>
+</html>
