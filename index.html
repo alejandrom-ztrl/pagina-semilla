@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Coste, Trazabilidad y Beneficio (V39 - Desglose de Costes)</title>
+    <title>Calculadora Coste, Trazabilidad y Beneficio (V40 - Acceso con Contraseña)</title>
     <style>
         /* Estilos CSS (Mantenidos) */
         body { font-family: sans-serif; max-width: 1200px; margin: 2rem auto; padding: 1rem; background-color: #f4f4f9; display: flex; gap: 20px; }
@@ -27,7 +27,7 @@
         .btn-delete { background-color: #e74c3c; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
         .btn-delete:hover { background-color: #c0392b; }
         .btn-reset-counter { 
-            background-color: #7f8c8d; /* Gris para evitar confusión con Exportar/Generar */
+            background-color: #7f8c8d; 
             margin-top: 10px;
             font-size: 0.9rem;
             padding: 8px;
@@ -53,7 +53,7 @@
         .label-output { margin-top: 15px; padding: 15px; background-color: #f0f8ff; border: 2px dashed #3498db; border-radius: 4px; font-size: 1.1rem; text-align: center; }
         .label-output .id { font-size: 1.5rem; font-weight: bold; color: #c0392b; display: block; margin-bottom: 5px; }
 
-        /* Tabla de Registro */
+        /* Tablas */
         .registry-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
         .registry-table th, .registry-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         .registry-table th { background-color: #ecf0f1; font-weight: bold; color: #2c3e50; }
@@ -92,86 +92,91 @@
         .legend-section li { margin-bottom: 4px; padding-bottom: 2px; }
         .legend-section strong { font-weight: bold; color: #c0392b; margin-right: 5px; }
         
+        /* Contenedor de Login */
+        #login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.95); /* Fondo oscuro semitransparente */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: none;
+        }
+        .login-box input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+        }
+        .login-box button {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-box button:hover {
+            background-color: #2980b9;
+        }
+        #login-error {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
+        /* Oculta el contenido de la app por defecto */
+        #app-content {
+            display: none;
+            width: 100%;
+            display: flex;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
 
-<div class="cost-container module">
-    <h2>💰 Cálculo de Coste y Margen (V39)</h2>
-    
-    <div class="cost-input-section input-section">
-        <label for="product_cost">Selecciona la Semilla:</label>
-        <select id="product_cost" onchange="updateTechData('product_cost')">
-            <option value="">-- Elige un producto --</option>
-            <option value="Nasturtium Indian Cress">1. Capuchina India</option>
-            <option value="Radish Pink">2. Rábano Rosa</option>
-            <option value="Chickpea">3. Garbanzo</option>
-            <option value="Carrot">4. Zanahoria</option>
-            <option value="Sunflower">5. Girasol</option>
-            <option value="Amaranth Red">6. Amaranto Rojo</option>
-            <option value="Borage">7. Borraja</option>
-            <option value="Basil Lemon">8. Albahaca Limón</option>
-            <option value="Shiso Red">9. Shiso Roja</option>
-            <option value="Mung Bean">10. Judía (Mung)</option>
-            <option value="Basil Genovese">11. Albahaca Genovesa</option>
-            <option value="Radish Red Rambo">12. Rábano Rambo</option>
-            <option value="Chinese Mahogany">13. Chinese Mahogany</option>
-            <option value="Pea">14. Guisante</option>
-            <option value="Coriander">15. Cilantro</option>
-            <option value="Adzuki">16. Adzuki Rojo</option>
-            <option value="Shungiku">17. Shunguiku</option>
-            <option value="Beet Red">18. Remolacha</option>
-            <option value="Fennel">19. Hinojo</option>
-            <option value="Parsley">20. Perejil</option>
-            <option value="Nasturtium">21. Capuchina Alaska</option>
-        </select>
-        
-        <label>Dimensiones y Lote:</label>
-        <div class="batch-input-group">
-            <input type="number" id="tray_width" placeholder="Ancho (cm)" step="any" value="25">
-            <input type="number" id="tray_length" placeholder="Largo (cm)" step="any" value="50">
-            <input type="number" id="batch_size_cost" placeholder="Lote (N)" step="1" value="1">
-        </div>
-
-        <label for="sales_price_input">Precio de Venta/Bandeja (€):</label>
-        <input type="number" id="sales_price_input" value="10.00" step="0.01">
-        
-        <button class="btn-calculate" onclick="calculateCost()">Calcular Coste y Margen</button>
+<div id="login-container">
+    <div class="login-box">
+        <h2>Acceso Restringido</h2>
+        <p>Introduce la contraseña para continuar:</p>
+        <input type="password" id="password-input" placeholder="Contraseña" autofocus>
+        <button onclick="checkPassword()">Acceder</button>
+        <div id="login-error">Contraseña incorrecta. Inténtalo de nuevo.</div>
     </div>
-    
-    <div id="costResultBox" class="result cost-result" style="display: none;">
-        <div>Coste **TOTAL ESTIMADO** de Producción por **LOTE** ($C_{Lote}$):</div>
-        <div id="finalPrice" class="price-big">0.00€</div>
-        <div id="costDetails" class="details"></div>
-    </div>
-
-    <div id="costDetailTableContainer">
-        </div>
-
-    <div id="salesResultBox" class="result sales-result" style="display: none;">
-        <div>Margen de Beneficio Aplicado al Lote:</div>
-        <div id="profitMargin" class="sales-price-big">0.0%</div>
-        <div id="profitDetails" class="details"></div>
-    </div>
-    
-    <div id="techDataResult" style="margin-top: 30px;">
-        </div>
 </div>
 
-<div class="traceability-module module">
-    <h2>🏷️ Gestión de Siembra y Trazabilidad (V39)</h2>
-    <div class="persistence-info">
-        💾 **Persistencia:** Los datos se guardan en la memoria local (`localStorage`). Usa **Exportar CSV** para crear una copia de seguridad externa.
-        <br>
-        ✨ **Lotes No Reutilizables:** La secuencia de lote (ej: `-01`, `-02`, `-03`) ya **no se recicla** aunque el lote anterior haya sido eliminado. El ID incluye la fecha.
-    </div>
+<div id="app-content">
 
-    <div class="trace-input-legend-wrapper">
+    <div class="cost-container module">
+        <h2>💰 Cálculo de Coste y Margen (V40)</h2>
         
-        <div class="trace-input-section">
-            <h3>Generar Nuevo Lote Sembrado</h3>
-            <label for="product_trace">Selecciona la Semilla:</label>
-            <select id="product_trace" onchange="updateTechData('product_trace')">
+        <div class="cost-input-section input-section">
+            <label for="product_cost">Selecciona la Semilla:</label>
+            <select id="product_cost" onchange="updateTechData('product_cost')">
                 <option value="">-- Elige un producto --</option>
                 <option value="Nasturtium Indian Cress">1. Capuchina India</option>
                 <option value="Radish Pink">2. Rábano Rosa</option>
@@ -196,43 +201,163 @@
                 <option value="Nasturtium">21. Capuchina Alaska</option>
             </select>
             
-            <label for="batch_size_trace">Tamaño del Lote (N° Bandejas):</label>
-            <input type="number" id="batch_size_trace" value="1" min="1" step="1">
-            
-            <button class="btn-calculate btn-trace" onclick="generateAndSaveLot()">Generar y Registrar Lote (ID y Fechas)</button>
-
-            <div id="lotMessage" class="message" style="display: none;"></div>
-
-            <div id="labelOutput" class="label-output" style="display: none;">
-                **ETIQUETA PARA BANDEJA**
-                <span class="id" id="loteIdValue"></span>
-                Producto: <span id="labelProduct"></span><br>
-                Fecha Siembra: <span id="labelDateStart"></span><br>
-                Fecha Cosecha Estimada: <span id="labelDateEnd"></span>
+            <label>Dimensiones y Lote:</label>
+            <div class="batch-input-group">
+                <input type="number" id="tray_width" placeholder="Ancho (cm)" step="any" value="25">
+                <input type="number" id="tray_length" placeholder="Largo (cm)" step="any" value="50">
+                <input type="number" id="batch_size_cost" placeholder="Lote (N)" step="1" value="1">
             </div>
-        </div>
 
-        <div class="legend-section">
-            <h3>📖 Códigos de Producto (Memoria)</h3>
-            <ul id="codeLegendList">
-                </ul>
+            <label for="sales_price_input">Precio de Venta/Bandeja (€):</label>
+            <input type="number" id="sales_price_input" value="10.00" step="0.01">
+            
+            <button class="btn-calculate" onclick="calculateCost()">Calcular Coste y Margen</button>
         </div>
         
-    </div>
-    
-    <h3 style="margin-top: 25px;">Registro de Lotes Sembrados (Histórico)</h3>
-    <button class="btn-calculate btn-export" onclick="exportLotRegistryToCSV()">Exportar Trazabilidad (CSV)</button>
-    <button class="btn-calculate btn-reset-counter" onclick="resetLotCounters()">⚠️ REINICIAR CONTADORES DE LOTE (Empezar de 0)</button>
-
-    <div id="lotRegistryContainer">
+        <div id="costResultBox" class="result cost-result" style="display: none;">
+            <div>Coste **TOTAL ESTIMADO** de Producción por **LOTE** ($C_{Lote}$):</div>
+            <div id="finalPrice" class="price-big">0.00€</div>
+            <div id="costDetails" class="details"></div>
         </div>
+
+        <div id="costDetailTableContainer">
+            </div>
+
+        <div id="salesResultBox" class="result sales-result" style="display: none;">
+            <div>Margen de Beneficio Aplicado al Lote:</div>
+            <div id="profitMargin" class="sales-price-big">0.0%</div>
+            <div id="profitDetails" class="details"></div>
+        </div>
+        
+        <div id="techDataResult" style="margin-top: 30px;">
+            </div>
+    </div>
+
+    <div class="traceability-module module">
+        <h2>🏷️ Gestión de Siembra y Trazabilidad (V40)</h2>
+        <div class="persistence-info">
+            💾 **Persistencia:** Los datos se guardan en la memoria local (`localStorage`). Usa **Exportar CSV** para crear una copia de seguridad externa.
+            <br>
+            ✨ **Lotes No Reutilizables:** La secuencia de lote (ej: `-01`, `-02`, `-03`) ya **no se recicla**. El ID incluye la fecha.
+        </div>
+
+        <div class="trace-input-legend-wrapper">
+            
+            <div class="trace-input-section">
+                <h3>Generar Nuevo Lote Sembrado</h3>
+                <label for="product_trace">Selecciona la Semilla:</label>
+                <select id="product_trace" onchange="updateTechData('product_trace')">
+                    <option value="">-- Elige un producto --</option>
+                    <option value="Nasturtium Indian Cress">1. Capuchina India</option>
+                    <option value="Radish Pink">2. Rábano Rosa</option>
+                    <option value="Chickpea">3. Garbanzo</option>
+                    <option value="Carrot">4. Zanahoria</option>
+                    <option value="Sunflower">5. Girasol</option>
+                    <option value="Amaranth Red">6. Amaranto Rojo</option>
+                    <option value="Borage">7. Borraja</option>
+                    <option value="Basil Lemon">8. Albahaca Limón</option>
+                    <option value="Shiso Red">9. Shiso Roja</option>
+                    <option value="Mung Bean">10. Judía (Mung)</option>
+                    <option value="Basil Genovese">11. Albahaca Genovesa</option>
+                    <option value="Radish Red Rambo">12. Rábano Rambo</option>
+                    <option value="Chinese Mahogany">13. Chinese Mahogany</option>
+                    <option value="Pea">14. Guisante</option>
+                    <option value="Coriander">15. Cilantro</option>
+                    <option value="Adzuki">16. Adzuki Rojo</option>
+                    <option value="Shungiku">17. Shunguiku</option>
+                    <option value="Beet Red">18. Remolacha</option>
+                    <option value="Fennel">19. Hinojo</option>
+                    <option value="Parsley">20. Perejil</option>
+                    <option value="Nasturtium">21. Capuchina Alaska</option>
+                </select>
+                
+                <label for="batch_size_trace">Tamaño del Lote (N° Bandejas):</label>
+                <input type="number" id="batch_size_trace" value="1" min="1" step="1">
+                
+                <button class="btn-calculate btn-trace" onclick="generateAndSaveLot()">Generar y Registrar Lote (ID y Fechas)</button>
+
+                <div id="lotMessage" class="message" style="display: none;"></div>
+
+                <div id="labelOutput" class="label-output" style="display: none;">
+                    **ETIQUETA PARA BANDEJA**
+                    <span class="id" id="loteIdValue"></span>
+                    Producto: <span id="labelProduct"></span><br>
+                    Fecha Siembra: <span id="labelDateStart"></span><br>
+                    Fecha Cosecha Estimada: <span id="labelDateEnd"></span>
+                </div>
+            </div>
+
+            <div class="legend-section">
+                <h3>📖 Códigos de Producto (Memoria)</h3>
+                <ul id="codeLegendList">
+                    </ul>
+            </div>
+            
+        </div>
+        
+        <h3 style="margin-top: 25px;">Registro de Lotes Sembrados (Histórico)</h3>
+        <button class="btn-calculate btn-export" onclick="exportLotRegistryToCSV()">Exportar Trazabilidad (CSV)</button>
+        <button class="btn-calculate btn-reset-counter" onclick="resetLotCounters()">⚠️ REINICIAR CONTADORES DE LOTE (Empezar de 0)</button>
+
+        <div id="lotRegistryContainer">
+            </div>
+    </div>
 </div>
 
 <script>
+    // --- SEGURIDAD Y LOGIN (NUEVO) ---
+    const CORRECT_PASSWORD = "microgreens2025";
+    const AUTH_KEY = "isAuthenticated";
+
+    /**
+     * Verifica la contraseña y maneja el acceso.
+     */
+    function checkPassword() {
+        const input = document.getElementById('password-input').value;
+        const errorDiv = document.getElementById('login-error');
+
+        if (input === CORRECT_PASSWORD) {
+            // Éxito: Guardar estado y mostrar aplicación
+            localStorage.setItem(AUTH_KEY, 'true');
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-content').style.display = 'flex';
+            // Iniciar la aplicación
+            initializeApp();
+        } else {
+            // Fallo: Mostrar error
+            errorDiv.style.display = 'block';
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-input').focus();
+        }
+    }
+
+    /**
+     * Maneja el estado de autenticación al cargar la página.
+     */
+    function handleAuthOnLoad() {
+        const isAuthenticated = localStorage.getItem(AUTH_KEY) === 'true';
+        
+        if (isAuthenticated) {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-content').style.display = 'flex';
+            initializeApp();
+        } else {
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'none';
+        }
+
+        // Permitir Enter para acceder
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    }
+
+    // --- CONSTANTES Y DATOS (Mantenidos) ---
     const REF_AREA_CM2 = 25; 
     let currentTotalCostPerTray = 0; 
     
-    // --- DATOS DEL PRODUCTO Y CÓDIGOS ---
     const PRODUCT_CODES = {
         "Nasturtium Indian Cress": "NIC", "Radish Pink": "RDP", "Chickpea": "CHP", "Carrot": "CAR", "Sunflower": "SUN",
         "Amaranth Red": "AMA", "Borage": "BOR", "Basil Lemon": "BLL", "Shiso Red": "SHR", "Mung Bean": "MNG",
@@ -240,7 +365,6 @@
         "Adzuki": "ADZ", "Shungiku": "SHG", "Beet Red": "BTR", "Fennel": "FEN", "Parsley": "PAR", "Nasturtium": "NAA", 
     };
 
-    // --- MAPA DE NOMBRES EN ESPAÑOL PARA LA LEYENDA ---
     const PRODUCT_NAMES_ES = {
         "Nasturtium Indian Cress": "Capuchina India", "Radish Pink": "Rábano Rosa", "Chickpea": "Garbanzo", "Carrot": "Zanahoria", "Sunflower": "Girasol",
         "Amaranth Red": "Amaranto Rojo", "Borage": "Borraja", "Basil Lemon": "Albahaca Limón", "Shiso Red": "Shiso Roja", "Mung Bean": "Judía (Mung)",
@@ -280,7 +404,8 @@
         WATER_PER_DAY: 0.0000032,        
     };
     
-    // --- LEYENDA DE CÓDIGOS (Mantenida) ---
+    // --- LEYENDA Y FUNCIONES DE TRAZABILIDAD (Mantenidas) ---
+    
     function renderCodeLegend() {
         const list = document.getElementById('codeLegendList');
         let htmlContent = '';
@@ -293,8 +418,6 @@
         });
         list.innerHTML = htmlContent;
     }
-
-    // --- FUNCIONES DE TRAZABILIDAD Y PERSISTENCIA (Mantenidas de V38) ---
 
     function getLotRegistry() {
         try {
@@ -314,7 +437,6 @@
         }
     }
 
-    // Funciones para manejar el contador persistente
     function getMaxSequentialCounters() {
         try {
             const counters = localStorage.getItem('MAX_SEQUENTIAL_COUNTERS');
@@ -359,7 +481,6 @@
             return;
         }
 
-        // 1. Generar Fechas y Códigos
         const now = new Date();
         const harvestDate = new Date();
         harvestDate.setDate(now.getDate() + productData.T.CosechaTotal);
@@ -375,14 +496,11 @@
 
         const productCode = PRODUCT_CODES[productKey];
 
-        // 2. Generar Secuencial No Reutilizable
         const sequential = getNextSequential(datePrefix, productCode); 
         const sequentialStr = String(sequential).padStart(2, '0'); 
         
-        // Formato: [YYMMDD]-[CÓDIGO]-[SECUENCIAL]
         const lotId = `${datePrefix}-${productCode}-${sequentialStr}`; 
 
-        // 3. Crear Registro
         const newRecord = {
             id: lotId,
             product: productDisplayName, 
@@ -392,19 +510,15 @@
             destination: ''
         };
 
-        // 4. Guardar Registro
         const registry = getLotRegistry(); 
         registry.push(newRecord);
         saveLotRegistry(registry);
         
-        // 5. ACTUALIZAR CONTADOR PERSISTENTE
         const counters = getMaxSequentialCounters();
         const key = datePrefix + '-' + productCode;
         counters[key] = sequential; 
         saveMaxSequentialCounters(counters);
 
-
-        // 6. Mostrar Resultados
         document.getElementById('loteIdValue').innerText = lotId;
         document.getElementById('labelProduct').innerText = productDisplayName;
         document.getElementById('labelDateStart').innerText = newRecord.dateSown;
@@ -415,7 +529,6 @@
         lotMessage.style.display = 'block';
         document.getElementById('labelOutput').style.display = 'block';
 
-        // 7. Actualizar Tabla Histórica
         renderLotRegistry();
     }
     
@@ -559,6 +672,8 @@
         alert("✅ Archivo CSV generado. Por favor, revisa tus descargas para la copia de seguridad.");
     }
 
+    // --- FUNCIONES DE CÁLCULO (Mantenidas) ---
+
     function calculateSupplyCost(areaCm2, totalDays, blackoutDays, unitCostKey) {
         if (unitCostKey === 'TRAY') return COSTS_PER_CM2.TRAY * areaCm2;
         if (unitCostKey === 'SUBSTRATE') return COSTS_PER_CM2.SUBSTRATE * areaCm2;
@@ -574,7 +689,6 @@
         }
     }
 
-    // --- NUEVA FUNCIÓN PARA GENERAR LA TABLA DE DESGLOSE DE COSTES (V39) ---
     function generateCostDetailTable(costs, totalCostPerTray) {
         const costDetailTableContainer = document.getElementById('costDetailTableContainer');
         
@@ -697,16 +811,22 @@
         document.getElementById('techDataResult').innerHTML = data ? generateTechnicalTable(data) : '';
     }
     
-    // --- INICIALIZACIÓN ---
-    document.addEventListener('DOMContentLoaded', () => {
+    /**
+     * Función que inicializa la aplicación (solo se llama tras el login).
+     */
+    function initializeApp() {
         renderLotRegistry();
         updateTechData('product_cost');
         renderCodeLegend(); 
-        document.getElementById('costDetailTableContainer').innerHTML = ''; // Limpiar al cargar
+        document.getElementById('costDetailTableContainer').innerHTML = '';
+    }
+
+    // --- INICIALIZACIÓN (Modificada para incluir Auth) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        handleAuthOnLoad();
     });
 
 </script>
 
 </body>
-
 </html>
