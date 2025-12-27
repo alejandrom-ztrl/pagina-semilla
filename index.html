@@ -3,2437 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microgreens La Isla - Sistema de Gestión</title>
+    <title>Microgreens La Isla - Gestión Profesional Cloud</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <style>
-        /* =============================================================== */
-        /* CÓDIGO CSS (Styles) */
-        /* =============================================================== */
         :root {
-            --primary: #4CAF50;
-            --primary-dark: #388E3C;
-            --secondary: #007bff;
-            --background: #f4f7f6;
-            --surface: #ffffff;
-            --text-color: #333;
-            --border-color: #ddd;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #2196F3;
-            --success: #4CAF50;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background);
-            color: var(--text-color);
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar (Menú Principal) */
-        .sidebar {
-            width: 250px;
-            background-color: var(--primary-dark);
-            color: white;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.5em;
-            color: var(--surface);
-        }
-        
-        .sidebar a, .sidebar button {
-            color: white;
-            text-decoration: none;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 1em;
-            width: 100%;
-        }
-
-        .sidebar a:hover, .sidebar a.active, .sidebar button:hover {
-            background-color: #317c34; 
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .logo-container {
-            text-align: center;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--surface);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Main Content Area */
-        .main-content {
-            flex-grow: 1;
-            padding: 20px 30px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-        
-        .header h1 {
-            color: var(--primary-dark);
-            font-size: 2em;
-        }
-
-        /* Content Sections */
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Forms */
-        .data-form {
-            background-color: var(--surface);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-
-        .data-form label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-            color: var(--primary-dark);
-        }
-
-        .data-form input[type="text"], 
-        .data-form input[type="number"], 
-        .data-form input[type="date"], 
-        .data-form input[type="time"], /* AÑADIDO PARA HORA */
-        .data-form select,
-        .data-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .form-grid > div, .data-form > div {
-            margin-bottom: 10px;
-        }
-
-        .data-form button {
-            margin-top: 15px;
-            width: auto;
-            min-width: 150px;
-        }
-        
-        .checkbox-group {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
-            width: auto;
-            margin-top: 0;
-        }
-        .checkbox-group input[type="text"] {
-            margin-top: 5px;
-        }
-
-
-        /* Buttons */
-        .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-
-        .primary-btn {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .primary-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .secondary-btn {
-            background-color: #f0f0f0;
-            color: var(--text-color);
-            margin-right: 10px;
-        }
-        
-        .secondary-btn:hover {
-            background-color: #e0e0e0;
-        }
-        
-        .delete-btn {
-            background-color: var(--danger);
-            color: white;
-        }
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-
-        /* Lists/Cards */
-        #lista-clientes, #lista-lotes, #lista-planes, #lista-visitas { /* AÑADIDO #lista-visitas */
-            list-style: none;
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .card {
-            background-color: var(--surface);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border-left: 5px solid var(--info);
-        }
-        
-        .card h4 {
-            margin-top: 0;
-            color: var(--primary-dark);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .card p {
-            margin: 5px 0;
-            font-size: 0.9em;
-        }
-        
-        /* Visitas List Styling (NEW) */
-        .visit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f9f9f9;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            border-left: 4px solid var(--info); 
-        }
-
-        .visit-completed {
-            background-color: #e3f2fd; /* Light Blue/Info */
-            border-left: 4px solid var(--secondary); /* Blue for completed */
-        }
-        .visit-completed strong {
-            text-decoration: line-through;
-            color: #777;
-        }
-        
-        /* Configuración de Plantas */
-        #lista-plantas-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .edit-planta-card {
-            background-color: #fff3cd; /* Color de advertencia */
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .edit-planta-card input, .edit-planta-card select {
-            background-color: #fefefe;
-        }
-
-        /* Calculadora */
-        .calculator-output {
-            background-color: var(--surface);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .calculator-output h3 {
-            color: var(--primary-dark);
-            margin-top: 0;
-        }
-        
-        .calculator-output p {
-            font-size: 1.1em;
-            margin: 10px 0;
-        }
-        
-        .calculator-output strong {
-            font-size: 1.8em;
-            color: var(--danger);
-            display: block;
-        }
-
-        .tray-selection {
-            margin-top: 20px;
-        }
-        
-        .tray-btn {
-            padding: 10px 15px;
-            margin: 5px;
-            background-color: #e9e9e9;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            transition: all 0.2s;
-            font-weight: normal;
-            position: relative;
-        }
-        
-        .tray-btn.selected {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-            box-shadow: 0 0 5px var(--primary);
-        }
-
-        .delete-tray-btn {
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-left: 5px;
-            transition: color 0.1s;
-        }
-        
-        .delete-tray-btn:hover {
-            color: #a71d2a;
-        }
-
-        /* Calendario */
-        .calendar-section {
-            width: 350px;
-            background-color: var(--surface);
-            padding: 20px;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-            overflow-y: auto;
-            border-left: 1px solid var(--border-color);
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .calendar-header h3 {
-            color: var(--primary-dark);
-            margin: 0;
-        }
-        
-        #task-calendar {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .task-date {
-            display: block;
-            background-color: var(--primary);
-            color: white;
-            padding: 5px 10px;
-            margin: 15px 0 5px 0;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-        
-        /* NEW: Visitas Calendar Styling */
-        #visitas-calendar-modal .task-date {
-            background-color: var(--secondary); /* Blue for Visitas dates */
-        }
-        #visitas-calendar-modal .task-item {
-            border-left: 4px solid var(--info); /* Light blue for pending visits */
-        }
-        #visitas-calendar-modal .visit-completed {
-            background-color: #e3f2fd;
-            border-left: 4px solid var(--secondary); /* Darker blue for completed visits */
-        }
-
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f9f9f9;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .task-item strong {
-            font-weight: normal;
-        }
-        
-        .task-pending {
-            border-left: 4px solid var(--warning);
-        }
-        
-        .task-completed {
-            background-color: #e8f5e9;
-            border-left: 4px solid var(--success);
-        }
-        
-        .task-completed strong {
-            text-decoration: line-through;
-            color: #777;
-        }
-        
-        /* Modal (Calendario Completo) */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 10; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: var(--surface);
-            margin: 5% auto; 
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; 
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
-            color: var(--primary-dark);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close-btn:hover,
-        .close-btn:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        /* Ocultar la barra de tareas en el menú principal */
-        .sidebar a[data-section="tasks"] {
-            display: none; 
-        }
-
-        .config-actions {
-             display: flex;
-             gap: 10px;
-             margin-bottom: 20px;
-        }
-        .config-actions input[type="file"] {
-            display: none;
-        }
-        .config-actions label {
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            background-color: var(--surface);
-        }
-        .config-actions label:hover {
-            background-color: #e0e0e0;
-        }
-
-        .error-message {
-            color: var(--danger);
-            font-weight: bold;
-            background-color: #f8d7da;
-            padding: 10px;
-            border: 1px solid #f5c6cb;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-
-
-        /* Responsive Adjustments */
-        @media (max-width: 900px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 0;
-                height: auto;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-            
-            .logo-container {
-                display: none; /* Hide logo on small screens */
-            }
-
-            .sidebar a {
-                padding: 10px 15px;
-                flex-grow: 1;
-                justify-content: center;
-                white-space: nowrap;
-            }
-
-            .sidebar i {
-                margin-right: 0;
-            }
-            .sidebar span {
-                display: none; /* Hide text on small screens */
-            }
-
-            .main-content {
-                padding: 20px;
-            }
-            
-            .calendar-section {
-                width: 100%;
-                border-left: none;
-                box-shadow: none;
-                max-height: none;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            #lista-clientes, #lista-lotes, #lista-planes, #lista-plantas-container, #lista-visitas {
-                grid-template-columns: 1fr;
-            }
-        }
+            --primary: #27ae60; --primary-dark: #1e8449; --bg: #f4f6f8; --surface: #ffffff;
+            --text: #333; --text-light: #7f8c8d; --border: #dcdde1; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --danger: #e74c3c; --warning: #f1c40f; --info: #3498db; --purple: #9b59b6;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; font-size: 1.2rem; font-weight: bold; background-color: #1a252f; border-bottom: 1px solid #34495e; }
+        .nav-menu { flex-grow: 1; padding: 10px 0; }
+        .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; transition: 0.3s; border-left: 4px solid transparent; }
+        .nav-item:hover { background-color: #34495e; }
+        .nav-item.active { background-color: #34495e; border-left: 4px solid var(--primary); }
+        .nav-item i { margin-right: 15px; width: 20px; text-align: center; }
+        .main { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background: var(--surface); padding: 20px; border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f8f9fa; font-size: 0.8rem; color: #666; text-transform: uppercase; }
+        .calendar-container { background: white; border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; margin-top: 20px; }
+        .calendar-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #2c3e50; color: white; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: #eee; gap: 1px; border: 1px solid #ddd; }
+        .calendar-day-head { background: #f8f9fa; padding: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; color: #666; }
+        .calendar-day { background: white; min-height: 120px; padding: 5px; position: relative; }
+        .day-num { font-weight: bold; margin-bottom: 5px; display: block; color: #999; }
+        .visit-tag { background: var(--info); color: white; font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-bottom: 2px; cursor: pointer; line-height: 1.2; }
+        .visit-reason { font-size: 0.6rem; opacity: 0.9; display: block; font-style: italic; border-top: 1px solid rgba(255,255,255,0.3); margin-top: 2px; }
+        .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-card { text-align: center; padding: 20px; }
+        .stat-card p { margin: 10px 0 0; font-size: 2rem; font-weight: bold; color: var(--primary); }
+        .calendar-accordion { border: 2px solid var(--primary); border-radius: 10px; overflow: hidden; }
+        .calendar-header { background: var(--primary); color: white; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .calendar-content { display: none; background: white; padding: 10px; max-height: 500px; overflow-y: auto; }
+        .calendar-content.show { display: block; }
+        .task-date-title { background: #f0f2f5; padding: 8px; font-weight: bold; margin-top: 10px; border-radius: 4px; border-left: 5px solid #ccc; font-size: 0.85rem; }
+        .task-row { padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .task-row.completed { opacity: 0.5; text-decoration: line-through; }
+        .badge-task { padding: 2px 8px; border-radius: 12px; color: white; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; width: 65px; text-align: center; }
+        .bg-remojo { background: var(--purple); } .bg-siembra { background: var(--info); } .bg-luz { background: var(--warning); color: #333; } .bg-cosecha { background: var(--danger); }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: var(--text-light); }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-info { background-color: var(--info); color: white; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-purple { background-color: var(--purple); color: white; }
+        .search-box { margin-bottom: 15px; position: relative; }
+        .search-box i { position: absolute; left: 10px; top: 12px; color: var(--text-light); }
+        .search-box input { padding-left: 35px; border: 2px solid var(--info); }
+        .mix-selector-box { border: 2px solid var(--purple); border-radius: 10px; padding: 15px; margin-top: 10px; display: none; }
+        .plt-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
+        .plt-check-item { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #f0f0f0; }
+        .plt-info-mix { font-size: 0.75rem; color: var(--text-light); flex-grow: 1; margin-left: 10px; }
+        .plt-check-item input[type="number"] { width: 60px; }
+        .mix-detail-list { font-size: 0.75rem; color: var(--purple); margin-top: 5px; list-style: none; padding-left: 0; }
+        .mix-detail-list li { display: inline-block; background: #f3ebff; padding: 2px 6px; border-radius: 4px; margin: 2px; }
+        #cloud-status { position: fixed; bottom: 10px; right: 10px; font-size: 0.7rem; background: #333; color: #fff; padding: 4px 10px; border-radius: 20px; opacity: 0.7; z-index: 1000; }
+        .alert-date { color: var(--danger); font-size: 0.75rem; font-weight: bold; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="sidebar">
-            <div class="logo-container">Microgreens</div>
-            <nav class="main-nav">
-                <a href="#" data-section="clientes"><i class="fas fa-users"></i> <span>Clientes</span></a>
-                <a href="#" data-section="planes"><i class="fas fa-calendar-check"></i> <span>Crear Plan</span></a>
-                <a href="#" data-section="todos-planes"><i class="fas fa-clipboard-list"></i> <span>Planes Activos</span></a>
-                <a href="#" data-section="visitas"><i class="fas fa-route"></i> <span>Visitas</span></a> <a href="#" data-section="lotes"><i class="fas fa-tag"></i> <span>Trazabilidad</span></a>
-                <a href="#" data-section="calculadora"><i class="fas fa-calculator"></i> <span>Calculadora</span></a>
-                <a href="#" data-section="configuracion"><i class="fas fa-cog"></i> <span>Configuración</span></a>
-            </nav>
-            <div style="flex-grow: 1;"></div>
-             <a href="#" onclick="openFullCalendar()"><i class="fas fa-calendar-alt"></i> <span>Calendario Completo</span></a>
-        </div>
+    <div id="cloud-status">Conectando a la nube...</div>
 
-        <div class="main-content">
-            <div class="header">
-                <h1 id="section-title">Clientes</h1>
+    <aside class="sidebar">
+        <div class="sidebar-header">LA ISLA GESTIÓN</div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i> Clientes</div>
+            <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i> Plantas</div>
+            <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i> Planes</div>
+            <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i> Lotes</div>
+            <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i> Visitas</div>
+            <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i> Calculadora</div>
+            <div class="nav-item" onclick="showSection('config')"><i class="fas fa-cog"></i> Configuración</div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section id="dashboard" class="section active">
+            <h2>Dashboard</h2>
+            <div class="grid-dashboard">
+                <div class="card stat-card"><h3>Clientes</h3><p id="stat-clientes">0</p></div>
+                <div class="card stat-card"><h3>Planes</h3><p id="stat-planes">0</p></div>
+                <div class="card stat-card"><h3>Lotes</h3><p id="stat-lotes">0</p></div>
             </div>
-
-            <section id="clientes" class="content-section active">
-                <div class="data-form">
-                    <h2>Añadir Nuevo Cliente</h2>
-                    <form id="form-cliente">
-                        <label for="cliente-nombre">Nombre del Cliente (*)</label>
-                        <input type="text" id="cliente-nombre" required>
-
-                        <div class="form-grid">
-                            <div>
-                                <label for="cliente-telefono">Teléfono</label>
-                                <input type="text" id="cliente-telefono">
-                            </div>
-                            <div>
-                                <label for="cliente-direccion">Dirección</label>
-                                <input type="text" id="cliente-direccion">
-                            </div>
-                        </div>
-                        
-                        <label for="cliente-notas">Notas</label>
-                        <textarea id="cliente-notas"></textarea>
-                        
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-user-plus"></i> Guardar Cliente</button>
-                    </form>
+            <div class="calendar-accordion">
+                <div class="calendar-header" onclick="toggleCalendar()">
+                    <span><i class="fas fa-list-check"></i> TAREAS DIARIAS</span>
+                    <i id="cal-icon" class="fas fa-chevron-down"></i>
                 </div>
-
-                <h2>Lista de Clientes</h2>
-                <ul id="lista-clientes">
-                    </ul>
-            </section>
-
-            <section id="planes" class="content-section">
-                <div class="data-form">
-                    <h2>Crear Nuevo Plan de Siembra Recurrente</h2>
-                    <form id="form-plan-siembra">
-                        <div class="form-grid">
-                            <div>
-                                <label for="plan-cliente">Cliente (*)</label>
-                                <select id="plan-cliente" required>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="plan-planta">Planta a Sembrar (*)</label>
-                                <select id="plan-planta" required>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            <div>
-                                <label for="plan-bandeja-tipo">Tipo de Bandeja (*)</label>
-                                <select id="plan-bandeja-tipo" required>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="plan-bandejas-cantidad">Cantidad de Bandejas (*)</label>
-                                <input type="number" id="plan-bandejas-cantidad" min="1" value="1" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-grid">
-                             <div>
-                                <label for="plan-frecuencia">Frecuencia de Siembra (Días) (*)</label>
-                                <input type="number" id="plan-frecuencia" min="1" value="7" required>
-                            </div>
-                            <div>
-                                <label for="plan-fecha-siembra">Fecha de Primera Siembra (*)</label>
-                                <input type="date" id="plan-fecha-siembra" required>
-                            </div>
-                        </div>
-
-                        <label for="plan-fecha-fin">Fecha de Finalización (Opcional)</label>
-                        <input type="date" id="plan-fecha-fin">
-
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-calendar-plus"></i> Crear Plan</button>
-                    </form>
-                </div>
-            </section>
-            
-            <section id="todos-planes" class="content-section">
-                <h2>Planes de Siembra Recurrentes Activos</h2>
-                <div id="lista-planes">
-                    </div>
-            </section>
-            
-            <section id="visitas" class="content-section">
-                <div class="data-form">
-                    <h2>Registrar Nueva Visita</h2>
-                    <form id="form-visita">
-                        <div class="form-grid">
-                            <div>
-                                <label for="visita-cliente">Cliente (*)</label>
-                                <select id="visita-cliente" required>
-                                    </select>
-                            </div>
-                            <div>
-                                <label for="visita-titulo">Título de Visita (*)</label>
-                                <input type="text" id="visita-titulo" required>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            <div>
-                                <label for="visita-fecha">Fecha (*)</label>
-                                <input type="date" id="visita-fecha" required>
-                            </div>
-                            <div>
-                                <label for="visita-hora">Hora (Opcional)</label>
-                                <input type="time" id="visita-hora">
-                            </div>
-                        </div>
-
-                        <label for="visita-notas">Notas</label>
-                        <textarea id="visita-notas"></textarea>
-
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-save"></i> Guardar Visita</button>
-                    </form>
-                </div>
-
-                <h2>Próximas Visitas</h2>
-                <ul id="lista-visitas">
-                    </ul>
-                
-                <button class="btn secondary-btn" onclick="openVisitsCalendar()" style="margin-top: 20px;"><i class="fas fa-calendar-alt"></i> Ver Calendario de Visitas</button>
-            </section>
-
-
-            <section id="lotes" class="content-section">
-                <div class="data-form">
-                    <h2>Generar Lote de Trazabilidad (Al Cosechar)</h2>
-                    <form id="form-lote">
-                        <div class="form-grid">
-                            <div>
-                                <label for="lote-cliente">Cliente (*)</label>
-                                <select id="lote-cliente" required>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="lote-planta">Planta Cosechada (*)</label>
-                                <select id="lote-planta" required>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-grid">
-                             <div>
-                                <label for="lote-cosecha">Fecha de Cosecha (*)</label>
-                                <input type="date" id="lote-cosecha" required>
-                            </div>
-                            <div>
-                                <label for="lote-bandejas">Bandejas Cosechadas (*)</label>
-                                <input type="number" id="lote-bandejas" min="1" value="1" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-tag"></i> Registrar Lote</button>
-                    </form>
-                </div>
-                
-                <h2>Historial de Lotes</h2>
-                <ul id="lista-lotes">
-                    </ul>
-            </section>
-
-            <section id="calculadora" class="content-section">
-                <div class="data-form">
-                    <h2>Configuración de Cálculo</h2>
-                    <div class="form-grid">
-                        <div>
-                            <label for="calc-planta">Planta (*)</label>
-                            <select id="calc-planta" required>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Tipo de Bandeja Seleccionada</label>
-                            <p style="margin-top: 10px; font-style: italic; font-size: 0.9em;">Haz clic en una bandeja para seleccionarla.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tray-selection">
-                    <h3>Bandejas Estándar (25x50 cm, etc.)</h3>
-                    <div class="standard-trays">
-                        </div>
-
-                    <h3 style="margin-top: 20px;">Bandejas Personalizadas</h3>
-                    <div id="bandejas-custom">
-                        </div>
-                </div>
-
-                <div class="calculator-output">
-                    <h3>Resultados del Cálculo (Para 1 bandeja)</h3>
-                    <div class="form-grid" style="text-align: center;">
-                        <div>
-                            <p>Gramos de Semilla Requeridos</p>
-                            <strong id="calc-gramos">0</strong>
-                            <span>gramos</span>
-                        </div>
-                        <div>
-                            <p>Costo Estimado de Semilla</p>
-                            <strong id="calc-costo">0.00</strong>
-                            <span>Euros (€)</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="configuracion" class="content-section">
-                
-                <h2>Gestión de Archivos y Limpieza</h2>
-                <div class="config-actions">
-                    <button class="btn secondary-btn" onclick="exportData()"><i class="fas fa-download"></i> Exportar Datos (Backup)</button>
-                    <label for="import-file" class="btn secondary-btn"><i class="fas fa-upload"></i> Importar Datos</label>
-                    <input type="file" id="import-file" accept=".json" onchange="importData(event)">
-                    <button class="btn delete-btn" onclick="clearAllDataConfirm()"><i class="fas fa-trash-alt"></i> Borrar TODOS los Datos</button>
-                </div>
-                
-                <div class="data-form">
-                    <h2>Añadir Bandeja Personalizada</h2>
-                    <form id="form-bandeja-custom">
-                        <div class="form-grid">
-                            <div>
-                                <label for="custom-ancho">Ancho (cm) (*)</label>
-                                <input type="number" id="custom-ancho" min="1" required>
-                            </div>
-                            <div>
-                                <label for="custom-alto">Alto (cm) (*)</label>
-                                <input type="number" id="custom-alto" min="1" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-plus"></i> Añadir Bandeja</button>
-                    </form>
-                </div>
-                
-                <div class="data-form">
-                    <h2>Añadir Nueva Planta</h2>
-                    <form id="form-planta">
-                        <label for="planta-nombre">Nombre de la Planta (*)</label>
-                        <input type="text" id="planta-nombre" required>
-
-                        <div class="form-grid">
-                            <div>
-                                <label for="planta-densidad">Densidad (g / bandeja 25x50 cm) (*)</label>
-                                <input type="number" id="planta-densidad" step="any" required>
-                            </div>
-                            <div>
-                                <label for="planta-coste-kg">Coste por Kilo (€/kg) (*)</label>
-                                <input type="number" id="planta-coste-kg" step="any" required>
-                            </div>
-                        </div>
-
-                        <div class="form-grid">
-                            <div>
-                                <label for="planta-oscuridad">Días de Oscuridad (*)</label>
-                                <input type="number" id="planta-oscuridad" min="0" required>
-                            </div>
-                            <div>
-                                <label for="planta-crecimiento">Días Total de Siembra (de siembra a cosecha) (*)</label>
-                                <input type="number" id="planta-crecimiento" min="1" required>
-                            </div>
-                        </div>
-
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="planta-remojo"> Requiere Remojo
-                            </label>
-                            <input type="text" id="planta-tiempo-remojo" placeholder="Tiempo de remojo (ej: 6 horas)" disabled>
-                        </div>
-                        
-                        <button type="submit" class="btn primary-btn"><i class="fas fa-seedling"></i> Guardar Planta</button>
-                    </form>
-                </div>
-
-                <h2>Lista y Edición de Plantas</h2>
-                <div id="lista-plantas-container">
-                    </div>
-            </section>
-        </div>
-
-        <div class="calendar-section">
-            <div class="calendar-header">
-                <h3>Tareas Próximas</h3>
-                <button class="btn secondary-btn" onclick="openFullCalendar()">Ver Todo</button>
+                <div id="calendar-body" class="calendar-content"></div>
             </div>
-            <div id="task-calendar">
-                </div>
-        </div>
-    </div>
+        </section>
 
-    <div id="full-calendar-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeFullCalendar()">&times;</span>
-            <h2>Calendario Completo de Tareas</h2>
-            <div id="full-calendar-tasks">
-                </div>
-        </div>
-    </div>
-    
-    <div id="visitas-calendar-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeVisitsCalendar()">&times;</span>
-            <h2>Calendario de Visitas</h2>
-            <div id="full-calendar-visitas">
+        <section id="clientes" class="section">
+            <h2>Gestión de Clientes</h2>
+            <div class="card">
+                <div class="form-group"><label>Nombre del Cliente</label><input type="text" id="cli-nombre"></div>
+                <button class="btn btn-primary" onclick="addCliente()" style="margin-top:10px;">Añadir Cliente</button>
             </div>
-        </div>
-    </div>
+            <div class="card"><table id="table-clientes"><thead><tr><th>Nombre</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="plantas" class="section">
+            <h2>Gestión de Plantas</h2>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                    <div class="form-group"><label>ID (3 letras)</label><input type="text" id="plt-id" maxlength="3"></div>
+                    <div class="form-group"><label>Nombre</label><input type="text" id="plt-nombre"></div>
+                    <div class="form-group"><label>Remojo (h)</label><input type="number" id="plt-remojo" value="0"></div>
+                    <div class="form-group"><label>Oscuro (d)</label><input type="number" id="plt-oscuro" value="3"></div>
+                    <div class="form-group"><label>Total (d)</label><input type="number" id="plt-total" value="10"></div>
+                    <div class="form-group"><label>Gr/Band. Est.</label><input type="number" id="plt-gramos" value="200"></div>
+                    <div class="form-group"><label>Precio/Kg (€)</label><input type="number" id="plt-precio" value="0" step="0.01"></div>
+                </div>
+                <button class="btn btn-primary" onclick="addPlanta()" style="margin-top:15px;">Guardar / Actualizar Planta</button>
+            </div>
+            <div class="card">
+                <table id="table-plantas">
+                    <thead><tr><th>ID</th><th>Nombre</th><th>Remojo</th><th>Total</th><th>Precio/Kg</th><th>Acciones</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="planes" class="section">
+            <h2>Planes de Siembra</h2>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                    <div class="form-group"><label>Cliente</label><select id="plan-cliente"></select></div>
+                    <div class="form-group"><label>Tipo Bandeja</label>
+                        <select id="plan-tipo-bandeja">
+                            <option value="Estándar (25x50)">Estándar (25x50 cm)</option>
+                            <option value="Cuadrada (12x12)">Cuadrada (12x12 cm)</option>
+                            <option value="Pequeña (9x9)">Pequeña (9x9 cm)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Frecuencia (d)</label><input type="number" id="plan-frec" value="7"></div>
+                </div>
+
+                <div id="panel-individual" style="margin-top:20px; padding:15px; border:1px solid #ddd; border-radius:8px;">
+                    <p style="font-weight:bold; color:var(--primary);">MODO INDIVIDUAL (POR ENTREGA)</p>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                        <div class="form-group">
+                            <label>Planta</label>
+                            <select id="plan-planta" onchange="updateDiasInfo()"></select>
+                            <small id="plan-dias-info" style="color: var(--primary); font-weight: bold; display: block; margin-top: 5px;"></small>
+                        </div>
+                        <div class="form-group"><label>Nº Bandejas</label><input type="number" id="plan-cant-ind" value="1"></div>
+                        <div class="form-group">
+                            <label>Fecha Entrega Final</label>
+                            <input type="date" id="plan-fecha" onchange="validateLeadTime()">
+                            <div id="date-alert" class="alert-date">⚠️ No hay tiempo suficiente para cultivar esta planta.</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+                        <button class="btn btn-primary" onclick="addPlan()">Guardar Individual</button>
+                        <button class="btn btn-purple" onclick="togglePlanModo('mix')">Cambiar a Modo MIX</button>
+                    </div>
+                </div>
+
+                <div id="panel-mix" class="mix-selector-box">
+                    <p style="font-weight:bold; color:var(--purple);">MODO MIX</p>
+                    <div class="form-group" style="max-width:300px;"><label>Fecha Entrega Final</label><input type="date" id="plan-fecha-entrega"></div>
+                    <div class="plt-list-grid" id="mix-lista-check"></div>
+                    <div style="margin-top:15px; display:flex; gap:10px;">
+                        <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
+                        <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <table id="table-planes">
+                    <thead><tr><th>Cliente</th><th>Tipo</th><th>Detalle de Plantas</th><th>Acción</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="lotes" class="section">
+            <h2>Gestión de Lotes</h2>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div class="form-group"><label>Planta</label><select id="lote-planta"></select></div>
+                    <div class="form-group"><label>Cliente</label><select id="lote-cliente"></select></div>
+                    <div class="form-group"><label>Cant. Bandejas</label><input type="number" id="lote-cant" value="1"></div>
+                    <div class="form-group"><label>Fecha</label><input type="date" id="lote-fecha"></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:15px;" onclick="addLoteManual()">Generar Lote Progresivo</button>
+            </div>
+            <div class="card">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-lote-cliente" placeholder="Buscar por cliente..." onkeyup="filterLotes()"></div>
+                <table id="table-lotes"><thead><tr><th>Código</th><th>Planta</th><th>Cliente</th><th>Cant</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody id="tbody-lotes"></tbody></table>
+            </div>
+        </section>
+
+        <section id="visitas" class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Agenda de Visitas</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="toggleVisitsView('calendario')">Calendario</button>
+                    <button class="btn btn-primary" onclick="toggleVisitsView('lista')">Lista</button>
+                </div>
+            </div>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                    <div class="form-group"><label>Cliente</label><select id="visita-cliente"></select></div>
+                    <div class="form-group"><label>Fecha</label><input type="date" id="visita-fecha"></div>
+                    <div class="form-group"><label>Hora</label><input type="time" id="visita-hora"></div>
+                    <div class="form-group"><label>Motivo</label><input type="text" id="visita-motivo"></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()">Registrar Visita</button>
+            </div>
+            <div id="visitas-calendario" class="calendar-container">
+                <div class="calendar-nav"><button onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="cal-title">MES</h3><button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button></div>
+                <div class="calendar-grid" id="visitas-grid"></div>
+            </div>
+            <div id="visitas-lista" class="card" style="display:none;"><table id="table-visitas"><thead><tr><th>Cliente</th><th>Fecha</th><th>Motivo</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section id="calculadora" class="section">
+            <h2>Calculadora de Semillas</h2>
+            <div class="card">
+                <div class="form-group"><label>Planta</label><select id="calc-planta" onchange="runCalc()"></select></div>
+                <div class="form-group"><label>Tipo Bandeja</label>
+                    <select id="calc-bandeja" onchange="runCalc()">
+                        <option value="1250">Estándar (25x50)</option>
+                        <option value="144">Cuadrada (12x12)</option>
+                        <option value="81">Pequeña (9x9)</option>
+                    </select>
+                </div>
+                <div id="calc-res" class="card" style="margin-top:15px; background:#e8f6ed; font-size: 1.2rem; text-align: center;">Resultados...</div>
+            </div>
+        </section>
+
+        <section id="config" class="section">
+            <h2>Configuración & Sincronización</h2>
+            <div class="card">
+                <p>Usa el botón "Recuperar Datos" para cargar tu archivo anterior en la nube.</p>
+                <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                    <input type="file" id="import-file" style="display:none" onchange="importToCloud(event)">
+                    <button class="btn btn-info" onclick="document.getElementById('import-file').click()"><i class="fas fa-upload"></i> RECUPERAR DATOS (IMPORTAR JSON)</button>
+                    <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i> Exportar Copia JSON</button>
+                    <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar Todo</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ===============================================================
-        // CÓDIGO JAVASCRIPT (Lógica de la Aplicación)
-        // ===============================================================
-
-        // 1. CONFIGURACIÓN INICIAL Y DATOS BASE
-        // ===============================================================
-
-        const STANDARD_TRAY_AREA = 25 * 50; 
-        const STANDARD_TRAYS_CONFIG = [
-            { id: 'std-1', name: '25x50 cm (10x20 in)', width: 25, height: 50 },
-            { id: 'std-2', name: '9x9 cm', width: 9, height: 9 },
-            { id: 'std-3', name: '12x12 cm', width: 12, height: 12 }
-        ];
-
-        // DATOS DE PLANTAS ACTUALIZADOS CON PRECIOS SOLICITADOS (EUR/kg)
-        const BASE_PLANT_DATA = {
-            "Guisante cerrado": { densidad: 250, oscuridad: 3, crecimiento: 9, remojo: '8-12 horas', costeKg: 5.89, iniciales: 'GC' },
-            "Guisante abierto": { densidad: 250, oscuridad: 3, crecimiento: 9, remojo: '8-12 horas', costeKg: 5.96, iniciales: 'GA' },
-            "Garbanzo": { densidad: 300, oscuridad: 3, crecimiento: 9, remojo: '8-24 horas', costeKg: 6.72, iniciales: 'GB' },
-            "Judía": { densidad: 450, oscuridad: 6, crecimiento: 15, remojo: '8-24 horas', costeKg: 7.20, iniciales: 'JD' },
-            "Girasol": { densidad: 100, oscuridad: 4, crecimiento: 8, remojo: '6 horas', costeKg: 7.96, iniciales: 'GS' },
-            "Rábano rosa abierto": { densidad: 48, oscuridad: 3, crecimiento: 9, remojo: 'No', costeKg: 10.99, iniciales: 'RR' },
-            "Rábano rosa cerrado": { densidad: 48, oscuridad: 3, crecimiento: 9, remojo: 'No', costeKg: 11.99, iniciales: 'RC' },
-            "Remolacha": { densidad: 110, oscuridad: 5, crecimiento: 15, remojo: 'No', costeKg: 12.00, iniciales: 'RM' },
-            "Cebolla": { densidad: 80, oscuridad: 7, crecimiento: 18, remojo: 'No', costeKg: 15.00, iniciales: 'CB' },
-            "Kale rizado": { densidad: 20, oscuridad: 4, crecimiento: 12, remojo: 'No', costeKg: 18.00, iniciales: 'KR' },
-            "Col Lombarda": { densidad: 20, oscuridad: 4, crecimiento: 12, remojo: 'No', costeKg: 18.00, iniciales: 'CL' },
-            "Albahaca": { densidad: 15, oscuridad: 5, crecimiento: 16, remojo: 'No', costeKg: 15.99, iniciales: 'AB' },
-            "Brócoli": { densidad: 20, oscuridad: 3, crecimiento: 9, remojo: 'No', costeKg: 14.50, iniciales: 'BR' },
-            "Mostaza Roja": { densidad: 25, oscuridad: 3, crecimiento: 9, remojo: 'No', costeKg: 14.99, iniciales: 'MR' },
-            "Mostaza Verde": { densidad: 25, oscuridad: 3, crecimiento: 9, remojo: 'No', costeKg: 13.99, iniciales: 'MV' },
-            "Rúcula": { densidad: 25, oscuridad: 3, crecimiento: 10, remojo: 'No', costeKg: 18.00, iniciales: 'RU' },
-            "Zanahoria": { densidad: 150, oscuridad: 7, crecimiento: 21, remojo: 'No', costeKg: 35.00, iniciales: 'ZA' },
-            "Cilantro": { densidad: 100, oscuridad: 5, crecimiento: 18, remojo: 'No', costeKg: 18.00, iniciales: 'CLT' },
-            "Chía": { densidad: 10, oscuridad: 7, crecimiento: 15, remojo: 'No', costeKg: 20.00, iniciales: 'CH' },
-            "Amaranto": { densidad: 10, oscuridad: 3, crecimiento: 12, remojo: 'No', costeKg: 30.00, iniciales: 'AM' },
-            "Espinaca": { densidad: 100, oscuridad: 8, crecimiento: 20, remojo: 'No', costeKg: 22.00, iniciales: 'ES' },
-            "Puerro": { densidad: 80, oscuridad: 7, crecimiento: 20, remojo: 'No', costeKg: 19.00, iniciales: 'PU' },
-            "Shiso roja": { densidad: 20, oscuridad: 8, crecimiento: 27, remojo: 'No', costeKg: 462.92, iniciales: 'SR' },
-            "Frijol mungo": { densidad: 215, oscuridad: 3, crecimiento: 8, remojo: '8 horas', costeKg: 6.00, iniciales: 'FM' }
-        };
-
-        const LOCAL_STORAGE_KEYS = {
-            CLIENTES: 'clientes',
-            PLANTAS: 'plantas',
-            PLANES: 'planes',
-            LOTES: 'lotes',
-            TAREAS: 'tasks',
-            CUSTOM_TRAYS: 'customTrays',
-            VISITAS: 'visitas' // NUEVA CLAVE
-        };
-
-        // 2. FUNCIONES DE DATOS GLOBALES
-        // ===============================================================
-        
-        const getData = (key) => {
-            try {
-                const dataStr = localStorage.getItem(key);
-                return dataStr ? JSON.parse(dataStr) : [];
-            } catch (e) {
-                console.error(`Error al obtener datos para la clave ${key}:`, e);
-                return [];
-            }
-        };
-
-        const saveData = (key, data) => {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-            } catch (e) {
-                console.error(`Error al guardar datos para la clave ${key}:`, e);
-            }
-        };
-
-        /**
-         * Inicializa o actualiza la lista de plantas en localStorage con datos base.
-         */
-        function initializePlantData() {
-            let storedPlants = getData(LOCAL_STORAGE_KEYS.PLANTAS);
-            if (storedPlants.length === 0) {
-                storedPlants = Object.entries(BASE_PLANT_DATA).map(([nombre, data], index) => ({
-                    id: index + 1,
-                    nombre,
-                    ...data
-                }));
-                saveData(LOCAL_STORAGE_KEYS.PLANTAS, storedPlants);
-            }
-        }
-        
-        /**
-         * Actualiza los datos de las plantas existentes con los datos base (para actualizar precios/densidades)
-         */
-        function updateBasePlantData() {
-             let storedPlants = getData(LOCAL_STORAGE_KEYS.PLANTAS);
-             let needsSave = false;
-
-             Object.entries(BASE_PLANT_DATA).forEach(([nombre, baseData]) => {
-                const existingPlant = storedPlants.find(p => p.nombre === nombre);
-                if (existingPlant) {
-                    // Solo actualizar los campos de configuración
-                    if (existingPlant.densidad !== baseData.densidad) {
-                        existingPlant.densidad = baseData.densidad;
-                        needsSave = true;
-                    }
-                    if (existingPlant.costeKg !== baseData.costeKg) {
-                        existingPlant.costeKg = baseData.costeKg;
-                        needsSave = true;
-                    }
-                    if (existingPlant.oscuridad !== baseData.oscuridad) {
-                        existingPlant.oscuridad = baseData.oscuridad;
-                        needsSave = true;
-                    }
-                    if (existingPlant.crecimiento !== baseData.crecimiento) {
-                        existingPlant.crecimiento = baseData.crecimiento;
-                        needsSave = true;
-                    }
-                    if (existingPlant.remojo !== baseData.remojo) {
-                        existingPlant.remojo = baseData.remojo;
-                        needsSave = true;
-                    }
-                }
-             });
-
-             // Si alguna planta nueva falta, la añadimos (aunque esto no debería pasar si se maneja bien)
-             Object.entries(BASE_PLANT_DATA).forEach(([nombre, baseData], index) => {
-                 if (!storedPlants.some(p => p.nombre === nombre)) {
-                     storedPlants.push({
-                        id: Date.now() + index,
-                        nombre,
-                        ...baseData
-                    });
-                    needsSave = true;
-                 }
-             });
-
-
-             if (needsSave) {
-                 saveData(LOCAL_STORAGE_KEYS.PLANTAS, storedPlants);
-             }
-        }
-        
-        const getPlantaDataByName = (name) => {
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS);
-            return plantas.find(p => p.nombre === name);
-        };
-        
-        const getTrayAreaById = (trayId) => {
-            const standardTray = STANDARD_TRAYS_CONFIG.find(t => t.id === trayId);
-            if (standardTray) {
-                return standardTray.width * standardTray.height;
-            }
-
-            if (trayId && trayId.startsWith('custom-')) {
-                const index = parseInt(trayId.replace('custom-', ''), 10);
-                const customTrays = getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS) || [];
-                const customTray = customTrays[index];
-                if (customTray && typeof customTray.width === 'number' && typeof customTray.height === 'number') {
-                    if (isFinite(customTray.width) && isFinite(customTray.height)) {
-                        return customTray.width * customTray.height;
-                    }
-                }
-            }
-            return STANDARD_TRAY_AREA; 
-        }
-
-        // 3. FUNCIONES DE GESTIÓN DE DATOS Y UTILIDADES
-        // ===============================================================
-        window.clearAllDataConfirm = function() {
-            if (!confirm("⚠️ ATENCIÓN: ¿Está seguro de que desea borrar TODOS los datos de clientes, planes, lotes, tareas, visitas y bandejas personalizadas? ESTA ACCIÓN NO SE PUEDE DESHACER.\n\n✅ NOTA: Los datos de configuración de plantas (precios, densidades y días) NO serán borrados y se mantendrán actualizados.")) {
-                return;
-            }
-            const keysToClear = [LOCAL_STORAGE_KEYS.CLIENTES, LOCAL_STORAGE_KEYS.PLANES, LOCAL_STORAGE_KEYS.LOTES, LOCAL_STORAGE_KEYS.TAREAS, LOCAL_STORAGE_KEYS.CUSTOM_TRAYS, LOCAL_STORAGE_KEYS.VISITAS]; // Se añade LOCAL_STORAGE_KEYS.VISITAS
-            keysToClear.forEach(key => {
-                localStorage.removeItem(key);
-            });
-            initializePlantData();
-            loadAllData();
-            document.querySelector('.main-nav a[data-section="clientes"]').click();
-        }
-
-        /**
-         * Normaliza una fecha (objeto Date o string YYYY-MM-DD) al formato puro YYYY-MM-DD.
-         * @param {Date | string} dateInput - El objeto Date o el string de fecha.
-         * @returns {string} La fecha en formato YYYY-MM-DD.
-         */
-        function normalizarFecha(dateInput) {
-            let d;
-            if (typeof dateInput === 'string' && dateInput.length === 10) {
-                const parts = dateInput.split('-');
-                const year = parseInt(parts[0]);
-                const month = parseInt(parts[1]) - 1;
-                const day = parseInt(parts[2]);
-                // Creamos la fecha usando componentes locales: new Date(year, month, day).
-                d = new Date(year, month, day);
-            } else if (dateInput instanceof Date) {
-                d = dateInput;
-            } else {
-                d = new Date(dateInput);
-            }
-
-            if (isNaN(d.getTime())) return '';
-            
-            // Usar métodos UTC para evitar problemas de zona horaria al formatear YYYY-MM-DD.
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-
-            return `${year}-${month}-${day}`;
-        }
-        
-        /**
-         * Formatea la fecha YYYY-MM-DD a un formato legible D/M/YYYY
-         * @param {string} dateStr - Fecha en formato YYYY-MM-DD.
-         * @returns {string} Fecha en formato D/M/YYYY.
-         */
-        function formatDateForDisplay(dateStr) {
-            if (!dateStr || dateStr.length !== 10) return 'N/A';
-            try {
-                const [year, month, day] = dateStr.split('-');
-                // return `${parseInt(day)}/${parseInt(month)}/${year}`;
-                return `${day}/${month}/${year}`; // Mantener el padding para consistencia visual
-            } catch (e) {
-                return dateStr;
-            }
-        }
-        
-        /**
-         * Añade días a una fecha dada.
-         * @param {string} dateStr - Fecha en formato YYYY-MM-DD.
-         * @param {number} days - Número de días a añadir.
-         * @returns {string} Nueva fecha en formato YYYY-MM-DD.
-         */
-        function addDaysToDate(dateStr, days) {
-            const parts = dateStr.split('-');
-            // Cuidado con el mes (0-indexado)
-            let d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            d.setDate(d.getDate() + days);
-            return normalizarFecha(d);
-        }
-
-        // 4. INICIALIZACIÓN Y NAVEGACIÓN
-        // ===============================================================
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initializePlantData();
-            updateBasePlantData();
-            setupEventListeners();
-            loadAllData();
-            document.querySelector('.main-nav a[data-section="clientes"]').click();
-
-            // Listener para cerrar modal al hacer clic fuera
-            window.onclick = function(event) {
-                const modal = document.getElementById('full-calendar-modal');
-                const visitasModal = document.getElementById('visitas-calendar-modal'); // NUEVO
-                if (event.target == modal) {
-                    closeFullCalendar();
-                }
-                if (event.target == visitasModal) { // NUEVO
-                    closeVisitsCalendar();
-                }
-            }
-        });
-
-        function setupEventListeners() {
-            document.querySelectorAll('.main-nav a').forEach(link => {
-                link.addEventListener('click', handleNavClick);
-            });
-
-            // Formularios
-            document.getElementById('form-cliente').addEventListener('submit', handleAddCliente);
-            document.getElementById('planta-remojo').addEventListener('change', toggleRemojoInputConfig);
-            document.getElementById('form-planta').addEventListener('submit', handleAddPlanta);
-            document.getElementById('form-bandeja-custom').addEventListener('submit', handleAddCustomTray);
-            document.getElementById('form-plan-siembra').addEventListener('submit', handleAddPlan);
-            document.getElementById('form-lote').addEventListener('submit', handleAddLote);
-            
-            // Calculadora
-            document.getElementById('calc-planta').addEventListener('change', calculateSeeds);
-            document.querySelectorAll('.standard-trays .tray-btn').forEach(btn => {
-                btn.addEventListener('click', function() { handleTraySelection(this); });
-            });
-        }
-        
-        function handleNavClick(e) {
-            e.preventDefault();
-            const targetSection = e.currentTarget.dataset.section;
-
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.main-nav a').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            const sectionToShow = document.getElementById(targetSection);
-            if (sectionToShow) {
-                sectionToShow.classList.add('active');
-                const titleText = e.currentTarget.textContent.substring(e.currentTarget.textContent.indexOf(' ') + 1).trim();
-                document.getElementById('section-title').textContent = titleText;
-                e.currentTarget.classList.add('active');
-
-                if (targetSection === 'clientes') {
-                    renderClientes();
-                    loadPlanForms();
-                    loadLoteForms();
-                } else if (targetSection === 'planes') {
-                    loadPlanForms();
-                } else if (targetSection === 'todos-planes') {
-                    renderPlanes();
-                } else if (targetSection === 'visitas') { // NUEVO: LÓGICA DE VISITAS
-                    loadVisitasForms();
-                    renderVisitas();
-                } else if (targetSection === 'lotes') {
-                    renderLotes();
-                    loadLoteForms();
-                } else if (targetSection === 'calculadora') {
-                    loadCalculatorForms();
-                    calculateSeeds();
-                } else if (targetSection === 'configuracion') {
-                    renderPlantas();
-                    renderCustomTrays();
-                }
-                renderCalendarTasks();
-            }
-        }
-
-        function loadAllData() {
-            loadPlanForms();
-            loadLoteForms();
-            loadCalculatorForms();
-            loadVisitasForms(); // NUEVO: Cargar el select de clientes y event listener
-            renderClientes();
-            renderPlantas();
-            renderCustomTrays();
-            renderCalendarTasks();
-            renderVisitas(); // Renderizar visitas (aunque la sección no esté activa)
-            renderPlanes();
-            renderLotes();
-            checkForTodayVisits(); // ✔ Alertas Automáticas: Visitas de Hoy
-        }
-
-
-        // 5. LÓGICA DE CLIENTES
-        // ===============================================================
-        function handleAddCliente(e) {
-            e.preventDefault();
-            const nombreCliente = document.getElementById('cliente-nombre').value.trim();
-            if (!nombreCliente) {
-                alert("Error: El nombre del cliente es obligatorio.");
-                return;
-            }
-
-            const cliente = {
-                id: Date.now(),
-                nombre: nombreCliente,
-                telefono: document.getElementById('cliente-telefono').value,
-                direccion: document.getElementById('cliente-direccion').value,
-                notas: document.getElementById('cliente-notas').value
-            };
-
-            const clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES);
-            if (clientes.some(c => c.nombre.toLowerCase() === cliente.nombre.toLowerCase())) {
-                alert(`Error: Ya existe un cliente con el nombre "${cliente.nombre}".`);
-                return;
-            }
-            
-            clientes.push(cliente);
-            saveData(LOCAL_STORAGE_KEYS.CLIENTES, clientes);
-            document.getElementById('form-cliente').reset();
-            alert(`Cliente "${cliente.nombre}" guardado.`);
-            loadAllData();
-        }
-
-        function renderClientes() {
-            const listaClientes = document.getElementById('lista-clientes');
-            const clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES).sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            if (clientes.length === 0) {
-                listaClientes.innerHTML = '<p>No hay clientes registrados.</p>';
-                return;
-            }
-
-            listaClientes.innerHTML = clientes.map(c => `
-                <li class="card" id="cliente-item-${c.id}">
-                    <h4>${c.nombre}</h4>
-                    ${c.telefono ? `<p>Teléfono: <strong>${c.telefono}</strong></p>` : ''}
-                    ${c.direccion ? `<p>Dirección: <strong>${c.direccion}</strong></p>` : ''}
-                    ${c.notas ? `<p>Notas: ${c.notas}</p>` : ''}
-                    <div style="margin-top: 10px;">
-                        <button class="btn secondary-btn delete-btn" onclick="deleteClienteConfirm(${c.id})">
-                            <i class="fas fa-trash-alt"></i> Eliminar
-                        </button>
-                    </div>
-                </li>
-            `).join('');
-        }
-
-        window.deleteClienteConfirm = function(id) {
-            if (confirm("¿Está seguro de que desea eliminar este cliente? Esto NO eliminará los planes o lotes asociados, pero puede causar problemas de referencia.")) {
-                let clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES).filter(c => c.id != id);
-                saveData(LOCAL_STORAGE_KEYS.CLIENTES, clientes);
-                alert("Cliente eliminado.");
-                loadAllData();
-            }
-        }
-        
-        // 6. LÓGICA DE CONFIGURACIÓN Y PLANTAS
-        // ===============================================================
-        function toggleRemojoInputConfig() {
-            const remojoCheck = document.getElementById('planta-remojo');
-            const remojoInput = document.getElementById('planta-tiempo-remojo');
-            remojoInput.disabled = !remojoCheck.checked;
-            remojoInput.required = remojoCheck.checked;
-        }
-
-        function handleAddPlanta(e) {
-            e.preventDefault();
-            const nombrePlanta = document.getElementById('planta-nombre').value.trim();
-            if (!nombrePlanta) {
-                alert("Error: El nombre de la planta es obligatorio.");
-                return;
-            }
-            
-            const remojoCheck = document.getElementById('planta-remojo').checked;
-            
-            // Generar iniciales (ej: Guisante Cerrado -> GC)
-            const iniciales = nombrePlanta.split(/\s+/).map(w => w[0]).join('').toUpperCase().substring(0, 3);
-
-            const nuevaPlanta = {
-                id: Date.now(),
-                nombre: nombrePlanta,
-                densidad: parseFloat(document.getElementById('planta-densidad').value),
-                remojo: remojoCheck ? document.getElementById('planta-tiempo-remojo').value : 'No',
-                oscuridad: parseInt(document.getElementById('planta-oscuridad').value),
-                crecimiento: parseInt(document.getElementById('planta-crecimiento').value),
-                costeKg: parseFloat(document.getElementById('planta-coste-kg').value),
-                iniciales: iniciales
-            };
-
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS);
-            if (plantas.some(p => p.nombre.toLowerCase() === nuevaPlanta.nombre.toLowerCase())) {
-                alert(`Error: Ya existe una planta con el nombre "${nuevaPlanta.nombre}".`);
-                return;
-            }
-            
-            plantas.push(nuevaPlanta);
-            saveData(LOCAL_STORAGE_KEYS.PLANTAS, plantas);
-            document.getElementById('form-planta').reset();
-            document.getElementById('planta-tiempo-remojo').disabled = true;
-            document.getElementById('planta-tiempo-remojo').required = false;
-            alert(`Planta "${nuevaPlanta.nombre}" guardada.`);
-            loadAllData();
-        }
-
-        function renderPlantas() {
-            const container = document.getElementById('lista-plantas-container');
-            try {
-                const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS).sort((a, b) => a.nombre.localeCompare(b.nombre));
-                container.innerHTML = plantas.map(p => {
-                    const densidadText = (p.densidad !== undefined && p.densidad !== null) ? `${Number(p.densidad).toFixed(2).replace('.', ',')}` : 'N/A';
-                    const costeText = (p.costeKg !== undefined && p.costeKg !== null) ? `${Number(p.costeKg).toFixed(2).replace('.', ',')} €` : 'N/A';
-                    const remojoText = p.remojo && p.remojo !== 'No' ? `${p.remojo} (Sí)` : 'No';
-                    const editContainerId = `edit-planta-container-${p.id}`;
-
-                    return `
-                        <div class="card">
-                            <h4>${p.nombre || 'Planta Desconocida'} (${p.iniciales || 'N/A'})</h4>
-                            <p>Densidad (25x50): <strong>${densidadText} g</strong></p>
-                            <p>Coste por Kg: <strong>${costeText}</strong></p>
-                            <p>Oscuridad: <strong>${p.oscuridad !== undefined ? p.oscuridad : 'N/A'} días</strong></p>
-                            <p>Crecimiento Total: <strong>${p.crecimiento !== undefined ? p.crecimiento : 'N/A'} días</strong></p>
-                            <p>Remojo: <strong>${remojoText}</strong></p>
-                            <div style="margin-top: 10px;">
-                                <button class="btn secondary-btn" onclick="openEditPlanta(${p.id})"><i class="fas fa-edit"></i> Editar</button>
-                                <button class="btn delete-btn" onclick="deletePlantaConfirm(${p.id})"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                            </div>
-                            <div id="${editContainerId}" class="edit-planta-card" style="display:none;">
-                                </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                container.innerHTML = `<div class="error-message">Error al cargar la lista de plantas: ${e.message}</div>`;
-            }
-        }
-
-        window.deletePlantaConfirm = function(id) {
-            if (confirm("¿Está seguro de que desea eliminar esta planta? Esto puede afectar a los planes de siembra existentes.")) {
-                let plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS).filter(p => p.id != id);
-                saveData(LOCAL_STORAGE_KEYS.PLANTAS, plantas);
-                alert("Planta eliminada.");
-                loadAllData();
-            }
-        }
-        
-        // Lógica de Edición de Planta
-        window.openEditPlanta = function(id) {
-            const editContainer = document.getElementById(`edit-planta-container-${id}`);
-            const planta = getData(LOCAL_STORAGE_KEYS.PLANTAS).find(p => p.id === id);
-            if (!planta || !editContainer) return;
-
-            const isRemojo = planta.remojo !== 'No';
-            const remojoTime = isRemojo ? planta.remojo : '';
-            const densidadValue = planta.densidad !== undefined ? planta.densidad : 0;
-            const costeValue = planta.costeKg !== undefined ? planta.costeKg : 0;
-            const oscuridadValue = planta.oscuridad !== undefined ? planta.oscuridad : 0;
-            const crecimientoValue = planta.crecimiento !== undefined ? planta.crecimiento : 0;
-
-            editContainer.innerHTML = `
-                <form onsubmit="handleEditPlanta(${id}, event)" class="data-form">
-                    <h4>Editar ${planta.nombre}</h4>
-                    <label>Nombre:</label>
-                    <input type="text" id="edit-nombre-${id}" value="${planta.nombre || ''}" required>
-                    <label>Densidad (g / 25x50):</label>
-                    <input type="number" id="edit-densidad-${id}" value="${densidadValue}" step="any" required>
-                    <label>Coste por Kilo (€/kg):</label>
-                    <input type="number" id="edit-coste-kg-${id}" value="${costeValue}" step="any" required>
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="edit-remojo-check-${id}" ${isRemojo ? 'checked' : ''} onchange="toggleRemojoInput(${id})"> Requiere Remojo
-                        </label>
-                        <input type="text" id="edit-tiempo-remojo-${id}" placeholder="Tiempo de remojo (ej: 6 horas)" value="${remojoTime}" ${!isRemojo ? 'disabled' : ''} ${isRemojo ? 'required' : ''}>
-                    </div>
-                    <label>Días de Oscuridad:</label>
-                    <input type="number" id="edit-oscuridad-${id}" value="${oscuridadValue}" required>
-                    <label>Días Total de Siembra:</label>
-                    <input type="number" id="edit-crecimiento-${id}" value="${crecimientoValue}" required>
-                    <button type="submit" class="btn primary-btn">Guardar Cambios</button>
-                    <button type="button" class="btn secondary-btn" onclick="closeEditPlanta(${id})">Cancelar</button>
-                </form>
-            `;
-            editContainer.style.display = 'block';
-        }
-        window.toggleRemojoInput = function(id) {
-            const remojoCheck = document.getElementById(`edit-remojo-check-${id}`);
-            const remojoInput = document.getElementById(`edit-tiempo-remojo-${id}`);
-            remojoInput.disabled = !remojoCheck.checked;
-            remojoInput.required = remojoCheck.checked;
-        }
-        window.handleEditPlanta = function(id, e) {
-            e.preventDefault();
-            const remojoCheck = document.getElementById(`edit-remojo-check-${id}`).checked;
-            const nombrePlanta = document.getElementById(`edit-nombre-${id}`).value.trim();
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS);
-            const plantaIndex = plantas.findIndex(p => p.id === id);
-
-            if (plantaIndex !== -1) {
-                // Verificar nombre duplicado (excluyendo el propio registro)
-                if (plantas.some((p, index) => index !== plantaIndex && p.nombre.toLowerCase() === nombrePlanta.toLowerCase())) {
-                    alert(`Error: Ya existe otra planta con el nombre "${nombrePlanta}".`);
-                    return;
-                }
-
-                const planta = plantas[plantaIndex];
-                const newNombre = nombrePlanta;
-                const newIniciales = newNombre.split(/\s+/).map(w => w[0]).join('').toUpperCase().substring(0, 3);
-                
-                planta.nombre = newNombre;
-                planta.densidad = parseFloat(document.getElementById(`edit-densidad-${id}`).value);
-                planta.costeKg = parseFloat(document.getElementById(`edit-coste-kg-${id}`).value);
-                planta.remojo = remojoCheck ? document.getElementById(`edit-tiempo-remojo-${id}`).value : 'No';
-                planta.oscuridad = parseInt(document.getElementById(`edit-oscuridad-${id}`).value);
-                planta.crecimiento = parseInt(document.getElementById(`edit-crecimiento-${id}`).value);
-                planta.iniciales = newIniciales; // Actualizar iniciales
-
-                saveData(LOCAL_STORAGE_KEYS.PLANTAS, plantas);
-                alert(`Cambios guardados para ${planta.nombre}.`);
-                closeEditPlanta(id);
-                loadAllData();
-            }
-        }
-        window.closeEditPlanta = function(id) {
-            document.getElementById(`edit-planta-container-${id}`).style.display = 'none';
-            renderPlantas(); // Volver a renderizar para limpiar
-        }
-
-
-        // 7. LÓGICA DE PLANES DE SIEMBRA
-        // ===============================================================
-        function loadPlanForms() {
-            const selectCliente = document.getElementById('plan-cliente');
-            const selectPlanta = document.getElementById('plan-planta');
-            const selectBandeja = document.getElementById('plan-bandeja-tipo');
-            
-            const clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES).sort((a, b) => a.nombre.localeCompare(b.nombre));
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS).sort((a, b) => a.nombre.localeCompare(b.nombre));
-            const customTrays = getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS) || [];
-            
-            selectCliente.innerHTML = '<option value="" disabled selected>Seleccione Cliente</option>';
-            clientes.forEach(c => {
-                selectCliente.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-            });
-
-            selectPlanta.innerHTML = '<option value="" disabled selected>Seleccione Planta</option>';
-            plantas.forEach(p => {
-                selectPlanta.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-            });
-
-            selectBandeja.innerHTML = '<option value="" disabled selected>Seleccione Tipo</option>';
-            STANDARD_TRAYS_CONFIG.forEach(t => {
-                 selectBandeja.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-            });
-            customTrays.forEach((t, index) => {
-                 selectBandeja.innerHTML += `<option value="custom-${index}">Custom ${t.width}x${t.height} cm</option>`;
-            });
-        }
-        
-        function handleAddPlan(e) {
-            e.preventDefault();
-            
-            const clienteId = document.getElementById('plan-cliente').value;
-            const plantaNombre = document.getElementById('plan-planta').value;
-            const bandejaTipo = document.getElementById('plan-bandeja-tipo').value;
-            const cantidad = parseInt(document.getElementById('plan-bandejas-cantidad').value);
-            const frecuencia = parseInt(document.getElementById('plan-frecuencia').value);
-            const fechaSiembraInput = document.getElementById('plan-fecha-siembra').value;
-            const fechaFinInput = document.getElementById('plan-fecha-fin').value;
-
-            const siembraDateStr = normalizarFecha(fechaSiembraInput);
-            const fechaFinStr = fechaFinInput ? normalizarFecha(fechaFinInput) : null;
-            
-            const cliente = getData(LOCAL_STORAGE_KEYS.CLIENTES).find(c => c.id == clienteId);
-            const plantaData = getPlantaDataByName(plantaNombre);
-
-            if (!cliente || !plantaData || !siembraDateStr || isNaN(cantidad) || isNaN(frecuencia)) {
-                alert("Error: Por favor, complete todos los campos requeridos con valores válidos.");
-                return;
-            }
-
-            if (!siembraDateStr) {
-                alert("Error: La fecha de primera siembra no es válida.");
-                return;
-            }
-
-            const plan = {
-                id: Date.now(),
-                cliente: cliente.nombre,
-                planta: plantaNombre,
-                bandejaTipo: bandejaTipo,
-                cantidad: cantidad,
-                frecuencia: frecuencia,
-                fechaSiembra: siembraDateStr,
-                fechaFin: fechaFinStr || null,
-                plantaData: {
-                    remojo: plantaData.remojo,
-                    oscuridad: plantaData.oscuridad,
-                    crecimiento: plantaData.crecimiento
-                }
-            };
-            
-            const planes = getData(LOCAL_STORAGE_KEYS.PLANES);
-            planes.push(plan);
-            saveData(LOCAL_STORAGE_KEYS.PLANES, planes);
-            
-            generateTasksForPlan(plan);
-
-            document.getElementById('form-plan-siembra').reset();
-            alert(`Plan recurrente para ${plan.planta} creado.`);
-            renderPlanes();
-            renderCalendarTasks();
-        }
-        
-        function generateTasksForPlan(plan) {
-            const allTasks = getData(LOCAL_STORAGE_KEYS.TAREAS);
-            const { id, planta, cantidad, frecuencia, fechaSiembra, fechaFin, plantaData, cliente } = plan;
-            
-            const partsSiembra = fechaSiembra.split('-');
-            // Crear la fecha de siembra con la hora 00:00 local
-            let siembraDate = new Date(parseInt(partsSiembra[0]), parseInt(partsSiembra[1]) - 1, parseInt(partsSiembra[2]));
-
-            const plantaNombre = planta;
-            const remojo = plantaData.remojo;
-            const oscuridad = plantaData.oscuridad;
-            const crecimientoTotal = plantaData.crecimiento;
-            
-            let ciclo = 1;
-            let endDate;
-
-            if (fechaFin) {
-                const partsFin = fechaFin.split('-');
-                 // Crear la fecha de fin con la hora 00:00 local
-                endDate = new Date(parseInt(partsFin[0]), parseInt(partsFin[1]) - 1, parseInt(partsFin[2]));
-            } else {
-                // Si no hay fecha de fin, usar una fecha muy lejana (1 año)
-                endDate = new Date(siembraDate);
-                endDate.setFullYear(endDate.getFullYear() + 1);
-            }
-
-            let currentDate = normalizarFecha(siembraDate);
-            
-            while (new Date(currentDate) <= endDate) {
-                // 1. Tarea de Remojo (si aplica)
-                if (remojo && remojo !== 'No') {
-                    allTasks.push({
-                        id: Date.now() + ciclo + 1, // Garantizar ID único
-                        planId: id,
-                        date: currentDate,
-                        type: 'remojo',
-                        description: `Remojar ${plantaNombre} (${cantidad} bandejas)`,
-                        status: 'pending',
-                        plan: plan // Guardar el plan completo para referencias
-                    });
-                }
-                
-                // 2. Tarea de Siembra
-                const siembraTask = {
-                    id: Date.now() + ciclo + 2,
-                    planId: id,
-                    date: currentDate,
-                    type: 'siembra',
-                    description: `Sembrar ${plantaNombre} (${cantidad} bandejas)`,
-                    status: 'pending',
-                    plan: plan
-                };
-                allTasks.push(siembraTask);
-                
-                // 3. Tarea de Fin de Oscuridad (Pasar a Luz)
-                const luzDateStr = addDaysToDate(currentDate, oscuridad);
-                const luzTask = {
-                    id: Date.now() + ciclo + 3,
-                    planId: id,
-                    date: luzDateStr,
-                    type: 'luz',
-                    description: `Pasar a Luz ${plantaNombre} (${cantidad} bandejas)`,
-                    status: 'pending',
-                    plan: plan
-                };
-                allTasks.push(luzTask);
-                
-                // 4. Tarea de Cosecha
-                const cosechaDays = crecimientoTotal - 1; // Si el día 1 es la siembra, la cosecha es a los DíasTotal-1
-                const cosechaDateStr = addDaysToDate(currentDate, cosechaDays);
-                const cosechaTask = {
-                    id: Date.now() + ciclo + 4,
-                    planId: id,
-                    date: cosechaDateStr,
-                    type: 'cosecha',
-                    description: `Cosechar ${plantaNombre} (${cantidad} bandejas) para ${cliente}`,
-                    status: 'pending',
-                    plan: plan
-                };
-                allTasks.push(cosechaTask);
-
-                // Preparar para el próximo ciclo
-                currentDate = addDaysToDate(currentDate, frecuencia);
-                ciclo++;
-            }
-            
-            saveData(LOCAL_STORAGE_KEYS.TAREAS, allTasks);
-        }
-
-        function renderPlanes() {
-            const listaPlanes = document.getElementById('lista-planes');
-            const planes = getData(LOCAL_STORAGE_KEYS.PLANES).sort((a, b) => new Date(a.fechaSiembra) - new Date(b.fechaSiembra));
-
-            if (planes.length === 0) {
-                listaPlanes.innerHTML = '<p>No hay planes de siembra recurrentes activos.</p>';
-                return;
-            }
-
-            listaPlanes.innerHTML = planes.map(p => {
-                const bandeja = STANDARD_TRAYS_CONFIG.find(t => t.id === p.bandejaTipo) || getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS).map((t, i) => ({ id: `custom-${i}`, name: `Custom ${t.width}x${t.height} cm` })).find(t => t.id === p.bandejaTipo);
-                const bandejaName = bandeja ? bandeja.name : p.bandejaTipo;
-                return `
-                    <div class="card" style="border-left: 5px solid var(--primary-dark);">
-                        <h4>Plan Recurrente: ${p.planta}</h4>
-                        <p>Cliente: <strong>${p.cliente}</strong></p>
-                        <p>Cantidad: <strong>${p.cantidad} x ${bandejaName}</strong></p>
-                        <p>Frecuencia: <strong>Cada ${p.frecuencia} días</strong></p>
-                        <p>Siembra Inicial: <strong>${formatDateForDisplay(p.fechaSiembra)}</strong></p>
-                        <p>Finalización: <strong>${p.fechaFin ? formatDateForDisplay(p.fechaFin) : 'Indefinido'}</strong></p>
-                        <div style="margin-top: 10px;">
-                            <button class="btn secondary-btn delete-btn" onclick="deletePlanConfirm(${p.id})"><i class="fas fa-trash-alt"></i> Eliminar Plan</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        window.deletePlanConfirm = function(id) {
-            if (confirm("¿Está seguro de que desea eliminar este plan de siembra recurrente? Se eliminarán todas las tareas futuras asociadas.")) {
-                let planes = getData(LOCAL_STORAGE_KEYS.PLANES).filter(p => p.id != id);
-                saveData(LOCAL_STORAGE_KEYS.PLANES, planes);
-                
-                let tasks = getData(LOCAL_STORAGE_KEYS.TAREAS).filter(t => t.planId != id);
-                saveData(LOCAL_STORAGE_KEYS.TAREAS, tasks);
-                
-                alert("Plan y tareas asociadas eliminados.");
-                renderPlanes();
-                renderCalendarTasks();
-            }
-        }
-
-        // 8. LÓGICA DE LOTES (TRAZABILIDAD)
-        // ===============================================================
-        function loadLoteForms() {
-            const selectClienteLote = document.getElementById('lote-cliente');
-            const selectPlantaLote = document.getElementById('lote-planta');
-            
-            const clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES).sort((a, b) => a.nombre.localeCompare(b.nombre));
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS).sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            selectClienteLote.innerHTML = '<option value="" disabled selected>Seleccione Cliente</option>';
-            clientes.forEach(c => {
-                selectClienteLote.innerHTML += `<option value="${c.nombre}">${c.nombre}</option>`;
-            });
-
-            selectPlantaLote.innerHTML = '<option value="" disabled selected>Seleccione Planta</option>';
-            plantas.forEach(p => {
-                selectPlantaLote.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-            });
-            
-            // Siembra por defecto hoy
-            document.getElementById('lote-cosecha').value = normalizarFecha(new Date());
-        }
-
-        function handleAddLote(e) {
-            e.preventDefault();
-            
-            const cliente = document.getElementById('lote-cliente').value;
-            const planta = document.getElementById('lote-planta').value;
-            const fechaCosecha = normalizarFecha(document.getElementById('lote-cosecha').value);
-            const bandejas = parseInt(document.getElementById('lote-bandejas').value);
-            
-            if (!cliente || !planta || !fechaCosecha || isNaN(bandejas) || bandejas <= 0) {
-                alert("Error: Por favor, complete todos los campos requeridos con valores válidos.");
-                return;
-            }
-
-            const plantaData = getPlantaDataByName(planta);
-            const plantaIniciales = plantaData ? plantaData.iniciales : 'XXX';
-            
-            // Generar código de lote: InicialesPlanta-DiaMes-Año-Bandejas-IndexHoy
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear().toString().substring(2);
-            
-            const lotesHoy = getData(LOCAL_STORAGE_KEYS.LOTES).filter(l => l.fechaCosecha === fechaCosecha);
-            const indexHoy = lotesHoy.length + 1;
-
-            const codigo = `${plantaIniciales}-${day}${month}-${year}-${bandejas}-${indexHoy}`;
-
-            const lote = {
-                id: Date.now(),
-                codigo: codigo,
-                cliente: cliente,
-                planta: planta,
-                fechaCosecha: fechaCosecha,
-                bandejas: bandejas
-            };
-            
-            const lotes = getData(LOCAL_STORAGE_KEYS.LOTES);
-            lotes.push(lote);
-            saveData(LOCAL_STORAGE_KEYS.LOTES, lotes);
-            
-            document.getElementById('form-lote').reset();
-            document.getElementById('lote-cosecha').value = normalizarFecha(new Date());
-            alert(`Lote ${codigo} registrado para ${cliente}.`);
-            renderLotes();
-        }
-
-        function renderLotes() {
-            const listaLotes = document.getElementById('lista-lotes');
-            const lotes = getData(LOCAL_STORAGE_KEYS.LOTES).sort((a, b) => new Date(b.fechaCosecha) - new Date(a.fechaCosecha));
-
-            if (lotes.length === 0) {
-                listaLotes.innerHTML = '<p>No hay lotes registrados.</p>';
-                return;
-            }
-
-            listaLotes.innerHTML = lotes.map(l => `
-                <li class="card">
-                    <h4>Lote: ${l.codigo}</h4>
-                    <p>Cliente: <strong>${l.cliente}</strong></p>
-                    <p>Planta: <strong>${l.planta}</strong></p>
-                    <p>Bandejas: <strong>${l.bandejas}</strong></p>
-                    <p>Fecha Cosecha: <strong>${formatDateForDisplay(l.fechaCosecha)}</strong></p>
-                    <div style="margin-top: 10px;">
-                        <button class="btn secondary-btn delete-btn" onclick="deleteLoteConfirm(${l.id})">
-                            <i class="fas fa-trash-alt"></i> Eliminar
-                        </button>
-                    </div>
-                </li>
-            `).join('');
-        }
-
-        window.deleteLoteConfirm = function(id) {
-            if (confirm("¿Está seguro de que desea eliminar este lote de trazabilidad?")) {
-                let lotes = getData(LOCAL_STORAGE_KEYS.LOTES).filter(l => l.id != id);
-                saveData(LOCAL_STORAGE_KEYS.LOTES, lotes);
-                alert("Lote eliminado.");
-                renderLotes();
-            }
-        }
-        
-        // 9. LÓGICA DE CALCULADORA Y BANDEJAS
-        // ===============================================================
-        function loadCalculatorForms() {
-            const plantas = getData(LOCAL_STORAGE_KEYS.PLANTAS).sort((a, b) => a.nombre.localeCompare(b.nombre));
-            const selectPlanta = document.getElementById('calc-planta');
-            const standardTraysContainer = document.querySelector('.standard-trays');
-            
-            selectPlanta.innerHTML = '<option value="" disabled selected>Seleccione Planta</option>';
-            plantas.forEach(p => {
-                selectPlanta.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-            });
-
-            const lastSelectedPlant = localStorage.getItem('calc-planta-selected');
-            if (lastSelectedPlant) {
-                selectPlanta.value = lastSelectedPlant;
-            }
-
-            // Renderizar botones de bandejas estándar
-            standardTraysContainer.innerHTML = STANDARD_TRAYS_CONFIG.map(t => `
-                <button class="btn tray-btn" data-area="${t.width * t.height}" onclick="handleTraySelection(this)" data-id="${t.id}">
-                    ${t.name} (${t.width * t.height} cm²)
-                </button>
-            `).join('');
-
-            // Seleccionar última bandeja
-            const lastSelectedTrayId = localStorage.getItem('calc-tray-selected-id');
-            const selectedBtn = document.querySelector(`.tray-btn[data-id="${lastSelectedTrayId}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('selected');
-            } else if (STANDARD_TRAYS_CONFIG.length > 0) {
-                 // Si no hay selección previa, seleccionar la primera estándar
-                const firstStandard = document.querySelector(`.standard-trays .tray-btn`);
-                if(firstStandard) {
-                    firstStandard.classList.add('selected');
-                    localStorage.setItem('calc-tray-selected-id', firstStandard.dataset.id);
-                }
-            }
-        }
-        
-        function renderCustomTrays() {
-            const customTraysContainer = document.getElementById('bandejas-custom');
-            const customTrays = getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS) || [];
-
-            if (customTrays.length === 0) {
-                customTraysContainer.innerHTML = '<p>Aún no hay bandejas personalizadas añadidas.</p>';
-                return;
-            }
-
-            customTraysContainer.innerHTML = customTrays.map((t, index) => {
-                const area = t.width * t.height;
-                return `
-                    <button class="btn tray-btn" data-area="${area}" onclick="handleTraySelection(this)" data-id="custom-${index}">
-                        ${t.width}x${t.height} cm (${area} cm²) 
-                        <span class="delete-tray-btn" onclick="deleteCustomTray(event, ${index})"><i class="fas fa-times-circle"></i></span>
-                    </button>
-                `;
-            }).join('');
-
-            const lastSelectedTrayId = localStorage.getItem('calc-tray-selected-id');
-            const selectedBtn = document.querySelector(`.tray-btn[data-id="${lastSelectedTrayId}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('selected');
-            }
-        }
-
-        window.handleAddCustomTray = function(e) {
-            e.preventDefault();
-            const ancho = parseFloat(document.getElementById('custom-ancho').value);
-            const alto = parseFloat(document.getElementById('custom-alto').value);
-
-            if (isNaN(ancho) || isNaN(alto) || ancho <= 0 || alto <= 0) {
-                alert("Por favor, introduzca valores de ancho y alto válidos.");
-                return;
-            }
-
-            const customTrays = getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS) || [];
-            customTrays.push({ width: ancho, height: alto });
-            saveData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS, customTrays);
-            document.getElementById('form-bandeja-custom').reset();
-            renderCustomTrays();
-            loadPlanForms(); // Actualizar el select de planes
-            alert(`Bandeja personalizada ${ancho}x${alto} cm añadida.`);
-        }
-        
-        window.deleteCustomTray = function(event, index) {
-            event.stopPropagation(); // Evitar que se active el handleTraySelection
-             if (confirm("¿Está seguro de que desea eliminar esta bandeja personalizada?")) {
-                let customTrays = getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS) || [];
-                customTrays.splice(index, 1);
-                saveData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS, customTrays);
-                localStorage.removeItem('calc-tray-selected-id'); // Deseleccionar
-                renderCustomTrays();
-                loadPlanForms();
-                calculateSeeds();
-                alert("Bandeja eliminada.");
-            }
-        }
-
-        window.handleTraySelection = function(button) {
-            document.querySelectorAll('.tray-btn').forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-            localStorage.setItem('calc-tray-selected-id', button.dataset.id);
-            calculateSeeds();
-        }
-
-        function calculateSeeds() {
-            const plantaNombre = document.getElementById('calc-planta').value;
-            const gramosSpan = document.getElementById('calc-gramos');
-            const costoSpan = document.getElementById('calc-costo');
-            
-            gramosSpan.textContent = '0';
-            costoSpan.textContent = '0.00';
-
-            if (!plantaNombre) {
-                gramosSpan.textContent = 'Seleccione Planta';
-                costoSpan.textContent = 'Seleccione Planta';
-                return;
-            }
-
-            const selectedTrayBtn = document.querySelector('.tray-btn.selected');
-            const selectedTrayArea = selectedTrayBtn ? parseFloat(selectedTrayBtn.dataset.area) : 0;
-
-            if (selectedTrayArea <= 0 || !isFinite(selectedTrayArea)) {
-                gramosSpan.textContent = 'Seleccione Bandeja';
-                costoSpan.textContent = 'Seleccione Bandeja';
-                return;
-            }
-
-            try {
-                const plantaData = getPlantaDataByName(plantaNombre);
-                const densidadBase = Number(plantaData?.densidad);
-                const costoKg = Number(plantaData?.costeKg);
-
-                if (!plantaData || !isFinite(densidadBase) || densidadBase <= 0 || !isFinite(costoKg)) {
-                    gramosSpan.textContent = 'N/A';
-                    costoSpan.textContent = 'N/A';
-                    return;
-                }
-
-                const gramosRequeridos = (densidadBase / STANDARD_TRAY_AREA) * selectedTrayArea;
-                const costoEstimado = (gramosRequeridos / 1000) * costoKg;
-
-                if (isFinite(gramosRequeridos)) {
-                    gramosSpan.textContent = gramosRequeridos.toFixed(2).replace('.', ',');
+        const firebaseConfig = { databaseURL: "https://la-isla-microgreen-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], visitas: [], ultimoCorrelativo: 0 };
+        let curMonth = new Date();
+        const B_AREAS = { "Estándar (25x50)": 1250, "Cuadrada (12x12)": 144, "Pequeña (9x9)": 81 };
+
+        function initApp() {
+            database.ref('micro_db_isla').on('value', (snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData) {
+                    db = cloudData;
+                    refresh();
+                    document.getElementById('cloud-status').innerText = "Nube sincronizada";
                 } else {
-                    gramosSpan.textContent = 'Error';
+                    document.getElementById('cloud-status').innerText = "Nube vacía. Importa tu copia.";
                 }
-
-                if (isFinite(costoEstimado)) {
-                    costoSpan.textContent = costoEstimado.toFixed(2).replace('.', ',');
-                } else {
-                    costoSpan.textContent = 'Error';
-                }
-            } catch (e) {
-                console.error("Error en calculateSeeds:", e);
-                document.getElementById('calc-gramos').textContent = 'Error';
-                document.getElementById('calc-costo').textContent = 'Error';
-            }
-        }
-
-        // 10. LÓGICA DEL CALENDARIO Y TAREAS
-        // ===============================================================
-        window.toggleTaskStatus = function(taskId) {
-            let tasks = getData(LOCAL_STORAGE_KEYS.TAREAS);
-            const taskIndex = tasks.findIndex(t => t.id === taskId);
-
-            if (taskIndex !== -1) {
-                const currentStatus = tasks[taskIndex].status;
-                tasks[taskIndex].status = currentStatus === 'pending' ? 'completed' : 'pending';
-                saveData(LOCAL_STORAGE_KEYS.TAREAS, tasks);
-                renderCalendarTasks();
-                renderFullCalendarTasks();
-            }
-        }
-        
-        window.deleteTaskConfirm = function(taskId) {
-             if (confirm("¿Está seguro de que desea eliminar esta tarea individual? No se regenerará automáticamente.")) {
-                let tasks = getData(LOCAL_STORAGE_KEYS.TAREAS).filter(t => t.id != taskId);
-                saveData(LOCAL_STORAGE_KEYS.TAREAS, tasks);
-                alert("Tarea eliminada.");
-                renderCalendarTasks();
-                renderFullCalendarTasks();
-            }
-        }
-
-        function renderCalendarTasks() {
-            const container = document.getElementById('task-calendar');
-            const allTasks = getData(LOCAL_STORAGE_KEYS.TAREAS);
-            const todayStr = normalizarFecha(new Date());
-
-            // Filtrar y ordenar: solo pendientes, ordenadas por fecha
-            const pendingTasks = allTasks
-                .filter(t => t.status === 'pending')
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            if (pendingTasks.length === 0) {
-                container.innerHTML = '<p>No hay tareas pendientes próximas.</p>';
-                return;
-            }
-
-            let html = '';
-            let currentDate = '';
-            let tasksCount = 0;
-            
-            // Mostrar solo las próximas 3 semanas
-            const threeWeeksFromNow = addDaysToDate(todayStr, 21);
-            
-            pendingTasks.forEach(t => {
-                if (t.date > threeWeeksFromNow) return; 
-
-                if (t.date !== currentDate) {
-                    html += `<span class="task-date">${t.date === todayStr ? 'HOY' : formatDateForDisplay(t.date)}</span>`;
-                    currentDate = t.date;
-                }
-                
-                const typeClass = `task-${t.type}`;
-                const translatedType = t.type.charAt(0).toUpperCase() + t.type.slice(1);
-                
-                let descriptionText = t.description;
-
-                // Añadir cantidad de semillas a las tareas de Siembra
-                if (t.type === 'siembra' && t.plan) {
-                    const plan = t.plan;
-                    const plantaData = getPlantaDataByName(plan.planta);
-                    const densidadBase = Number(plantaData?.densidad);
-                    const cantidadBandejas = Number(plan.cantidad);
-
-                    if (plantaData && isFinite(densidadBase) && densidadBase > 0 && isFinite(cantidadBandejas) && cantidadBandejas > 0) {
-                        try {
-                            const bandejaArea = getTrayAreaById(plan.bandejaTipo);
-                            const gramosRequeridosTotal = (densidadBase / STANDARD_TRAY_AREA) * bandejaArea * cantidadBandejas;
-                            const gramosStr = gramosRequeridosTotal.toFixed(0);
-                            descriptionText = `${t.description} - Requiere ${gramosStr} g`;
-                        } catch (e) {
-                            console.error("Error al calcular gramos en tarea:", e);
-                        }
-                    }
-                }
-
-                html += `
-                    <div class="task-item task-pending ${typeClass}">
-                        <div>
-                            <strong>${translatedType}:</strong> ${descriptionText}
-                            <p style="margin: 0; font-size: 0.8em; color: #777;">Cliente: ${t.plan ? t.plan.cliente : 'N/A'}</p>
-                        </div>
-                        <button class="btn secondary-btn" onclick="toggleTaskStatus(${t.id})">
-                            <i class="fas fa-check"></i> Hecho
-                        </button>
-                    </div>
-                `;
-                tasksCount++;
             });
-
-            if (tasksCount === 0) {
-                container.innerHTML = '<p>No hay tareas pendientes próximas (21 días).</p>';
-            } else {
-                container.innerHTML = html;
-            }
         }
 
-        window.openFullCalendar = function() {
-            renderFullCalendarTasks();
-            document.getElementById('full-calendar-modal').style.display = 'block';
+        function save() {
+            database.ref('micro_db_isla').set(db);
+            refresh();
         }
 
-        window.closeFullCalendar = function() {
-            document.getElementById('full-calendar-modal').style.display = 'none';
-        }
-        
-        function renderFullCalendarTasks() {
-            const container = document.getElementById('full-calendar-tasks');
-            const allTasks = getData(LOCAL_STORAGE_KEYS.TAREAS);
-            
-            if (allTasks.length === 0) {
-                container.innerHTML = '<p>No hay tareas registradas en el sistema.</p>';
-                return;
-            }
-
-            // Ordenar por fecha (ascendente)
-            const sortedTasks = allTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            let html = '';
-            let currentDate = '';
-            const todayStr = normalizarFecha(new Date());
-
-            sortedTasks.forEach(t => {
-                if (t.date !== currentDate) {
-                    html += `<span class="task-date">${t.date === todayStr ? 'HOY' : formatDateForDisplay(t.date)}</span>`;
-                    currentDate = t.date;
-                }
-                
-                const statusClass = t.status === 'completed' ? 'task-completed' : 'task-pending';
-                const buttonText = t.status === 'completed' ? '<i class="fas fa-undo"></i> Deshacer' : '<i class="fas fa-check"></i> Hecho';
-                const typeClass = `task-${t.type}`;
-                const translatedType = t.type.charAt(0).toUpperCase() + t.type.slice(1);
-                
-                let descriptionText = t.description;
-
-                // Añadir cantidad de semillas a las tareas de Siembra
-                if (t.type === 'siembra' && t.plan) {
-                    const plan = t.plan;
-                    const plantaData = getPlantaDataByName(plan.planta);
-                    const densidadBase = Number(plantaData?.densidad);
-                    const cantidadBandejas = Number(plan.cantidad);
-
-                    if (plantaData && isFinite(densidadBase) && densidadBase > 0 && isFinite(cantidadBandejas) && cantidadBandejas > 0) {
-                        try {
-                            const bandejaArea = getTrayAreaById(plan.bandejaTipo);
-                            const gramosRequeridosTotal = (densidadBase / STANDARD_TRAY_AREA) * bandejaArea * cantidadBandejas;
-                            const gramosStr = gramosRequeridosTotal.toFixed(0);
-                            descriptionText = `${t.description} - Requiere ${gramosStr} g`;
-                        } catch (e) {
-                            console.error("Error al calcular gramos en tarea:", e);
-                        }
-                    }
-                }
-
-                html += `
-                    <div class="task-item ${statusClass} ${typeClass}">
-                        <div>
-                            <strong>${translatedType}:</strong> ${descriptionText}
-                            <p style="margin: 0; font-size: 0.8em; color: #777;">Cliente: ${t.plan ? t.plan.cliente : 'N/A'}</p>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn secondary-btn" onclick="toggleTaskStatus(${t.id})">
-                                ${buttonText}
-                            </button>
-                            <button class="btn secondary-btn delete-btn" onclick="deleteTaskConfirm(${t.id})" style="background-color: #dc3545; color: white;">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-
-        // ===============================================================
-        // 11. LÓGICA DE VISITAS (NUEVO CÓDIGO)
-        // ===============================================================
-        
-        /**
-         * Rellena el select de clientes en el formulario de visitas y asigna el listener.
-         */
-        function loadVisitasForms() {
-            const selectClienteVisita = document.getElementById('visita-cliente');
-            const clientes = getData(LOCAL_STORAGE_KEYS.CLIENTES).sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            selectClienteVisita.innerHTML = '<option value="" disabled selected>Seleccione Cliente</option>';
-            clientes.forEach(c => {
-                selectClienteVisita.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
-            });
-
-            document.getElementById('form-visita').onsubmit = handleAddVisita;
-        }
-
-        /**
-         * Maneja el envío del formulario de nueva visita.
-         */
-        function handleAddVisita(e) {
-            e.preventDefault();
-
-            const clienteId = document.getElementById('visita-cliente').value;
-            const fecha = document.getElementById('visita-fecha').value;
-            const hora = document.getElementById('visita-hora').value;
-            const titulo = document.getElementById('visita-titulo').value.trim();
-            const notas = document.getElementById('visita-notas').value.trim();
-            const cliente = getData(LOCAL_STORAGE_KEYS.CLIENTES).find(c => c.id == clienteId);
-
-            if (!cliente || !fecha || !titulo) {
-                alert("Error: Por favor, complete todos los campos obligatorios (*).");
-                return;
-            }
-
-            const newVisita = {
-                id: Date.now(),
-                clienteId: clienteId,
-                clienteNombre: cliente.nombre,
-                fecha: normalizarFecha(fecha),
-                hora: hora,
-                titulo: titulo,
-                notas: notas,
-                status: 'pending' // 'pending' | 'completed'
-            };
-
-            const visitas = getData(LOCAL_STORAGE_KEYS.VISITAS);
-            visitas.push(newVisita);
-            saveData(LOCAL_STORAGE_KEYS.VISITAS, visitas);
-
-            document.getElementById('form-visita').reset();
-            alert(`Visita para "${newVisita.clienteNombre}" el ${newVisita.fecha} registrada.`);
-            renderVisitas();
-            checkForTodayVisits();
-        }
-
-        /**
-         * Renderiza la lista de visitas pendientes.
-         */
-        function renderVisitas() {
-            const listaVisitas = document.getElementById('lista-visitas');
-            const visitas = getData(LOCAL_STORAGE_KEYS.VISITAS);
-
-            // Filtrar y ordenar: solo pendientes, ordenadas por fecha y luego hora
-            const visitasPendientes = visitas
-                .filter(v => v.status === 'pending')
-                .sort((a, b) => {
-                    const dateA = new Date(`${a.fecha}T${a.hora || '00:00'}`);
-                    const dateB = new Date(`${b.fecha}T${b.hora || '00:00'}`);
-                    return dateA - dateB;
-                });
-            
-            if (visitasPendientes.length === 0) {
-                listaVisitas.innerHTML = '<p>No hay visitas pendientes registradas.</p>';
-                return;
-            }
-
-            listaVisitas.innerHTML = visitasPendientes.map(v => {
-                const fullDateTime = formatDateForDisplay(v.fecha) + (v.hora ? ` a las ${v.hora}` : '');
-                return `
-                    <li class="card visit-item" id="visita-item-${v.id}" style="border-left: 5px solid var(--secondary);">
-                        <div>
-                            <h4>${v.titulo}</h4>
-                            <p>Cliente: <strong>${v.clienteNombre}</strong></p>
-                            <p>Fecha/Hora: <strong>${fullDateTime}</strong></p>
-                            ${v.notas ? `<p>Notas: ${v.notas}</p>` : ''}
-                        </div>
-                        <div style="margin-left: 15px; display: flex; gap: 10px;">
-                            <button class="btn primary-btn" onclick="toggleVisitaStatus(${v.id})" style="background-color: var(--success);">
-                                <i class="fas fa-check"></i> Completar
-                            </button>
-                            <button class="btn secondary-btn delete-btn" onclick="deleteVisitaConfirm(${v.id})">
-                                <i class="fas fa-trash-alt"></i> Borrar
-                            </button>
-                        </div>
-                    </li>
-                `;
-            }).join('');
-        }
-
-        /**
-         * Alterna el estado de una visita (pendiente/completada).
-         */
-        window.toggleVisitaStatus = function(visitaId) {
-            let visitas = getData(LOCAL_STORAGE_KEYS.VISITAS);
-            const visitaIndex = visitas.findIndex(v => v.id === visitaId);
-
-            if (visitaIndex !== -1) {
-                const currentStatus = visitas[visitaIndex].status;
-                visitas[visitaIndex].status = currentStatus === 'pending' ? 'completed' : 'pending';
-                saveData(LOCAL_STORAGE_KEYS.VISITAS, visitas);
-                renderVisitas();
-                renderVisitsCalendarModal(); // Actualizar el modal si está abierto
-                checkForTodayVisits();
-            }
-        }
-
-        /**
-         * Confirma y elimina una visita.
-         */
-        window.deleteVisitaConfirm = function(id) {
-            if (confirm("¿Está seguro de que desea eliminar esta visita?")) {
-                let visitas = getData(LOCAL_STORAGE_KEYS.VISITAS).filter(v => v.id != id);
-                saveData(LOCAL_STORAGE_KEYS.VISITAS, visitas);
-                alert("Visita eliminada.");
-                renderVisitas();
-                renderVisitsCalendarModal();
-                checkForTodayVisits();
-            }
-        }
-        
-        // Lógica de Calendario de Visitas (Modal)
-        // ----------------------------------------
-        window.openVisitsCalendar = function() {
-            renderVisitsCalendarModal();
-            document.getElementById('visitas-calendar-modal').style.display = 'block';
-        }
-
-        window.closeVisitsCalendar = function() {
-            document.getElementById('visitas-calendar-modal').style.display = 'none';
-        }
-
-        /**
-         * Renderiza todas las visitas agrupadas por fecha en el modal.
-         */
-        function renderVisitsCalendarModal() {
-            const container = document.getElementById('full-calendar-visitas');
-            const visitas = getData(LOCAL_STORAGE_KEYS.VISITAS).sort((a, b) => {
-                const dateA = new Date(`${a.fecha}T${a.hora || '00:00'}`);
-                const dateB = new Date(`${b.fecha}T${b.hora || '00:00'}`);
-                return dateA - dateB;
-            });
-
-            if (visitas.length === 0) {
-                container.innerHTML = '<p>No hay visitas registradas en el sistema.</p>';
-                return;
-            }
-
-            let html = '';
-            let currentDate = '';
-            const todayStr = normalizarFecha(new Date());
-
-            visitas.forEach(v => {
-                if (v.fecha !== currentDate) {
-                    // Usar un color diferente para la fecha de visitas en el modal
-                    html += `<span class="task-date" style="background-color: var(--secondary);">${v.fecha === todayStr ? 'HOY' : formatDateForDisplay(v.fecha)}</span>`;
-                    currentDate = v.fecha;
-                }
-                
-                const statusClass = v.status === 'completed' ? 'visit-completed' : 'visit-pending';
-                const buttonText = v.status === 'completed' ? '<i class="fas fa-undo"></i> Deshacer' : '<i class="fas fa-check"></i> Completar';
-                const buttonStyle = v.status === 'completed' ? 'background-color: var(--info);' : 'background-color: var(--success);';
-                const horaDisplay = v.hora ? ` (${v.hora})` : '';
-                const titleDisplay = v.titulo;
-                
-                html += `
-                    <div class="task-item ${statusClass}" id="cal-visita-${v.id}">
-                        <div>
-                            <strong>${titleDisplay}${horaDisplay}</strong>
-                            <p>Cliente: ${v.clienteNombre}</p>
-                            ${v.notas ? `<p style="margin-top: 5px;">Notas: ${v.notas}</p>` : ''}
-                        </div>
-                        <button class="btn secondary-btn" onclick="toggleVisitaStatus(${v.id})" style="${buttonStyle} color: white;">
-                            ${buttonText}
-                        </button>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        /**
-         * Muestra una alerta si hay visitas pendientes hoy.
-         */
-        function checkForTodayVisits() {
-            const todayStr = normalizarFecha(new Date());
-            const visitas = getData(LOCAL_STORAGE_KEYS.VISITAS);
-
-            const todayVisits = visitas.filter(v => v.status === 'pending' && v.fecha === todayStr);
-
-            if (todayVisits.length > 0) {
-                alert(`🔔 ALERTA DE VISITAS: Tienes ${todayVisits.length} visita(s) pendiente(s) para HOY, ${formatDateForDisplay(todayStr)}.`);
-            }
-        }
-
-        // 12. LÓGICA DE IMPORTACIÓN/EXPORTACIÓN (MODIFICADA)
-        // ===============================================================
-        
-        window.importData = function(event) {
-            const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-
+        function importToCloud(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const jsonString = e.target.result;
-                    const jsonData = JSON.parse(jsonString);
-
-                    if (jsonData.clientes || jsonData.plantas || jsonData.planes || jsonData.lotes || jsonData.tasks || jsonData.customTrays || jsonData.visitas) { // MODIFICADO: Añade visitas
-                        // Solo importamos los datos si son Arrays y existen
-                        if (jsonData.clientes && Array.isArray(jsonData.clientes)) {
-                            saveData(LOCAL_STORAGE_KEYS.CLIENTES, jsonData.clientes);
-                        }
-                        if (jsonData.plantas && Array.isArray(jsonData.plantas)) {
-                            saveData(LOCAL_STORAGE_KEYS.PLANTAS, jsonData.plantas);
-                        }
-                        if (jsonData.planes && Array.isArray(jsonData.planes)) {
-                            saveData(LOCAL_STORAGE_KEYS.PLANES, jsonData.planes);
-                        }
-                        if (jsonData.lotes && Array.isArray(jsonData.lotes)) {
-                            saveData(LOCAL_STORAGE_KEYS.LOTES, jsonData.lotes);
-                        }
-                        if (jsonData.tasks && Array.isArray(jsonData.tasks)) {
-                            saveData(LOCAL_STORAGE_KEYS.TAREAS, jsonData.tasks);
-                        }
-                        if (jsonData.customTrays && Array.isArray(jsonData.customTrays)) {
-                            saveData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS, jsonData.customTrays);
-                        }
-                         if (jsonData.visitas && Array.isArray(jsonData.visitas)) { // NUEVO: Lógica de importación para visitas
-                            saveData(LOCAL_STORAGE_KEYS.VISITAS, jsonData.visitas);
-                        }
-
-
-                        alert("✅ Datos importados correctamente.");
-                        loadAllData();
-
-                    } else {
-                        alert("⚠️ Archivo JSON importado, pero no contenía datos válidos para la aplicación.");
-                    }
-
-                } catch (error) {
-                    alert("Error al leer o parsear el archivo JSON. Asegúrese de que el formato sea correcto.");
-                    console.error("Error de importación:", error);
+            reader.onload = (ev) => {
+                const imported = JSON.parse(ev.target.result);
+                if(confirm("Se subirán todos tus datos antiguos a la nube. ¿OK?")) {
+                    db = imported;
+                    save();
+                    alert("¡Datos recuperados con éxito!");
                 }
             };
-            reader.readAsText(file);
+            reader.readAsText(e.target.files[0]);
         }
 
-        window.exportData = function() {
-            const dataToExport = {
-                clientes: getData(LOCAL_STORAGE_KEYS.CLIENTES),
-                plantas: getData(LOCAL_STORAGE_KEYS.PLANTAS),
-                planes: getData(LOCAL_STORAGE_KEYS.PLANES),
-                lotes: getData(LOCAL_STORAGE_KEYS.LOTES),
-                tasks: getData(LOCAL_STORAGE_KEYS.TAREAS),
-                customTrays: getData(LOCAL_STORAGE_KEYS.CUSTOM_TRAYS),
-                visitas: getData(LOCAL_STORAGE_KEYS.VISITAS) // MODIFICADO: Añade visitas
-            };
+        function refresh() {
+            const cliOpt = (db.clientes || []).map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+            const pltOpt = (db.plantas || []).map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+            
+            document.getElementById('visita-cliente').innerHTML = cliOpt; 
+            document.getElementById('plan-cliente').innerHTML = cliOpt; 
+            document.getElementById('plan-planta').innerHTML = pltOpt;
+            document.getElementById('lote-planta').innerHTML = pltOpt; 
+            document.getElementById('lote-cliente').innerHTML = cliOpt; 
+            document.getElementById('calc-planta').innerHTML = pltOpt;
+            
+            document.getElementById('mix-lista-check').innerHTML = (db.plantas || []).map(p => `
+                <div class="plt-check-item mix-row">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" class="mix-chk" value="${p.id}"> 
+                        <span style="margin-left: 8px; font-weight: 500;">${p.nombre}</span>
+                        <span class="plt-info-mix">(${p.total} días)</span>
+                    </label>
+                    <input type="number" class="mix-qty" value="0" min="0" placeholder="Cant.">
+                </div>`).join('');
+            
+            document.querySelector('#table-planes tbody').innerHTML = (db.planes || []).map(p => {
+                let det = "";
+                if(p.tipo === 'MIX') {
+                    const noms = p.detalleMix.map(item => {
+                        const pl = db.plantas.find(x => x.id === item.id);
+                        return pl ? `${pl.nombre} (x${item.cant})` : item.id;
+                    });
+                    det = `<strong>MIX:</strong><ul class="mix-detail-list"><li>${noms.join('</li><li>')}</li></ul>`;
+                } else {
+                    const pl = db.plantas.find(x => x.id === p.plantaId);
+                    det = `Indiv: ${pl ? pl.nombre : p.plantaId} (x${p.cant})`;
+                }
+                return `<tr><td>${p.cliente}</td><td>${p.tipo}</td><td>${det}<br><small>[${p.bandeja}]</small></td><td><button class="btn btn-danger" onclick="borrar('planes',${p.id})">X</button></td></tr>`;
+            }).join('');
 
-            const jsonString = JSON.stringify(dataToExport, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            document.querySelector('#table-plantas tbody').innerHTML = (db.plantas || []).map(p => `<tr><td>${p.id}</td><td>${p.nombre}</td><td>${p.remojo}h / ${p.oscuro}d</td><td>${p.total}d</td><td>${p.precio}€</td><td><button class="btn btn-info" onclick="editPlanta('${p.id}')">E</button><button class="btn btn-danger" onclick="borrar('plantas','${p.id}')">X</button></td></tr>`).join('');
+            document.querySelector('#table-clientes tbody').innerHTML = (db.clientes || []).map(c => `<tr><td>${c.nombre}</td><td><button class="btn btn-danger" onclick="borrar('clientes',${c.id})">X</button></td></tr>`).join('');
+            document.querySelector('#table-visitas tbody').innerHTML = (db.visitas || []).map(v => `<tr><td>${v.cliente}</td><td>${v.fecha}</td><td>${v.motivo}</td><td><button class="btn btn-danger" onclick="borrar('visitas',${v.id})">X</button></td></tr>`).join('');
             
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-            a.download = `microgreens_la_isla_backup_${dateStr}.json`;
+            renderLotesTable(db.lotes || []);
+            document.getElementById('stat-clientes').innerText = (db.clientes || []).length; 
+            document.getElementById('stat-planes').innerText = (db.planes || []).length; 
+            document.getElementById('stat-lotes').innerText = (db.lotes || []).length;
             
-            a.href = url;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert("✅ Datos exportados correctamente.");
+            updateDiasInfo(); 
+            generateTasks(); 
+            renderVisitsCal();
         }
 
+        // --- NUEVAS FUNCIONES DE CÁLCULO DE ENTREGA ---
+        function updateDiasInfo() {
+            const pltId = document.getElementById('plan-planta').value;
+            const plt = (db.plantas || []).find(x => x.id === pltId);
+            const infoSpan = document.getElementById('plan-dias-info');
+            if(plt && infoSpan) {
+                infoSpan.innerText = `Ciclo total de siembra a cosecha: ${plt.total} días`;
+                validateLeadTime();
+            }
+        }
+
+        function validateLeadTime() {
+            const dateVal = document.getElementById('plan-fecha').value;
+            const pltId = document.getElementById('plan-planta').value;
+            const alertBox = document.getElementById('date-alert');
+            
+            if(!dateVal || !pltId) return;
+            
+            const plt = db.plantas.find(x => x.id === pltId);
+            const entrega = new Date(dateVal);
+            const hoy = new Date();
+            hoy.setHours(0,0,0,0);
+            
+            // Calculamos la fecha en la que debería empezar la siembra
+            const siembraNecesaria = new Date(entrega);
+            siembraNecesaria.setDate(siembraNecesaria.getDate() - plt.total);
+            
+            if(siembraNecesaria < hoy) {
+                alertBox.style.display = "block";
+            } else {
+                alertBox.style.display = "none";
+            }
+        }
+
+        function generateTasks() {
+            const body = document.getElementById('calendar-body'); if(!body) return;
+            body.innerHTML = ''; const tasks = [];
+            (db.planes || []).forEach(plan => {
+                for(let i=0; i<4; i++) {
+                    if(plan.tipo === 'INDIVIDUAL') {
+                        const plt = db.plantas.find(x => x.id === plan.plantaId); if(!plt) return;
+                        // En individual, plan.fecha es la FECHA DE ENTREGA
+                        let entrega = new Date(plan.fecha);
+                        entrega.setDate(entrega.getDate() + (i * plan.frec));
+                        
+                        // Calculamos la siembra restando el total de la planta
+                        let s = new Date(entrega);
+                        s.setDate(s.getDate() - plt.total);
+                        crearHitos(tasks, s, plt, plan.cant, plan);
+                    } else {
+                        // En MIX, plan.fechaEntrega es la FECHA DE ENTREGA
+                        let c = new Date(plan.fechaEntrega); 
+                        c.setDate(c.getDate() + (i * plan.frec));
+                        plan.detalleMix.forEach(item => {
+                            const plt = db.plantas.find(x => x.id === item.id); if(!plt) return;
+                            let s = new Date(c); 
+                            s.setDate(s.getDate() - plt.total);
+                            crearHitos(tasks, s, plt, item.cant, plan);
+                        });
+                    }
+                }
+            });
+            const filtradas = tasks.filter(t => t.fecha >= new Date(new Date().setHours(0,0,0,0))).sort((a,b) => a.fecha - b.fecha).slice(0,30);
+            let lastD = "";
+            filtradas.forEach(t => {
+                const dStr = t.fecha.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'short' }).toUpperCase();
+                if(dStr !== lastD) { body.innerHTML += `<div class="task-date-title">${dStr}</div>`; lastD = dStr; }
+                const isDone = (db.completadas || []).includes(t.tid);
+                body.innerHTML += `<div class="task-row ${isDone?'completed':''}" onclick="toggleTask('${t.tid}')"><span class="badge-task bg-${t.tipo}">${t.tipo}</span> <strong>${t.msg}</strong> (${t.cli})</div>`;
+            });
+        }
+
+        function crearHitos(tasks, s, plt, cant, plan) {
+            const add = (f, t, m) => tasks.push({ fecha: new Date(f), tipo: t, msg: m, cli: plan.cliente, tid: `${t}-${plan.id}-${f.getTime()}` });
+            if(plt.remojo > 0) { let r = new Date(s); r.setDate(r.getDate()-1); add(r, 'remojo', `REMOJAR ${plt.nombre}`); }
+            add(s, 'siembra', `SEMBRAR ${plt.nombre} (x${cant})`);
+            let l = new Date(s); l.setDate(l.getDate() + plt.oscuro); add(l, 'luz', `A LUZ ${plt.nombre}`);
+            let c = new Date(s); c.setDate(c.getDate() + plt.total); add(c, 'cosecha', `COSECHAR ${plt.nombre}`);
+        }
+
+        // --- RESTO DE FUNCIONES ---
+        function showSection(id) { 
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+            if(id==='visitas') renderVisitsCal(); 
+        }
+        function toggleCalendar() { document.getElementById('calendar-body').classList.toggle('show'); }
+        function togglePlanModo(m) { document.getElementById('panel-individual').style.display = m==='individual'?'block':'none'; document.getElementById('panel-mix').style.display = m==='mix'?'block':'none'; }
+
+        function addPlanta() {
+            const id = document.getElementById('plt-id').value.toUpperCase();
+            const p = { id, nombre: document.getElementById('plt-nombre').value, remojo: parseInt(document.getElementById('plt-remojo').value), oscuro: parseInt(document.getElementById('plt-oscuro').value), total: parseInt(document.getElementById('plt-total').value), gramos: parseInt(document.getElementById('plt-gramos').value), precio: parseFloat(document.getElementById('plt-precio').value) };
+            if(!db.plantas) db.plantas = [];
+            const idx = db.plantas.findIndex(x => x.id === id);
+            if(idx > -1) db.plantas[idx] = p; else db.plantas.push(p);
+            save();
+        }
+        function editPlanta(id) {
+            const p = db.plantas.find(x => x.id === id);
+            document.getElementById('plt-id').value = p.id;
+            document.getElementById('plt-nombre').value = p.nombre;
+            document.getElementById('plt-remojo').value = p.remojo;
+            document.getElementById('plt-oscuro').value = p.oscuro;
+            document.getElementById('plt-total').value = p.total;
+            document.getElementById('plt-gramos').value = p.gramos;
+            document.getElementById('plt-precio').value = p.precio;
+        }
+
+        function toggleTask(id) { if(!db.completadas) db.completadas=[]; if(db.completadas.includes(id)) db.completadas=db.completadas.filter(x=>x!==id); else db.completadas.push(id); save(); }
+        function addCliente() { const n = document.getElementById('cli-nombre').value; if(n) { if(!db.clientes) db.clientes=[]; db.clientes.push({id:Date.now(), nombre:n}); save(); } }
+        
+        function addPlan() { 
+            const p = { 
+                id: Date.now(), 
+                tipo: 'INDIVIDUAL', 
+                cliente: document.getElementById('plan-cliente').value, 
+                plantaId: document.getElementById('plan-planta').value, 
+                bandeja: document.getElementById('plan-tipo-bandeja').value, 
+                cant: parseInt(document.getElementById('plan-cant-ind').value), 
+                frec: parseInt(document.getElementById('plan-frec').value), 
+                fecha: document.getElementById('plan-fecha').value 
+            }; 
+            if(p.fecha) { if(!db.planes) db.planes=[]; db.planes.push(p); save(); } 
+        }
+
+        function addPlanMix() { 
+            let sel = []; 
+            document.querySelectorAll('.mix-row').forEach(r => { 
+                const chk = r.querySelector('.mix-chk'); 
+                const qty = r.querySelector('.mix-qty'); 
+                if(chk.checked && parseInt(qty.value)>0) sel.push({id:chk.value, cant:parseInt(qty.value)}); 
+            }); 
+            const p = { 
+                id: Date.now(), 
+                tipo: 'MIX', 
+                cliente: document.getElementById('plan-cliente').value, 
+                detalleMix: sel, 
+                bandeja: document.getElementById('plan-tipo-bandeja').value, 
+                frec: parseInt(document.getElementById('plan-frec').value), 
+                fechaEntrega: document.getElementById('plan-fecha-entrega').value 
+            }; 
+            if(sel.length>0) { if(!db.planes) db.planes=[]; db.planes.push(p); save(); togglePlanModo('individual'); } 
+        }
+
+        function addLoteManual() { 
+            const pltId = document.getElementById('lote-planta').value; 
+            const pltObj = db.plantas.find(x=>x.id===pltId); 
+            if(!db.ultimoCorrelativo) db.ultimoCorrelativo=0; 
+            db.ultimoCorrelativo++; 
+            const cod = pltId + document.getElementById('lote-fecha').value.replace(/-/g,'').slice(2)+"-"+db.ultimoCorrelativo; 
+            if(!db.lotes) db.lotes=[]; 
+            db.lotes.push({id:Date.now(), codigo:cod, plantaNombre:pltObj.nombre, cliente:document.getElementById('lote-cliente').value, cant:document.getElementById('lote-cant').value, fecha:document.getElementById('lote-fecha').value}); 
+            save(); 
+        }
+
+        function renderLotesTable(data) { document.getElementById('tbody-lotes').innerHTML = data.map(l => `<tr><td>${l.codigo}</td><td>${l.plantaNombre}</td><td>${l.cliente}</td><td>${l.cant}</td><td>${l.fecha}</td><td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td></tr>`).join(''); }
+        function addVisita() { if(!db.visitas) db.visitas=[]; db.visitas.push({id:Date.now(), cliente:document.getElementById('visita-cliente').value, fecha:document.getElementById('visita-fecha').value, hora:document.getElementById('visita-hora').value, motivo:document.getElementById('visita-motivo').value}); save(); }
+        
+        function renderVisitsCal() {
+            const grid = document.getElementById('visitas-grid'); if(!grid) return; grid.innerHTML = '';
+            document.getElementById('cal-title').innerText = new Intl.DateTimeFormat('es-ES',{month:'long', year:'numeric'}).format(curMonth).toUpperCase();
+            const totalDays = new Date(curMonth.getFullYear(), curMonth.getMonth()+1, 0).getDate();
+            for(let d=1; d<=totalDays; d++) {
+                const f = `${curMonth.getFullYear()}-${String(curMonth.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const tags = (db.visitas || []).filter(v => v.fecha === f).map(v => `<div class="visit-tag">${v.cliente}</div>`).join('');
+                grid.innerHTML += `<div class="calendar-day"><span class="day-num">${d}</span>${tags}</div>`;
+            }
+        }
+
+        function changeMonth(d) { curMonth.setMonth(curMonth.getMonth()+d); renderVisitsCal(); }
+        function toggleVisitsView(v) { document.getElementById('visitas-lista').style.display = v==='lista'?'block':'none'; document.getElementById('visitas-calendario').style.display = v==='calendario'?'block':'none'; }
+        function runCalc() { const p = db.plantas.find(x => x.id === document.getElementById('calc-planta').value); if(!p) return; const g = (p.gramos * (parseFloat(document.getElementById('calc-bandeja').value)/1250)).toFixed(1); const coste = ((g/1000)*(p.precio||0)).toFixed(2); document.getElementById('calc-res').innerHTML = `<strong>${g}g</strong> / <span style="color:var(--primary)">Coste: ${coste}€</span>`; }
+        function filterLotes() { const q = document.getElementById('search-lote-cliente').value.toLowerCase(); renderLotesTable(db.lotes.filter(l => l.cliente.toLowerCase().includes(q))); }
+        function borrar(k, id) { if(confirm("¿Borrar?")) { db[k] = db[k].filter(x => x.id != id); save(); } }
+        function exportData() { const blob = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `isla_db.json`; a.click(); }
+        function clearData() { if(confirm("¿BORRAR TODO?")) { db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], visitas: [], ultimoCorrelativo: 0 }; save(); } }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
