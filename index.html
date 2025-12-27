@@ -13,7 +13,6 @@
         }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* --- ESTILOS PARA MODO MÓVIL FORZADO --- */
         body.mobile-view { overflow: auto; }
         body.mobile-view .sidebar { width: 80px; }
         body.mobile-view .sidebar-header { font-size: 0.7rem; padding: 10px 5px; }
@@ -402,7 +401,6 @@
             if(siembraNecesaria < hoy) alertBox.style.display = "block"; else alertBox.style.display = "none";
         }
 
-        /* --- LOGICA MODIFICADA PARA MOSTRAR GRAMOS Y BANDEJA --- */
         function generateTasks() {
             const body = document.getElementById('calendar-body'); if(!body) return;
             body.innerHTML = ''; const tasks = [];
@@ -445,7 +443,6 @@
                 add(r, 'remojo', `REMOJAR ${plt.nombre}`); 
             }
 
-            // --- INFO DE BANDEJA Y GRAMOS PARA SIEMBRA ---
             const area = B_AREAS[plan.bandeja] || 1250;
             const grPorBandeja = (plt.gramos * (area / 1250)).toFixed(1);
             const grTotales = (grPorBandeja * cant).toFixed(1);
@@ -503,13 +500,38 @@
             const p = { id: Date.now(), tipo: 'MIX', cliente: document.getElementById('plan-cliente').value, detalleMix: sel, bandeja: document.getElementById('plan-tipo-bandeja').value, frec: parseInt(document.getElementById('plan-frec').value), fechaEntrega: document.getElementById('plan-fecha-entrega').value }; 
             if(sel.length>0) { if(!db.planes) db.planes=[]; db.planes.push(p); save(); togglePlanModo('individual'); } 
         }
+
+        /* --- LOGICA MODIFICADA PARA CODIGO DE LOTE: FECHA + INICIALES + PROGRESIVO --- */
         function addLoteManual() { 
-            const pltId = document.getElementById('lote-planta').value; const pltObj = db.plantas.find(x=>x.id===pltId); 
-            if(!db.ultimoCorrelativo) db.ultimoCorrelativo=0; db.ultimoCorrelativo++; 
-            const cod = pltId + document.getElementById('lote-fecha').value.replace(/-/g,'').slice(2)+"-"+db.ultimoCorrelativo; 
-            if(!db.lotes) db.lotes=[]; db.lotes.push({id:Date.now(), codigo:cod, plantaNombre:pltObj.nombre, cliente:document.getElementById('lote-cliente').value, cant:document.getElementById('lote-cant').value, fecha:document.getElementById('lote-fecha').value}); 
+            const pltId = document.getElementById('lote-planta').value; 
+            const pltObj = db.plantas.find(x => x.id === pltId); 
+            const fechaSel = document.getElementById('lote-fecha').value;
+            
+            if(!pltId || !fechaSel) {
+                alert("Selecciona planta y fecha");
+                return;
+            }
+
+            if(!db.ultimoCorrelativo) db.ultimoCorrelativo=0; 
+            db.ultimoCorrelativo++; 
+            
+            // Formato: AAAAMMDD (sin guiones)
+            const fechaFormateada = fechaSel.replace(/-/g,'');
+            // Formato Final: 20240520RAB-1
+            const cod = fechaFormateada + pltId.toUpperCase() + "-" + db.ultimoCorrelativo; 
+
+            if(!db.lotes) db.lotes=[]; 
+            db.lotes.push({
+                id: Date.now(), 
+                codigo: cod, 
+                plantaNombre: pltObj.nombre, 
+                cliente: document.getElementById('lote-cliente').value, 
+                cant: document.getElementById('lote-cant').value, 
+                fecha: fechaSel
+            }); 
             save(); 
         }
+
         function renderLotesTable(data) { document.getElementById('tbody-lotes').innerHTML = data.map(l => `<tr><td>${l.codigo}</td><td>${l.plantaNombre}</td><td>${l.cliente}</td><td>${l.cant}</td><td>${l.fecha}</td><td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td></tr>`).join(''); }
         function addVisita() { if(!db.visitas) db.visitas=[]; db.visitas.push({id:Date.now(), cliente:document.getElementById('visita-cliente').value, fecha:document.getElementById('visita-fecha').value, hora:document.getElementById('visita-hora').value, motivo:document.getElementById('visita-motivo').value}); save(); }
         function renderVisitsCal() {
