@@ -12,14 +12,41 @@
             --danger: #e74c3c; --warning: #f1c40f; --info: #3498db; --purple: #9b59b6;
         }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        
+        /* --- ESTILOS PARA MODO MÓVIL FORZADO --- */
+        body.mobile-view {
+            overflow: auto;
+        }
+        body.mobile-view .sidebar {
+            width: 80px;
+        }
+        body.mobile-view .sidebar-header {
+            font-size: 0.7rem;
+            padding: 10px 5px;
+        }
+        body.mobile-view .nav-item span {
+            display: none;
+        }
+        body.mobile-view .nav-item i {
+            margin-right: 0;
+            font-size: 1.5rem;
+        }
+        body.mobile-view .main {
+            zoom: 0.8; /* Escala el contenido para que quepa mejor */
+            -moz-transform: scale(0.8); /* Compatibilidad Firefox */
+            -moz-transform-origin: 0 0;
+            padding: 15px;
+        }
+        /* --------------------------------------- */
+
+        .sidebar { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s; }
         .sidebar-header { padding: 20px; text-align: center; font-size: 1.2rem; font-weight: bold; background-color: #1a252f; border-bottom: 1px solid #34495e; }
         .nav-menu { flex-grow: 1; padding: 10px 0; }
         .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; transition: 0.3s; border-left: 4px solid transparent; }
         .nav-item:hover { background-color: #34495e; }
         .nav-item.active { background-color: #34495e; border-left: 4px solid var(--primary); }
         .nav-item i { margin-right: 15px; width: 20px; text-align: center; }
-        .main { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
+        .main { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; transition: all 0.3s; }
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -73,16 +100,20 @@
     <div id="cloud-status">Conectando a la nube...</div>
 
     <aside class="sidebar">
-        <div class="sidebar-header">LA ISLA GESTIÓN</div>
+        <div class="sidebar-header" id="sidebar-title">LA ISLA GESTIÓN</div>
         <nav class="nav-menu">
-            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
-            <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i> Clientes</div>
-            <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i> Plantas</div>
-            <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i> Planes</div>
-            <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i> Lotes</div>
-            <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i> Visitas</div>
-            <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i> Calculadora</div>
-            <div class="nav-item" onclick="showSection('config')"><i class="fas fa-cog"></i> Configuración</div>
+            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
+            <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i> <span>Clientes</span></div>
+            <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i> <span>Plantas</span></div>
+            <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i> <span>Planes</span></div>
+            <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i> <span>Lotes</span></div>
+            <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i> <span>Visitas</span></div>
+            <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i> <span>Calculadora</span></div>
+            <div class="nav-item" onclick="showSection('config')"><i class="fas fa-cog"></i> <span>Configuración</span></div>
+            <hr style="border: 0; border-top: 1px solid #34495e; margin: 10px 0;">
+            <div class="nav-item" onclick="toggleMobileView()" style="color: var(--warning);">
+                <i class="fas fa-mobile-alt"></i> <span id="view-text">Vista: Móvil</span>
+            </div>
         </nav>
     </aside>
 
@@ -283,6 +314,23 @@
             });
         }
 
+        /* --- NUEVA FUNCION ALTERNAR VISTA --- */
+        function toggleMobileView() {
+            const body = document.body;
+            const text = document.getElementById('view-text');
+            const title = document.getElementById('sidebar-title');
+            
+            if (body.classList.contains('mobile-view')) {
+                body.classList.remove('mobile-view');
+                text.innerText = "Vista: Móvil";
+                title.innerText = "LA ISLA GESTIÓN";
+            } else {
+                body.classList.add('mobile-view');
+                text.innerText = "Vista: PC";
+                title.innerText = "ISLA";
+            }
+        }
+
         function save() {
             database.ref('micro_db_isla').set(db);
             refresh();
@@ -435,6 +483,15 @@
         function showSection(id) { 
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+            
+            // Buscar el elemento de navegación por su onclick para ponerlo activo
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(item => {
+                if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(`showSection('${id}')`)) {
+                    item.classList.add('active');
+                }
+            });
+
             document.getElementById(id).classList.add('active'); 
             if(id==='visitas') renderVisitsCal(); 
         }
