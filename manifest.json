@@ -5,7 +5,7 @@
   "start_url": "index.html",
   "icons": [
     {
-      "src": "icon.png",
+     "src": "logotipo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
