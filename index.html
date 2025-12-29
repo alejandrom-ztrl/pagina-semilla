@@ -10,8 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="La Isla">
-    <link rel="apple-touch-icon" href="logo.png">
-<link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -21,7 +20,6 @@
         }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* --- ESTILOS PARA MODO MÓVIL FORZADO --- */
         body.mobile-view { overflow: auto; }
         body.mobile-view .sidebar { width: 80px; }
         body.mobile-view .sidebar-header { font-size: 0.7rem; padding: 10px 5px; }
@@ -73,17 +71,32 @@
         .search-box { margin-bottom: 15px; position: relative; }
         .search-box i { position: absolute; left: 10px; top: 12px; color: var(--text-light); }
         .search-box input { padding-left: 35px; border: 2px solid var(--info); }
+        
+        /* NUEVO DISEÑO MODO MIX PARA MÓVIL */
         .mix-selector-box { border: 2px solid var(--purple); border-radius: 10px; padding: 15px; margin-top: 10px; display: none; }
-        .plt-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
-        .plt-check-item { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #f0f0f0; }
-        .plt-info-mix { font-size: 0.75rem; color: var(--text-light); flex-grow: 1; margin-left: 10px; }
-        .plt-check-item input[type="number"] { width: 60px; }
+        .plt-list-grid { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
+        .plt-check-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 8px; 
+            border-bottom: 1px solid #f0f0f0; 
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .mix-left { flex-grow: 1; display: flex; flex-direction: column; }
+        .mix-right { display: flex; align-items: center; gap: 10px; min-width: 100px; justify-content: flex-end; }
+        .mix-name { font-weight: bold; font-size: 0.9rem; }
+        .mix-days { font-size: 0.75rem; color: var(--text-light); }
+        .mix-qty { width: 60px !important; text-align: center; }
+        .mix-chk { transform: scale(1.3); }
+
         .mix-detail-list { font-size: 0.75rem; color: var(--purple); margin-top: 5px; list-style: none; padding-left: 0; }
         .mix-detail-list li { display: inline-block; background: #f3ebff; padding: 2px 6px; border-radius: 4px; margin: 2px; }
         #cloud-status { position: fixed; bottom: 10px; right: 10px; font-size: 0.7rem; background: #333; color: #fff; padding: 4px 10px; border-radius: 20px; opacity: 0.7; z-index: 1000; }
         .alert-date { color: var(--danger); font-size: 0.75rem; font-weight: bold; margin-top: 5px; display: none; }
+        .info-mix-date { color: var(--info); font-size: 0.85rem; font-weight: bold; margin-top: 10px; }
 
-        /* --- ESTILOS MODAL ETIQUETA --- */
         #modal-etiqueta {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
@@ -113,9 +126,9 @@
 
     <aside class="sidebar">
         <div class="sidebar-header" id="sidebar-title">
-    <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 5px;">
-    <div>LA ISLA GESTIÓN</div>
-</div>
+            <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 5px;">
+            <div>LA ISLA GESTIÓN</div>
+        </div>
         <nav class="nav-menu">
             <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
             <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i> <span>Clientes</span></div>
@@ -218,8 +231,12 @@
 
                 <div id="panel-mix" class="mix-selector-box">
                     <p style="font-weight:bold; color:var(--purple);">MODO MIX</p>
-                    <div class="form-group" style="max-width:300px;"><label>Fecha Entrega Final</label><input type="date" id="plan-fecha-entrega"></div>
+                    <div class="form-group" style="max-width:300px;">
+                        <label>Fecha Entrega Final</label>
+                        <input type="date" id="plan-fecha-entrega" onchange="calcMixLeadTime()">
+                    </div>
                     <div class="plt-list-grid" id="mix-lista-check"></div>
+                    <div id="mix-lead-info" class="info-mix-date"></div>
                     <div style="margin-top:15px; display:flex; gap:10px;">
                         <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
                         <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
@@ -373,14 +390,17 @@
             document.getElementById('lote-cliente').innerHTML = cliOpt; 
             document.getElementById('calc-planta').innerHTML = pltOpt;
             
+            // MODIFICACIÓN: ESTRUCTURA LISTA MIX REFORMADA PARA MÓVIL
             document.getElementById('mix-lista-check').innerHTML = (db.plantas || []).map(p => `
                 <div class="plt-check-item mix-row">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" class="mix-chk" value="${p.id}"> 
-                        <span style="margin-left: 8px; font-weight: 500;">${p.nombre}</span>
-                        <span class="plt-info-mix">(${p.total} días)</span>
-                    </label>
-                    <input type="number" class="mix-qty" value="0" min="0" placeholder="Cant.">
+                    <div class="mix-left">
+                        <span class="mix-name">${p.nombre}</span>
+                        <span class="mix-days">${p.total} días ciclo</span>
+                    </div>
+                    <div class="mix-right">
+                        <input type="number" class="mix-qty" value="0" min="0" placeholder="Cant" onchange="calcMixLeadTime()">
+                        <input type="checkbox" class="mix-chk" value="${p.id}" onchange="calcMixLeadTime()"> 
+                    </div>
                 </div>`).join('');
             
             document.querySelector('#table-planes tbody').innerHTML = (db.planes || []).map(p => {
@@ -412,6 +432,37 @@
             renderVisitsCal();
         }
 
+        // CÁLCULO DE FECHA LÍMITE PARA MIX
+        function calcMixLeadTime() {
+            const fechaEntregaStr = document.getElementById('plan-fecha-entrega').value;
+            const infoBox = document.getElementById('mix-lead-info');
+            if (!fechaEntregaStr) {
+                infoBox.innerText = "";
+                return;
+            }
+
+            let maxDias = 0;
+            document.querySelectorAll('.mix-row').forEach(r => {
+                const chk = r.querySelector('.mix-chk');
+                const qty = r.querySelector('.mix-qty');
+                if (chk.checked && parseInt(qty.value) > 0) {
+                    const plt = db.plantas.find(x => x.id === chk.value);
+                    if (plt && plt.total > maxDias) maxDias = plt.total;
+                }
+            });
+
+            if (maxDias > 0) {
+                const entrega = new Date(fechaEntregaStr);
+                const siembraMasTemprana = new Date(entrega);
+                siembraMasTemprana.setDate(siembraMasTemprana.getDate() - maxDias);
+                
+                const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                infoBox.innerText = `⚠️ La semilla que más tarda requiere sembrar el: ${siembraMasTemprana.toLocaleDateString('es-ES', opciones)}`;
+            } else {
+                infoBox.innerText = "Selecciona plantas para ver la fecha de inicio.";
+            }
+        }
+
         function updateDiasInfo() {
             const pltId = document.getElementById('plan-planta').value;
             const plt = (db.plantas || []).find(x => x.id === pltId);
@@ -436,7 +487,6 @@
             if(siembraNecesaria < hoy) alertBox.style.display = "block"; else alertBox.style.display = "none";
         }
 
-        /* --- TAREAS DIARIAS --- */
         function generateTasks() {
             const body = document.getElementById('calendar-body'); if(!body) return;
             body.innerHTML = ''; const tasks = [];
@@ -468,7 +518,6 @@
                 if(dStr !== lastD) { body.innerHTML += `<div class="task-date-title">${dStr}</div>`; lastD = dStr; }
                 const isDone = (db.completadas || []).includes(t.tid);
                 
-                // Pasamos los datos necesarios a la función toggleTask mediante atributos data-
                 body.innerHTML += `<div class="task-row ${isDone?'completed':''}" 
                     onclick="toggleTask('${t.tid}', '${t.tipo}', '${t.pltNombre}', '${t.cli}', '${t.fStr}', '${t.cant}', '${t.bandeja}', '${t.pltId}')">
                     <span class="badge-task bg-${t.tipo}">${t.tipo}</span> 
@@ -511,7 +560,6 @@
             add(c, 'cosecha', `COSECHAR ${plt.nombre}`);
         }
 
-        // --- LÓGICA DE TACHADO Y GENERACIÓN AUTOMÁTICA DE LOTE ---
         function toggleTask(id, tipo, pltNombre, cliente, fecha, cant, bandeja, pltId) { 
             if(!db.completadas) db.completadas=[]; 
             
@@ -519,7 +567,6 @@
                 db.completadas = db.completadas.filter(x=>x!==id);
             } else {
                 db.completadas.push(id);
-                // Si la tarea es siembra, generamos lote y etiqueta
                 if(tipo === 'siembra') {
                     generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja);
                 }
@@ -531,7 +578,6 @@
             if(!db.ultimoCorrelativo) db.ultimoCorrelativo = 0;
             db.ultimoCorrelativo++;
             
-            // Formato Lote: IDPLANTA + YYMMDD + Correlativo
             const cod = pltId + fecha.replace(/-/g,'').slice(2) + "-" + db.ultimoCorrelativo;
             
             if(!db.lotes) db.lotes = [];
@@ -544,14 +590,13 @@
                 fecha: fecha
             });
 
-            // Mostrar la etiqueta en el modal
+            // MODIFICACIÓN: SE ELIMINÓ LA LÍNEA DE CANTIDAD DE LA ETIQUETA
             const labelHtml = `
                 <strong>CLIENTE:</strong> ${cliente}<br>
                 <strong>PRODUCTO:</strong> ${pltNombre}<br>
                 <strong>FECHA SIEMBRA:</strong> ${fecha}<br>
                 <strong>LOTE:</strong> ${cod}<br>
-                <strong>BANDEJA:</strong> ${bandeja}<br>
-                <strong>CANTIDAD:</strong> ${cant} ud(s).
+                <strong>BANDEJA:</strong> ${bandeja}
             `;
             document.getElementById('label-text').innerHTML = labelHtml;
             document.getElementById('modal-etiqueta').style.display = 'flex';
@@ -578,6 +623,7 @@
         }
         function toggleCalendar() { document.getElementById('calendar-body').classList.toggle('show'); }
         function togglePlanModo(m) { document.getElementById('panel-individual').style.display = m==='individual'?'block':'none'; document.getElementById('panel-mix').style.display = m==='mix'?'block':'none'; }
+        
         function addPlanta() {
             const id = document.getElementById('plt-id').value.toUpperCase();
             const p = { id, nombre: document.getElementById('plt-nombre').value, remojo: parseInt(document.getElementById('plt-remojo').value), oscuro: parseInt(document.getElementById('plt-oscuro').value), total: parseInt(document.getElementById('plt-total').value), gramos: parseInt(document.getElementById('plt-gramos').value), precio: parseFloat(document.getElementById('plt-precio').value) };
@@ -641,6 +687,3 @@
     </script>
 </body>
 </html>
-
-
-
