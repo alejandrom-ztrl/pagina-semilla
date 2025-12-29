@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="apple-touch-icon" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microgreens La Isla - Gestión Profesional Cloud</title>
@@ -14,6 +13,7 @@
         }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
+        /* --- ESTILOS PARA MODO MÓVIL FORZADO --- */
         body.mobile-view { overflow: auto; }
         body.mobile-view .sidebar { width: 80px; }
         body.mobile-view .sidebar-header { font-size: 0.7rem; padding: 10px 5px; }
@@ -74,11 +74,34 @@
         .mix-detail-list li { display: inline-block; background: #f3ebff; padding: 2px 6px; border-radius: 4px; margin: 2px; }
         #cloud-status { position: fixed; bottom: 10px; right: 10px; font-size: 0.7rem; background: #333; color: #fff; padding: 4px 10px; border-radius: 20px; opacity: 0.7; z-index: 1000; }
         .alert-date { color: var(--danger); font-size: 0.75rem; font-weight: bold; margin-top: 5px; display: none; }
+
+        /* --- ESTILOS MODAL ETIQUETA --- */
+        #modal-etiqueta {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+        }
+        .etiqueta-content {
+            background: white; padding: 20px; border-radius: 10px; width: 320px; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid var(--primary);
+        }
+        .label-box {
+            border: 1px dashed #333; padding: 15px; margin: 15px 0; text-align: left;
+            font-family: 'Courier New', monospace; background: #fdfdfd; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
     <div id="cloud-status">Conectando a la nube...</div>
+
+    <div id="modal-etiqueta">
+        <div class="etiqueta-content">
+            <h3>🌱 Lote Generado</h3>
+            <div class="label-box" id="label-text"></div>
+            <button class="btn btn-primary" onclick="copyLabel()"><i class="fas fa-copy"></i> Copiar Datos</button>
+            <button class="btn btn-danger" onclick="closeLabel()" style="margin-top:10px;">Cerrar</button>
+        </div>
+    </div>
 
     <aside class="sidebar">
         <div class="sidebar-header" id="sidebar-title">LA ISLA GESTIÓN</div>
@@ -402,6 +425,7 @@
             if(siembraNecesaria < hoy) alertBox.style.display = "block"; else alertBox.style.display = "none";
         }
 
+        /* --- TAREAS DIARIAS --- */
         function generateTasks() {
             const body = document.getElementById('calendar-body'); if(!body) return;
             body.innerHTML = ''; const tasks = [];
@@ -432,12 +456,30 @@
                 const dStr = t.fecha.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'short' }).toUpperCase();
                 if(dStr !== lastD) { body.innerHTML += `<div class="task-date-title">${dStr}</div>`; lastD = dStr; }
                 const isDone = (db.completadas || []).includes(t.tid);
-                body.innerHTML += `<div class="task-row ${isDone?'completed':''}" onclick="toggleTask('${t.tid}')"><span class="badge-task bg-${t.tipo}">${t.tipo}</span> <strong>${t.msg}</strong> (${t.cli})</div>`;
+                
+                // Pasamos los datos necesarios a la función toggleTask mediante atributos data-
+                body.innerHTML += `<div class="task-row ${isDone?'completed':''}" 
+                    onclick="toggleTask('${t.tid}', '${t.tipo}', '${t.pltNombre}', '${t.cli}', '${t.fStr}', '${t.cant}', '${t.bandeja}', '${t.pltId}')">
+                    <span class="badge-task bg-${t.tipo}">${t.tipo}</span> 
+                    <strong>${t.msg}</strong> (${t.cli})
+                </div>`;
             });
         }
 
         function crearHitos(tasks, s, plt, cant, plan) {
-            const add = (f, t, m) => tasks.push({ fecha: new Date(f), tipo: t, msg: m, cli: plan.cliente, tid: `${t}-${plan.id}-${f.getTime()}` });
+            const fStr = s.toISOString().split('T')[0];
+            const add = (f, t, m) => tasks.push({ 
+                fecha: new Date(f), 
+                tipo: t, 
+                msg: m, 
+                cli: plan.cliente, 
+                tid: `${t}-${plan.id}-${f.getTime()}`,
+                pltNombre: plt.nombre,
+                pltId: plt.id,
+                fStr: fStr,
+                cant: cant,
+                bandeja: plan.bandeja
+            });
             
             if(plt.remojo > 0) { 
                 let r = new Date(s); r.setDate(r.getDate()-1); 
@@ -456,6 +498,63 @@
             
             let c = new Date(s); c.setDate(c.getDate() + plt.total); 
             add(c, 'cosecha', `COSECHAR ${plt.nombre}`);
+        }
+
+        // --- LÓGICA DE TACHADO Y GENERACIÓN AUTOMÁTICA DE LOTE ---
+        function toggleTask(id, tipo, pltNombre, cliente, fecha, cant, bandeja, pltId) { 
+            if(!db.completadas) db.completadas=[]; 
+            
+            if(db.completadas.includes(id)) {
+                db.completadas = db.completadas.filter(x=>x!==id);
+            } else {
+                db.completadas.push(id);
+                // Si la tarea es siembra, generamos lote y etiqueta
+                if(tipo === 'siembra') {
+                    generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja);
+                }
+            }
+            save(); 
+        }
+
+        function generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja) {
+            if(!db.ultimoCorrelativo) db.ultimoCorrelativo = 0;
+            db.ultimoCorrelativo++;
+            
+            // Formato Lote: IDPLANTA + YYMMDD + Correlativo
+            const cod = pltId + fecha.replace(/-/g,'').slice(2) + "-" + db.ultimoCorrelativo;
+            
+            if(!db.lotes) db.lotes = [];
+            db.lotes.push({
+                id: Date.now(),
+                codigo: cod,
+                plantaNombre: pltNombre,
+                cliente: cliente,
+                cant: cant,
+                fecha: fecha
+            });
+
+            // Mostrar la etiqueta en el modal
+            const labelHtml = `
+                <strong>CLIENTE:</strong> ${cliente}<br>
+                <strong>PRODUCTO:</strong> ${pltNombre}<br>
+                <strong>FECHA SIEMBRA:</strong> ${fecha}<br>
+                <strong>LOTE:</strong> ${cod}<br>
+                <strong>BANDEJA:</strong> ${bandeja}<br>
+                <strong>CANTIDAD:</strong> ${cant} ud(s).
+            `;
+            document.getElementById('label-text').innerHTML = labelHtml;
+            document.getElementById('modal-etiqueta').style.display = 'flex';
+        }
+
+        function copyLabel() {
+            const text = document.getElementById('label-text').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Etiqueta copiada al portapapeles");
+            });
+        }
+
+        function closeLabel() {
+            document.getElementById('modal-etiqueta').style.display = 'none';
         }
 
         function showSection(id) { 
@@ -486,7 +585,7 @@
             document.getElementById('plt-gramos').value = p.gramos;
             document.getElementById('plt-precio').value = p.precio;
         }
-        function toggleTask(id) { if(!db.completadas) db.completadas=[]; if(db.completadas.includes(id)) db.completadas=db.completadas.filter(x=>x!==id); else db.completadas.push(id); save(); }
+        
         function addCliente() { const n = document.getElementById('cli-nombre').value; if(n) { if(!db.clientes) db.clientes=[]; db.clientes.push({id:Date.now(), nombre:n}); save(); } }
         function addPlan() { 
             const p = { id: Date.now(), tipo: 'INDIVIDUAL', cliente: document.getElementById('plan-cliente').value, plantaId: document.getElementById('plan-planta').value, bandeja: document.getElementById('plan-tipo-bandeja').value, cant: parseInt(document.getElementById('plan-cant-ind').value), frec: parseInt(document.getElementById('plan-frec').value), fecha: document.getElementById('plan-fecha').value }; 
@@ -501,38 +600,13 @@
             const p = { id: Date.now(), tipo: 'MIX', cliente: document.getElementById('plan-cliente').value, detalleMix: sel, bandeja: document.getElementById('plan-tipo-bandeja').value, frec: parseInt(document.getElementById('plan-frec').value), fechaEntrega: document.getElementById('plan-fecha-entrega').value }; 
             if(sel.length>0) { if(!db.planes) db.planes=[]; db.planes.push(p); save(); togglePlanModo('individual'); } 
         }
-
-        /* --- LOGICA MODIFICADA PARA CODIGO DE LOTE: FECHA + INICIALES + PROGRESIVO --- */
         function addLoteManual() { 
-            const pltId = document.getElementById('lote-planta').value; 
-            const pltObj = db.plantas.find(x => x.id === pltId); 
-            const fechaSel = document.getElementById('lote-fecha').value;
-            
-            if(!pltId || !fechaSel) {
-                alert("Selecciona planta y fecha");
-                return;
-            }
-
-            if(!db.ultimoCorrelativo) db.ultimoCorrelativo=0; 
-            db.ultimoCorrelativo++; 
-            
-            // Formato: AAAAMMDD (sin guiones)
-            const fechaFormateada = fechaSel.replace(/-/g,'');
-            // Formato Final: 20240520RAB-1
-            const cod = fechaFormateada + pltId.toUpperCase() + "-" + db.ultimoCorrelativo; 
-
-            if(!db.lotes) db.lotes=[]; 
-            db.lotes.push({
-                id: Date.now(), 
-                codigo: cod, 
-                plantaNombre: pltObj.nombre, 
-                cliente: document.getElementById('lote-cliente').value, 
-                cant: document.getElementById('lote-cant').value, 
-                fecha: fechaSel
-            }); 
+            const pltId = document.getElementById('lote-planta').value; const pltObj = db.plantas.find(x=>x.id===pltId); 
+            if(!db.ultimoCorrelativo) db.ultimoCorrelativo=0; db.ultimoCorrelativo++; 
+            const cod = pltId + document.getElementById('lote-fecha').value.replace(/-/g,'').slice(2)+"-"+db.ultimoCorrelativo; 
+            if(!db.lotes) db.lotes=[]; db.lotes.push({id:Date.now(), codigo:cod, plantaNombre:pltObj.nombre, cliente:document.getElementById('lote-cliente').value, cant:document.getElementById('lote-cant').value, fecha:document.getElementById('lote-fecha').value}); 
             save(); 
         }
-
         function renderLotesTable(data) { document.getElementById('tbody-lotes').innerHTML = data.map(l => `<tr><td>${l.codigo}</td><td>${l.plantaNombre}</td><td>${l.cliente}</td><td>${l.cant}</td><td>${l.fecha}</td><td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td></tr>`).join(''); }
         function addVisita() { if(!db.visitas) db.visitas=[]; db.visitas.push({id:Date.now(), cliente:document.getElementById('visita-cliente').value, fecha:document.getElementById('visita-fecha').value, hora:document.getElementById('visita-hora').value, motivo:document.getElementById('visita-motivo').value}); save(); }
         function renderVisitsCal() {
@@ -556,4 +630,3 @@
     </script>
 </body>
 </html>
-
