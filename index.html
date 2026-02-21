@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,1596 +15,550 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --primary: #27ae60;
-            --primary-dark: #1e8449;
-            --bg: #f4f6f8;
-            --surface: #ffffff;
-            --text: #333;
-            --text-light: #7f8c8d;
-            --border: #dcdde1;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --danger: #e74c3c;
-            --warning: #f1c40f;
-            --info: #3498db;
-            --purple: #9b59b6;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        body.mobile-view {
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        body.mobile-view .sidebar {
-            width: 100%;
-            height: auto;
-            min-height: 80px;
-            flex-direction: row;
-            order: 2;
-            z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-            white-space: nowrap;
-            padding-bottom: env(safe-area-inset-bottom);
-            background: #1a252f;
-        }
-
-        body.mobile-view .sidebar-header {
-            display: none;
-        }
-
-        body.mobile-view .nav-menu {
-            display: flex;
-            flex-direction: row;
-            padding: 0;
-            width: 100%;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        body.mobile-view .nav-item {
-            flex: 0 0 auto;
-            justify-content: center;
-            padding: 12px 15px;
-            border-left: none;
-            border-bottom: none;
-            border-top: 4px solid transparent;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 80px;
-        }
-
-        body.mobile-view .nav-item.active {
-            background-color: transparent;
-            border-top: 4px solid var(--primary);
-            color: var(--primary);
-        }
-
-        body.mobile-view .nav-item i {
-            margin-right: 0;
-            font-size: 1.5rem;
-        }
-
-        body.mobile-view .nav-item span {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        body.mobile-view .main {
-            order: 1;
-            padding: 15px;
-            padding-bottom: 25px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        body.mobile-view table {
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-            font-size: 0.85rem;
-        }
-
-        body.mobile-view .card {
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-
-        body.mobile-view input,
-        body.mobile-view select {
-            font-size: 16px;
-            padding: 14px;
-            border-radius: 8px;
-        }
-
-        body.mobile-view .grid-dashboard {
-            grid-template-columns: 1fr;
-        }
-
-        body.mobile-view .btn {
-            width: 100%;
-            justify-content: center;
-            padding: 15px;
-            font-size: 1.1rem;
-            margin-top: 10px !important;
-            margin-bottom: 5px;
-            border-radius: 8px;
-        }
-
-        body.mobile-view .btn-sm {
-            padding: 10px;
-            font-size: 0.9rem;
-        }
-
-        body.mobile-view td .btn {
-            width: auto;
-            display: inline-block;
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            margin-top: 0 !important;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: width 0.3s;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background-color: #1a252f;
-            border-bottom: 1px solid #34495e;
-        }
-
-        .nav-menu {
-            flex-grow: 1;
-            padding: 10px 0;
-        }
-
-        .nav-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-            border-left: 4px solid transparent;
-        }
-
-        .nav-item:hover {
-            background-color: #34495e;
-        }
-
-        .nav-item.active {
-            background-color: #34495e;
-            border-left: 4px solid var(--primary);
-        }
-
-        .nav-item i {
-            margin-right: 15px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .main {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s;
-        }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .card {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: #f8f9fa;
-            font-size: 0.8rem;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        .calendar-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .calendar-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: #2c3e50;
-            color: white;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            background: #eee;
-            gap: 1px;
-            border: 1px solid #ddd;
-        }
-
-        .calendar-day-head {
-            background: #f8f9fa;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .calendar-day {
-            background: white;
-            min-height: 120px;
-            padding: 5px;
-            position: relative;
-        }
-
-        .day-num {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #999;
-        }
-
-        .visit-tag {
-            background: var(--info);
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 6px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            cursor: pointer;
-            line-height: 1.2;
-        }
-
-        .grid-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .stat-card p {
-            margin: 10px 0 0;
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .calendar-accordion {
-            border: 2px solid var(--primary);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .calendar-header {
-            background: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .calendar-content {
-            display: none;
-            background: white;
-            padding: 10px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .calendar-content.show {
-            display: block;
-        }
-
-        .task-date-title {
-            background: #f0f2f5;
-            padding: 8px;
-            font-weight: bold;
-            margin-top: 10px;
-            border-radius: 4px;
-            border-left: 5px solid #ccc;
-            font-size: 0.85rem;
-        }
-
-        .task-row {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .task-row.completed {
-            opacity: 0.5;
-            text-decoration: line-through;
-        }
-
-        .badge-task {
-            padding: 2px 8px;
-            border-radius: 12px;
-            color: white;
-            font-size: 0.65rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            width: 65px;
-            text-align: center;
-        }
-
-        .bg-remojo {
-            background: var(--purple);
-        }
-
-        .bg-siembra {
-            background: var(--info);
-        }
-
-        .bg-luz {
-            background: var(--warning);
-            color: #333;
-        }
-
-        .bg-cosecha {
-            background: var(--danger);
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: var(--text-light);
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-info {
-            background-color: var(--info);
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-purple {
-            background-color: var(--purple);
-            color: white;
-        }
-
-        .search-box {
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 10px;
-            top: 12px;
-            color: var(--text-light);
-        }
-
-        .search-box input {
-            padding-left: 35px;
-            border: 2px solid var(--info);
-        }
-
-        /* NUEVO DISEÑO MODO MIX PARA MÓVIL */
-        .mix-selector-box {
-            border: 2px solid var(--purple);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .plt-list-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .plt-check-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px;
-            border-bottom: 1px solid #f0f0f0;
-            background: #fafafa;
-            border-radius: 4px;
-        }
-
-        .mix-left {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .mix-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 100px;
-            justify-content: flex-end;
-        }
-
-        .mix-name {
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .mix-days {
-            font-size: 0.75rem;
-            color: var(--text-light);
-        }
-
-        .mix-qty {
-            width: 60px !important;
-            text-align: center;
-        }
-
-        .mix-chk {
-            transform: scale(1.3);
-        }
-
-        .mix-detail-list {
-            font-size: 0.75rem;
-            color: var(--purple);
-            margin-top: 5px;
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .mix-detail-list li {
-            display: inline-block;
-            background: #f3ebff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin: 2px;
-        }
-
-        #cloud-status {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 0.7rem;
-            background: #333;
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            opacity: 0.7;
-            z-index: 1000;
-        }
-
-        .alert-date {
-            color: var(--danger);
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .info-mix-date {
-            color: var(--info);
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        #modal-etiqueta {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .etiqueta-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 320px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            border: 2px solid var(--primary);
-        }
-
-        .label-box {
-            border: 1px dashed #333;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: left;
-            font-family: Arial, sans-serif;
-            background: #fdfdfd;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        #login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #2c3e50;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-box img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <div class="app-container">
 
-    <div id="login-overlay">
-        <div class="login-box">
-            <img src="logo.png" alt="Logo">
-            <h3>Acceso Restringido</h3>
-            <input type="password" id="login-pwd" placeholder="Contraseña">
-            <button class="btn btn-primary" onclick="checkLogin()" style="width: 100%;">Entrar</button>
-            <p id="login-err" style="color: red; display: none; margin-top: 10px; font-size: 0.8rem;">Contraseña
-                incorrecta</p>
+        <div id="login-overlay">
+            <div class="login-box">
+                <img src="logo.png" alt="Logo">
+                <h3>Acceso Restringido</h3>
+                <input type="password" id="login-pwd" placeholder="Contraseña">
+                <button class="btn btn-primary" onclick="checkLogin()" style="width: 100%;">Entrar</button>
+                <p id="login-err" style="color: red; display: none; margin-top: 10px; font-size: 0.8rem;">Contraseña
+                    incorrecta</p>
+            </div>
         </div>
-    </div>
 
-    <div id="cloud-status">Conectando a la nube...</div>
+        <div id="cloud-status">Conectando a la nube...</div>
 
-    <div id="modal-etiqueta">
-        <div class="etiqueta-content">
-            <h3 style="text-transform: uppercase;">🌱 LOTE GENERADO</h3>
-            <div class="label-box" id="label-text"></div>
-            <button class="btn btn-primary" onclick="copyLabel()"><i class="fas fa-copy"></i> Copiar Datos</button>
-            <button class="btn btn-danger" onclick="closeLabel()" style="margin-top:10px;">Cerrar</button>
+        <div id="modal-etiqueta">
+            <div class="etiqueta-content">
+                <h3 style="text-transform: uppercase;">🌱 LOTE GENERADO</h3>
+                <div class="label-box" id="label-text"></div>
+                <button class="btn btn-primary" onclick="copyLabel()"><i class="fas fa-copy"></i> Copiar Datos</button>
+                <button class="btn btn-danger" onclick="closeLabel()" style="margin-top:10px;">Cerrar</button>
+            </div>
         </div>
-    </div>
 
-    <aside class="sidebar">
-        <div class="sidebar-header" id="sidebar-title">
-            <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 5px;">
-            <div>LA ISLA GESTIÓN</div>
-        </div>
-        <nav class="nav-menu">
-            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i>
-                <span>Dashboard</span>
+        <header class="top-nav">
+            <div class="top-nav-container">
+                <div class="nav-brand" onclick="showSection('dashboard')">
+                    <img src="logo.png" alt="Logo" class="nav-logo">
+                    <span class="nav-title">LA ISLA GESTIÓN</span>
+                </div>
+                <nav class="nav-menu">
+                    <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i>
+                        <span>Plantas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i>
+                        <span>Planes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i>
+                        <span>Lotes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('cosecha')"><i class="fas fa-leaf"></i>
+                        <span>Cosechas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i>
+                        <span>Visitas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i>
+                        <span>Calculadora</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('almacen')"><i class="fas fa-boxes"></i>
+                        <span>Almacén</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('notas')"><i class="fas fa-sticky-note"
+                            style="color:#f1c40f;"></i>
+                        <span>Notas</span>
+                    </div>
+                    <div class="nav-item nav-config" onclick="showSection('config')"><i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </div>
+                </nav>
             </div>
-            <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i> <span>Clientes</span>
-            </div>
-            <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i> <span>Plantas</span>
-            </div>
-            <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i>
-                <span>Planes</span>
-            </div>
-            <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i> <span>Lotes</span></div>
-            <div class="nav-item" onclick="showSection('cosecha')"><i class="fas fa-leaf"></i> <span>Cosechas</span>
-            </div>
-            <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i>
-                <span>Visitas</span>
-            </div>
-            <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i>
-                <span>Calculadora</span>
-            </div>
-            <div class="nav-item" onclick="showSection('config')"><i class="fas fa-cog"></i> <span>Configuración</span>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #34495e; margin: 10px 0;">
-            <div class="nav-item" onclick="toggleMobileView()" style="color: var(--warning);">
-                <i class="fas fa-mobile-alt"></i> <span id="view-text">Vista: Móvil</span>
-            </div>
-        </nav>
-    </aside>
+        </header>
 
-    <main class="main">
-        <section id="dashboard" class="section active">
-            <h2>Dashboard</h2>
-            <div class="grid-dashboard">
-                <div class="card stat-card">
-                    <h3>Clientes</h3>
-                    <p id="stat-clientes">0</p>
-                </div>
-                <div class="card stat-card">
-                    <h3>Planes</h3>
-                    <p id="stat-planes">0</p>
-                </div>
-                <div class="card stat-card">
-                    <h3>Lotes</h3>
-                    <p id="stat-lotes">0</p>
-                </div>
-            </div>
-            <div class="calendar-accordion">
-                <div class="calendar-header" onclick="toggleCalendar()">
-                    <span><i class="fas fa-list-check"></i> TAREAS DIARIAS</span>
-                    <i id="cal-icon" class="fas fa-chevron-down"></i>
-                </div>
-                <div id="calendar-body" class="calendar-content"></div>
-            </div>
-        </section>
-
-        <section id="clientes" class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2>Gestión de Clientes</h2>
-            </div>
-            <div class="card">
-                <input type="hidden" id="cli-id" value="">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>Nombre Comercial</label><input type="text" id="cli-nombre-comercial">
+        <main class="main">
+            <div class="content-container">
+                <section id="dashboard" class="section active">
+                    <div class="section-header">
+                        <h2>Dashboard</h2>
+                        <p>Resumen general operativo</p>
                     </div>
-                    <div class="form-group"><label>Nombre</label><input type="text" id="cli-nombre"></div>
-                    <div class="form-group"><label>NIF / CIF</label><input type="text" id="cli-nif"></div>
-                    <div class="form-group"><label>Dirección Fiscal</label><input type="text" id="cli-dir"></div>
-                    <div class="form-group"><label>Código Postal</label><input type="text" id="cli-cp"></div>
-                    <div class="form-group"><label>Población</label><input type="text" id="cli-pob"></div>
-                    <div class="form-group"><label>Provincia</label><input type="text" id="cli-prov"></div>
-                    <div class="form-group"><label>País</label><input type="text" id="cli-pais"></div>
-                    <div class="form-group"><label>Email</label><input type="email" id="cli-email"></div>
-                    <div class="form-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
-                    <div class="form-group"><label>Tipo de Cobro</label>
-                        <select id="cli-cobro">
-                            <option value="Factura 30 dias">Factura 30 días</option>
-                            <option value="Factura Inmediata">Factura Inmediata</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="addCliente()" style="margin-top:15px;"
-                    id="btn-save-cliente">Añadir / Actualizar Cliente</button>
-            </div>
-            <div class="card">
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-cliente"
-                        placeholder="Buscar cliente..." onkeyup="filterClientes()"></div>
-                <table id="table-clientes">
-                    <thead>
-                        <tr>
-                            <th>Nombre Comercial</th>
-                            <th>NIF</th>
-                            <th>Cobro</th>
-                            <th>Teléfono</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-clientes"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="plantas" class="section">
-            <h2>Gestión de Plantas</h2>
-            <div class="card">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>ID (3 letras)</label><input type="text" id="plt-id" maxlength="3">
-                    </div>
-                    <div class="form-group"><label>Nombre</label><input type="text" id="plt-nombre"></div>
-                    <div class="form-group"><label>Remojo (h)</label><input type="number" id="plt-remojo" value="0">
-                    </div>
-                    <div class="form-group"><label>Oscuro (d)</label><input type="number" id="plt-oscuro" value="3">
-                    </div>
-                    <div class="form-group"><label>Total (d)</label><input type="number" id="plt-total" value="10">
-                    </div>
-                    <div class="form-group"><label>Gr/Band. Est.</label><input type="number" id="plt-gramos"
-                            value="200"></div>
-                    <div class="form-group"><label>Precio/Kg (€)</label><input type="number" id="plt-precio" value="0"
-                            step="0.01"></div>
-                </div>
-                <button class="btn btn-primary" onclick="addPlanta()" style="margin-top:15px;">Guardar / Actualizar
-                    Planta</button>
-            </div>
-            <div class="card">
-                <table id="table-plantas">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Remojo</th>
-                            <th>Total</th>
-                            <th>Precio/Kg</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="planes" class="section">
-            <h2>Planes de Siembra</h2>
-            <div class="card">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>Cliente</label><select id="plan-cliente"></select></div>
-                    <div class="form-group"><label>Tipo Bandeja</label>
-                        <select id="plan-tipo-bandeja">
-                            <option value="Estándar (25x50)">Estándar (25x50)</option>
-                            <option value="Cuadrada (12x12)">Cuadrada (12x12)</option>
-                            <option value="Pequeña (9x9)">Pequeña (9x9)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Frecuencia (d)</label><input type="number" id="plan-frec" value="7">
-                    </div>
-                </div>
-
-                <div id="panel-individual"
-                    style="margin-top:20px; padding:15px; border:1px solid #ddd; border-radius:8px;">
-                    <input type="hidden" id="plan-id-edicion" value="">
-                    <p style="font-weight:bold; color:var(--primary);">MODO INDIVIDUAL (POR ENTREGA)</p>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
-                        <div class="form-group">
-                            <label>Planta</label>
-                            <select id="plan-planta" onchange="updateDiasInfo()"></select>
-                            <small id="plan-dias-info"
-                                style="color: var(--primary); font-weight: bold; display: block; margin-top: 5px;"></small>
+                    <div class="grid-dashboard">
+                        <div class="card stat-card">
+                            <h3>Clientes</h3>
+                            <p id="stat-clientes">0</p>
                         </div>
-                        <div class="form-group"><label>Nº Bandejas</label><input type="number" id="plan-cant-ind"
-                                value="1"></div>
-                        <div class="form-group">
-                            <label>Fecha Entrega Final</label>
-                            <input type="date" id="plan-fecha" onchange="validateLeadTime()">
-                            <div id="date-alert" class="alert-date">⚠️ No hay tiempo suficiente para cultivar esta
-                                planta.</div>
+                        <div class="card stat-card">
+                            <h3>Planes</h3>
+                            <p id="stat-planes">0</p>
+                        </div>
+                        <div class="card stat-card">
+                            <h3>Lotes</h3>
+                            <p id="stat-lotes">0</p>
                         </div>
                     </div>
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <button class="btn btn-primary" id="btn-save-plan" onclick="addPlan()">Guardar
-                            Individual</button>
-                        <button class="btn btn-purple" onclick="togglePlanModo('mix')">Cambiar a Modo MIX</button>
+                    <div class="calendar-accordion">
+                        <div class="calendar-header" onclick="toggleCalendar()">
+                            <span><i class="fas fa-list-check"></i> TAREAS DIARIAS</span>
+                            <i id="cal-icon" class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="calendar-body" class="calendar-content"></div>
                     </div>
-                </div>
+                </section>
 
-                <div id="panel-mix" class="mix-selector-box">
-                    <p style="font-weight:bold; color:var(--purple);">MODO MIX</p>
-                    <div class="form-group" style="max-width:300px;">
-                        <label>Fecha 1ª Entrega (Automática)</label>
-                        <input type="date" id="plan-fecha-entrega" readonly
-                            style="background:#f0f4f8; pointer-events:none;">
+                <section id="clientes" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Clientes</h2>
+                        <p>Administre sus clientes y datos de facturación</p>
                     </div>
-                    <div class="plt-list-grid" id="mix-lista-check"></div>
-                    <div id="mix-lead-info" class="info-mix-date"></div>
-                    <div style="margin-top:15px; display:flex; gap:10px;">
-                        <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
-                        <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
+                    <div class="card">
+                        <input type="hidden" id="cli-id" value="">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Nombre Comercial</label><input type="text"
+                                    id="cli-nombre-comercial">
+                            </div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="cli-nombre"></div>
+                            <div class="form-group"><label>NIF / CIF</label><input type="text" id="cli-nif"></div>
+                            <div class="form-group"><label>Dirección Fiscal</label><input type="text" id="cli-dir">
+                            </div>
+                            <div class="form-group"><label>Código Postal</label><input type="text" id="cli-cp"></div>
+                            <div class="form-group"><label>Población</label><input type="text" id="cli-pob"></div>
+                            <div class="form-group"><label>Provincia</label><input type="text" id="cli-prov"></div>
+                            <div class="form-group"><label>País</label><input type="text" id="cli-pais"></div>
+                            <div class="form-group"><label>Email</label><input type="email" id="cli-email"></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
+                            <div class="form-group"><label>Tipo de Cobro</label>
+                                <select id="cli-cobro">
+                                    <option value="Factura 30 dias">Factura 30 días</option>
+                                    <option value="Factura Inmediata">Factura Inmediata</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addCliente()" style="margin-top:15px;"
+                            id="btn-save-cliente">Añadir / Actualizar Cliente</button>
                     </div>
-                </div>
-            </div>
-            <div class="card">
-                <table id="table-planes">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Tipo</th>
-                            <th>Detalle de Plantas</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="lotes" class="section">
-            <h2>Gestión de Lotes</h2>
-            <div class="card">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>Planta</label><select id="lote-planta"></select></div>
-                    <div class="form-group"><label>Cliente</label><select id="lote-cliente"></select></div>
-                    <div class="form-group"><label>Cant. Bandejas</label><input type="number" id="lote-cant" value="1">
+                    <div class="card">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-cliente"
+                                placeholder="Buscar cliente..." onkeyup="filterClientes()"></div>
+                        <table id="table-clientes">
+                            <thead>
+                                <tr>
+                                    <th>Nombre Comercial</th>
+                                    <th>NIF</th>
+                                    <th>Cobro</th>
+                                    <th>Teléfono</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-clientes"></tbody>
+                        </table>
                     </div>
-                    <div class="form-group"><label>Fecha Siembra</label><input type="date" id="lote-fecha"></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:15px;" onclick="addLoteManual()">Generar Lote
-                    Progresivo</button>
-            </div>
-            <div class="card">
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-lote-cliente"
-                        placeholder="Buscar por cliente/código..." onkeyup="filterLotes()"></div>
-                <table id="table-lotes">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Planta</th>
-                            <th>Cliente</th>
-                            <th>Cant</th>
-                            <th>Siembra</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-lotes"></tbody>
-                </table>
-            </div>
-        </section>
+                </section>
 
-        <section id="cosecha" class="section">
-            <h2>Etiquetas de Cosecha</h2>
-            <div class="card">
-                <p>Selecciona un Lote existente e indica su Fecha de Cosecha para generar la etiqueta final.</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>Seleccione Lote</label><select id="cosecha-lote"></select></div>
-                    <div class="form-group"><label>Fecha de Cosecha</label><input type="date" id="cosecha-fecha"></div>
-                </div>
-                <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
-                        class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
-            </div>
-            <div class="card" id="card-etiqueta-print" style="display:none;">
-                <div class="label-box" id="label-cosecha-box"
-                    style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family: Arial, sans-serif;">
-                    <div style="text-align:center; margin-bottom:10px;">
-                        <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+                <section id="plantas" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Plantas</h2>
+                        <p>Catálogo de semillas y parámetros de cultivo</p>
                     </div>
-                    <div id="lbl-cliente-box"></div>
-                    <div id="lbl-prod-box"></div>
-                    <div id="lbl-lote-box"></div>
-                    <div id="lbl-siembra-box"></div>
-                    <div id="lbl-cosecha-box" style="font-weight:bold; margin-top:5px;"></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
-                        class="fas fa-download"></i> Descargar PNG</button>
-            </div>
-        </section>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>ID (3 letras)</label><input type="text" id="plt-id"
+                                    maxlength="3">
+                            </div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="plt-nombre"></div>
+                            <div class="form-group"><label>Remojo (h)</label><input type="number" id="plt-remojo"
+                                    value="0">
+                            </div>
+                            <div class="form-group"><label>Oscuro (d)</label><input type="number" id="plt-oscuro"
+                                    value="3">
+                            </div>
+                            <div class="form-group"><label>Total (d)</label><input type="number" id="plt-total"
+                                    value="10">
+                            </div>
+                            <div class="form-group"><label>Gr/Band. Est.</label><input type="number" id="plt-gramos"
+                                    value="200"></div>
+                            <div class="form-group"><label>Precio/Kg (€)</label><input type="number" id="plt-precio"
+                                    value="0" step="0.01"></div>
+                            <div class="form-group"><label>Stock Mín. (Kg)</label><input type="number"
+                                    id="plt-stock-min" value="1" step="0.1"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addPlanta()" style="margin-top:15px;">Guardar /
+                            Actualizar
+                            Planta</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-plantas">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Remojo</th>
+                                    <th>Total</th>
+                                    <th>Precio/Kg</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
 
-        <section id="visitas" class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2>Agenda de Visitas</h2>
-                <div>
-                    <button class="btn btn-primary" onclick="toggleVisitsView('calendario')">Calendario</button>
-                    <button class="btn btn-primary" onclick="toggleVisitsView('lista')">Lista</button>
-                </div>
-            </div>
-            <div class="card">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>Cliente</label><select id="visita-cliente"></select></div>
-                    <div class="form-group"><label>Fecha</label><input type="date" id="visita-fecha"></div>
-                    <div class="form-group"><label>Hora</label><input type="time" id="visita-hora"></div>
-                    <div class="form-group"><label>Motivo</label><input type="text" id="visita-motivo"></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()">Registrar Visita</button>
-            </div>
-            <div id="visitas-calendario" class="calendar-container">
-                <div class="calendar-nav"><button onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <h3 id="cal-title">MES</h3><button onclick="changeMonth(1)"><i
-                            class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar-grid" id="visitas-grid"></div>
-            </div>
-            <div id="visitas-lista" class="card" style="display:none;">
-                <table id="table-visitas">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Fecha</th>
-                            <th>Motivo</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
+                <section id="planes" class="section">
+                    <div class="section-header">
+                        <h2>Planes de Siembra</h2>
+                        <p>Programe siembras regulares para sus clientes</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Cliente</label><select id="plan-cliente"></select></div>
+                            <div class="form-group"><label>Tipo Bandeja</label>
+                                <select id="plan-tipo-bandeja">
+                                    <option value="Estándar (25x50)">Estándar (25x50)</option>
+                                    <option value="Cuadrada (12x12)">Cuadrada (12x12)</option>
+                                    <option value="Pequeña (9x9)">Pequeña (9x9)</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Frecuencia (d)</label><input type="number" id="plan-frec"
+                                    value="7">
+                            </div>
+                        </div>
 
-        <section id="calculadora" class="section">
-            <h2>Calculadora de Semillas</h2>
-            <div class="card">
-                <div class="form-group"><label>Planta</label><select id="calc-planta" onchange="runCalc()"></select>
-                </div>
-                <div class="form-group"><label>Tipo Bandeja</label>
-                    <select id="calc-bandeja" onchange="runCalc()">
-                        <option value="1250">Estándar (25x50)</option>
-                        <option value="144">Cuadrada (12x12)</option>
-                        <option value="81">Pequeña (9x9)</option>
-                    </select>
-                </div>
-                <div id="calc-res" class="card"
-                    style="margin-top:15px; background:#e8f6ed; font-size: 1.2rem; text-align: center;">Resultados...
-                </div>
-            </div>
-        </section>
+                        <div id="panel-individual"
+                            style="margin-top:20px; padding:15px; border:1px solid #ddd; border-radius:8px;">
+                            <input type="hidden" id="plan-id-edicion" value="">
+                            <p style="font-weight:bold; color:var(--primary);">MODO INDIVIDUAL (POR ENTREGA)</p>
+                            <div
+                                style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                                <div class="form-group">
+                                    <label>Planta</label>
+                                    <select id="plan-planta" onchange="updateDiasInfo()"></select>
+                                    <small id="plan-dias-info"
+                                        style="color: var(--primary); font-weight: bold; display: block; margin-top: 5px;"></small>
+                                </div>
+                                <div class="form-group"><label>Nº Bandejas</label><input type="number"
+                                        id="plan-cant-ind" value="1"></div>
+                                <div class="form-group">
+                                    <label>Fecha Entrega Final</label>
+                                    <input type="date" id="plan-fecha" onchange="validateLeadTime()">
+                                    <div id="date-alert" class="alert-date">⚠️ No hay tiempo suficiente para cultivar
+                                        esta
+                                        planta.</div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:10px;">
+                                <button class="btn btn-primary" id="btn-save-plan" onclick="addPlan()">Guardar
+                                    Individual</button>
+                                <button class="btn btn-purple" onclick="togglePlanModo('mix')">Cambiar a Modo
+                                    MIX</button>
+                            </div>
+                        </div>
 
-        <section id="config" class="section">
-            <h2>Configuración & Sincronización</h2>
-            <div class="card">
-                <p>Usa el botón "Recuperar Datos" para cargar tu archivo anterior en la nube.</p>
-                <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                    <input type="file" id="import-file" style="display:none" onchange="importToCloud(event)">
-                    <button class="btn btn-info" onclick="document.getElementById('import-file').click()"><i
-                            class="fas fa-upload"></i> RECUPERAR DATOS (IMPORTAR JSON)</button>
-                    <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i> Exportar
-                        Copia JSON</button>
-                    <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar
-                        Todo</button>
-                </div>
-            </div>
-        </section>
-    </main>
+                        <div id="panel-mix" class="mix-selector-box">
+                            <p style="font-weight:bold; color:var(--purple);">MODO MIX</p>
+                            <div class="form-group" style="max-width:300px;">
+                                <label>Fecha 1ª Entrega (Automática)</label>
+                                <input type="date" id="plan-fecha-entrega" readonly
+                                    style="background:#f0f4f8; pointer-events:none;">
+                            </div>
+                            <div class="plt-list-grid" id="mix-lista-check"></div>
+                            <div id="mix-lead-info" class="info-mix-date"></div>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
+                                <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <table id="table-planes">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Tipo</th>
+                                    <th>Detalle de Plantas</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="lotes" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Lotes</h2>
+                        <p>Trazabilidad individual de bandejas activas</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Planta</label><select id="lote-planta"></select></div>
+                            <div class="form-group"><label>Cliente</label><select id="lote-cliente"></select></div>
+                            <div class="form-group"><label>Cant. Bandejas</label><input type="number" id="lote-cant"
+                                    value="1">
+                            </div>
+                            <div class="form-group"><label>Fecha Siembra</label><input type="date" id="lote-fecha">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:15px;" onclick="addLoteManual()">Generar Lote
+                            Progresivo</button>
+                    </div>
+                    <div class="card">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-lote-cliente"
+                                placeholder="Buscar por cliente/código..." onkeyup="filterLotes()"></div>
+                        <table id="table-lotes">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Planta</th>
+                                    <th>Cliente</th>
+                                    <th>Cant</th>
+                                    <th>Siembra</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-lotes"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="cosecha" class="section">
+                    <div class="section-header">
+                        <h2>Etiquetas de Cosecha</h2>
+                        <p>Generación de albaranes y etiquetas para el empaquetado final</p>
+                    </div>
+                    <div class="card">
+                        <p>Selecciona un Lote existente e indica su Fecha de Cosecha para generar la etiqueta final.</p>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Seleccione Lote</label><select id="cosecha-lote"></select>
+                            </div>
+                            <div class="form-group"><label>Fecha de Cosecha</label><input type="date"
+                                    id="cosecha-fecha"></div>
+                        </div>
+                        <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
+                                class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
+                    </div>
+                    <div class="card" id="card-etiqueta-print" style="display:none;">
+                        <div class="label-box" id="label-cosecha-box"
+                            style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family: Arial, sans-serif;">
+                            <div style="text-align:center; margin-bottom:10px;">
+                                <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+                            </div>
+                            <div id="lbl-cliente-box"></div>
+                            <div id="lbl-prod-box"></div>
+                            <div id="lbl-lote-box"></div>
+                            <div id="lbl-siembra-box"></div>
+                            <div id="lbl-cosecha-box" style="font-weight:bold; margin-top:5px;"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
+                                class="fas fa-download"></i> Descargar PNG</button>
+                    </div>
+                </section>
+
+                <section id="visitas" class="section">
+                    <div class="section-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div>
+                                <h2>Agenda de Visitas</h2>
+                                <p>Programe mantenimientos o entregas en persona</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary"
+                                    onclick="toggleVisitsView('calendario')">Calendario</button>
+                                <button class="btn btn-primary" onclick="toggleVisitsView('lista')">Lista</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Cliente</label><select id="visita-cliente"></select></div>
+                            <div class="form-group"><label>Fecha</label><input type="date" id="visita-fecha"></div>
+                            <div class="form-group"><label>Hora</label><input type="time" id="visita-hora"></div>
+                            <div class="form-group"><label>Motivo</label><input type="text" id="visita-motivo"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()">Registrar
+                            Visita</button>
+                    </div>
+                    <div id="visitas-calendario" class="calendar-container">
+                        <div class="calendar-nav"><button onclick="changeMonth(-1)"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <h3 id="cal-title">MES</h3><button onclick="changeMonth(1)"><i
+                                    class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid" id="visitas-grid"></div>
+                    </div>
+                    <div id="visitas-lista" class="card" style="display:none;">
+                        <table id="table-visitas">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Motivo</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="calculadora" class="section">
+                    <div class="section-header">
+                        <h2>Calculadora de Semillas</h2>
+                        <p>Estime el rendimiento por bandeja instantáneamente</p>
+                    </div>
+                    <div class="card">
+                        <div class="form-group"><label>Planta</label><select id="calc-planta"
+                                onchange="runCalc()"></select>
+                        </div>
+                        <div class="form-group"><label>Tipo Bandeja</label>
+                            <select id="calc-bandeja" onchange="runCalc()">
+                                <option value="1250">Estándar (25x50)</option>
+                                <option value="144">Cuadrada (12x12)</option>
+                                <option value="81">Pequeña (9x9)</option>
+                            </select>
+                        </div>
+                        <div id="calc-res" class="card"
+                            style="margin-top:15px; background:#e8f6ed; font-size: 1.2rem; text-align: center;">
+                            Resultados...
+                        </div>
+                    </div>
+                </section>
+
+                <section id="almacen" class="section">
+                    <div class="section-header">
+                        <h2>Almacén & Inventario</h2>
+                        <p>Control de stock de semillas y otros insumos</p>
+                    </div>
+
+                    <h3 style="margin-top:20px; color:var(--primary-dark);">Stock de Semillas</h3>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Semilla (Planta)</label><select
+                                    id="stock-semilla-id"></select></div>
+                            <div class="form-group"><label>Añadir Cantidad (Kg)</label><input type="number"
+                                    id="stock-semilla-cant" value="1" step="0.1"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:15px;" onclick="addStockSemilla()"><i
+                                class="fas fa-plus"></i> Registrar Entrada de Semillas</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-almacen-semillas">
+                            <thead>
+                                <tr>
+                                    <th>Semilla (ID)</th>
+                                    <th>Nombre Planta</th>
+                                    <th>Stock Actual (Kg)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-almacen-semillas"></tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="margin-top:30px; color:var(--purple);">Otros Insumos (Materiales)</h3>
+                    <div class="card">
+                        <input type="hidden" id="insumo-id" value="">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Nombre (Ej: Sustrato, Cajas)</label><input type="text"
+                                    id="insumo-nombre"></div>
+                            <div class="form-group"><label>Cantidad</label><input type="number" id="insumo-cant"
+                                    value="0" step="0.1"></div>
+                            <div class="form-group"><label>Unidad de Medida</label>
+                                <select id="insumo-unidad">
+                                    <option value="Litros">Litros (L)</option>
+                                    <option value="Unidades">Unidades (Ud)</option>
+                                    <option value="Kg">Kilos (Kg)</option>
+                                    <option value="Metros">Metros (m)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-purple" style="margin-top:15px;" id="btn-save-insumo"
+                            onclick="addInsumo()"><i class="fas fa-save"></i> Guardar Insumo</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-almacen-insumos">
+                            <thead>
+                                <tr>
+                                    <th>Insumo</th>
+                                    <th>Stock</th>
+                                    <th>Unidad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-almacen-insumos"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="notas" class="section">
+                    <div class="section-header">
+                        <h2>Bloc de Notas (Recordatorios)</h2>
+                        <p>Anote pendientes y tareas rápidas</p>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>Nuevo Recordatorio</label>
+                            <textarea id="nota-texto" rows="3"
+                                placeholder="Escribe tu recordatorio aquí... (Ej: Comprar semillas de rábano)"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; font-size: 1rem; resize: vertical; margin-bottom: 10px;"></textarea>
+                        </div>
+                        <div class="form-group" style="max-width: 200px;">
+                            <label>Fecha Límite (Opcional)</label>
+                            <input type="date" id="nota-fecha" style="width: 100%;">
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addNota()"><i
+                                class="fas fa-plus"></i>
+                            Añadir Nota</button>
+                    </div>
+                    <div id="notas-grid" class="notas-grid"></div>
+                </section>
+
+                <section id="config" class="section">
+                    <div class="section-header">
+                        <h2>Configuración & Sincronización</h2>
+                        <p>Seguridad de datos y copias locales</p>
+                    </div>
+                    <div class="card">
+                        <p>Usa el botón "Recuperar Datos" para cargar tu archivo anterior en la nube.</p>
+                        <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                            <input type="file" id="import-file" style="display:none" onchange="importToCloud(event)">
+                            <button class="btn btn-info" onclick="document.getElementById('import-file').click()"><i
+                                    class="fas fa-upload"></i> RECUPERAR DATOS (IMPORTAR JSON)</button>
+                            <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i>
+                                Exportar
+                                Copia JSON</button>
+                            <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar
+                                Todo</button>
+                        </div>
+                    </div>
+                </section>
+        </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <script>
-        const firebaseConfig = { databaseURL: "https://la-isla-microgreen-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], visitas: [], ultimoCorrelativo: 0 };
-        let curMonth = new Date();
-        const B_AREAS = { "Estándar (25x50)": 1250, "Cuadrada (12x12)": 144, "Pequeña (9x9)": 81 };
-
-        // --- SEGURIDAD HASH ---
-        async function hashString(str) {
-            const buffer = new TextEncoder().encode(str);
-            const hash = await crypto.subtle.digest("SHA-256", buffer);
-            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        const SECRET_HASH = "33cf990007d36b063ef5a6a26b15798147235f8e1d40db87466998dd3d12535b"; // SHA-256 of 'Peluylola2022'
-
-        async function checkLogin() {
-            const pwd = document.getElementById('login-pwd').value;
-            const hashedInput = await hashString(pwd);
-            if (hashedInput === SECRET_HASH) {
-                sessionStorage.setItem('isla_auth', 'true');
-                document.getElementById('login-overlay').style.display = 'none';
-            } else {
-                document.getElementById('login-err').style.display = 'block';
-            }
-        }
-
-        // --- INICIO ---
-        function checkDeviceType() {
-            // Detección estricta de dispositivo móvil por userAgent y resolución
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            const isMobileBrowser = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-            const isSmallScreen = window.innerWidth <= 768;
-            return isMobileBrowser || isSmallScreen;
-        }
-
-        function forceView() {
-            const isMobile = checkDeviceType();
-            const body = document.body;
-            const text = document.getElementById('view-text');
-
-            if (isMobile) {
-                body.classList.add('mobile-view');
-                if (text) text.innerHTML = '<i class="fas fa-desktop"></i><span>Vista actual:<br>MÓVIL</span>';
-            } else {
-                body.classList.remove('mobile-view');
-                if (text) text.innerHTML = 'Vista actual: PC';
-            }
-        }
-
-        window.addEventListener('resize', () => { setTimeout(forceView, 200); });
-
-        function initApp() {
-            forceView();
-            if (sessionStorage.getItem('isla_auth') === 'true') {
-                document.getElementById('login-overlay').style.display = 'none';
-            }
-
-            database.ref('micro_db_isla').on('value', (snapshot) => {
-                const cloudData = snapshot.val();
-                if (cloudData) {
-                    db = cloudData;
-                    refresh();
-                    document.getElementById('cloud-status').innerText = "Nube sincronizada";
-                } else {
-                    document.getElementById('cloud-status').innerText = "Nube vacía. Importa tu copia.";
-                }
-            });
-        }
-
-        function toggleMobileView() {
-            const body = document.body;
-            const text = document.getElementById('view-text');
-            if (body.classList.contains('mobile-view')) {
-                body.classList.remove('mobile-view');
-                if (text) text.innerHTML = 'Vista actual: PC';
-            } else {
-                body.classList.add('mobile-view');
-                if (text) text.innerHTML = '<i class="fas fa-desktop"></i><span>Vista actual:<br>MÓVIL</span>';
-            }
-        }
-
-        function save() {
-            database.ref('micro_db_isla').set(db);
-            refresh();
-        }
-
-        function importToCloud(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const imported = JSON.parse(ev.target.result);
-                if (confirm("Se subirán todos tus datos antiguos a la nube. ¿OK?")) {
-                    db = imported;
-                    save();
-                    alert("¡Datos recuperados con éxito!");
-                }
-            };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        function refresh() {
-            // Ordenar clientes alfabéticamente
-            if (db.clientes) {
-                db.clientes.sort((a, b) => {
-                    const nameA = (a.nombreComercial || a.nombre || "").toUpperCase();
-                    const nameB = (b.nombreComercial || b.nombre || "").toUpperCase();
-                    if (nameA < nameB) return -1;
-                    if (nameA > nameB) return 1;
-                    return 0;
-                });
-            }
-
-            const cliOpt = (db.clientes || []).map(c => `<option value="${c.nombreComercial || c.nombre}">${c.nombreComercial || c.nombre}</option>`).join('');
-            const pltOpt = (db.plantas || []).map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-
-            document.getElementById('visita-cliente').innerHTML = cliOpt;
-            document.getElementById('plan-cliente').innerHTML = cliOpt;
-            document.getElementById('plan-planta').innerHTML = pltOpt;
-            document.getElementById('lote-planta').innerHTML = pltOpt;
-            document.getElementById('lote-cliente').innerHTML = cliOpt;
-            document.getElementById('calc-planta').innerHTML = pltOpt;
-
-            // MODIFICACIÓN: ESTRUCTURA LISTA MIX REFORMADA PARA MÓVIL
-            document.getElementById('mix-lista-check').innerHTML = (db.plantas || []).map(p => `
-                <div class="plt-check-item mix-row">
-                    <div class="mix-left">
-                        <span class="mix-name">${p.nombre}</span>
-                        <span class="mix-days">${p.total} días ciclo</span>
-                    </div>
-                    <div class="mix-right">
-                        <input type="number" class="mix-qty" value="0" min="0" placeholder="Cant" onchange="calcMixLeadTime()">
-                        <input type="checkbox" class="mix-chk" value="${p.id}" onchange="calcMixLeadTime()"> 
-                    </div>
-                </div>`).join('');
-
-            document.querySelector('#table-planes tbody').innerHTML = (db.planes || []).map(p => {
-                let det = "";
-                if (p.tipo === 'MIX') {
-                    const noms = p.detalleMix.map(item => {
-                        const pl = db.plantas.find(x => x.id === item.id);
-                        return pl ? `${pl.nombre} (x${item.cant})` : item.id;
-                    });
-                    det = `<strong>MIX:</strong><ul class="mix-detail-list"><li>${noms.join('</li><li>')}</li></ul>`;
-                } else {
-                    const pl = db.plantas.find(x => x.id === p.plantaId);
-                    det = `Indiv: ${pl ? pl.nombre : p.plantaId} (x${p.cant})`;
-                }
-                return `<tr><td>${p.cliente}</td><td>${p.tipo}</td><td>${det}<br><small>[${p.bandeja}]</small></td><td><button class="btn btn-info" onclick="editPlan(${p.id})">E</button> <button class="btn btn-danger" onclick="borrar('planes',${p.id})">X</button></td></tr>`;
-            }).join('');
-
-            document.querySelector('#table-plantas tbody').innerHTML = (db.plantas || []).map(p => `<tr><td>${p.id}</td><td>${p.nombre}</td><td>${p.remojo}h / ${p.oscuro}d</td><td>${p.total}d</td><td>${p.precio}€</td><td><button class="btn btn-info" onclick="editPlanta('${p.id}')">E</button><button class="btn btn-danger" onclick="borrar('plantas','${p.id}')">X</button></td></tr>`).join('');
-            renderClientesTable(db.clientes || []);
-            document.querySelector('#table-visitas tbody').innerHTML = (db.visitas || []).map(v => `<tr><td>${v.cliente}</td><td>${v.fecha}</td><td>${v.motivo}</td><td><button class="btn btn-danger" onclick="borrar('visitas',${v.id})">X</button></td></tr>`).join('');
-
-            renderLotesTable(db.lotes || []);
-
-            const lotesOpt = (db.lotes || []).map(l => `<option value="${l.codigo}">${l.codigo} - ${l.plantaNombre} (${l.cliente})</option>`).reverse().join('');
-            document.getElementById('cosecha-lote').innerHTML = lotesOpt;
-            document.getElementById('stat-clientes').innerText = (db.clientes || []).length;
-            document.getElementById('stat-planes').innerText = (db.planes || []).length;
-            document.getElementById('stat-lotes').innerText = (db.lotes || []).length;
-
-            updateDiasInfo();
-            generateTasks();
-            renderVisitsCal();
-        }
-
-        // CÁLCULO DE FECHA LÍMITE PARA MIX
-        function calcMixLeadTime() {
-            const fechaInput = document.getElementById('plan-fecha-entrega');
-            const infoBox = document.getElementById('mix-lead-info');
-
-            let maxDias = 0;
-            document.querySelectorAll('.mix-row').forEach(r => {
-                const chk = r.querySelector('.mix-chk');
-                const qty = r.querySelector('.mix-qty');
-                if (chk.checked && parseInt(qty.value) > 0) {
-                    const plt = db.plantas.find(x => x.id === chk.value);
-                    if (plt && plt.total > maxDias) maxDias = plt.total;
-                }
-            });
-
-            if (maxDias > 0) {
-                const hoy = new Date();
-                const entrega = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + maxDias);
-
-                // Formatear para input type="date" (YYYY-MM-DD)
-                const dd = String(entrega.getDate()).padStart(2, '0');
-                const mm = String(entrega.getMonth() + 1).padStart(2, '0'); // Enero es 0
-                const yyyy = entrega.getFullYear();
-                fechaInput.value = `${yyyy}-${mm}-${dd}`;
-
-                const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                infoBox.innerHTML = `✅ Fecha óptima de entrega: <strong>${entrega.toLocaleDateString('es-ES', opciones)}</strong>.<br><small style="color:#666;">Las siembras se escalonarán para estar listas ese mismo día.</small>`;
-            } else {
-                fechaInput.value = "";
-                infoBox.innerText = "Selecciona plantas y cantidades para calcular la fecha de entrega.";
-            }
-        }
-
-        function updateDiasInfo() {
-            const pltId = document.getElementById('plan-planta').value;
-            const plt = (db.plantas || []).find(x => x.id === pltId);
-            const infoSpan = document.getElementById('plan-dias-info');
-            if (plt && infoSpan) {
-                infoSpan.innerText = `Ciclo total de siembra a cosecha: ${plt.total} días`;
-                validateLeadTime();
-            }
-        }
-
-        function validateLeadTime() {
-            const dateVal = document.getElementById('plan-fecha').value;
-            const pltId = document.getElementById('plan-planta').value;
-            const alertBox = document.getElementById('date-alert');
-            if (!dateVal || !pltId) return;
-            const plt = db.plantas.find(x => x.id === pltId);
-            const entrega = new Date(dateVal);
-            const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            const siembraNecesaria = new Date(entrega);
-            siembraNecesaria.setDate(siembraNecesaria.getDate() - plt.total);
-            if (siembraNecesaria < hoy) alertBox.style.display = "block"; else alertBox.style.display = "none";
-        }
-
-        function generateTasks() {
-            const body = document.getElementById('calendar-body'); if (!body) return;
-            body.innerHTML = ''; const tasks = [];
-            (db.planes || []).forEach(plan => {
-                for (let i = 0; i < 4; i++) {
-                    if (plan.tipo === 'INDIVIDUAL') {
-                        const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
-                        let entrega = new Date(plan.fecha);
-                        entrega.setDate(entrega.getDate() + (i * plan.frec));
-                        let s = new Date(entrega);
-                        s.setDate(s.getDate() - plt.total);
-                        crearHitos(tasks, s, plt, plan.cant, plan);
-                    } else {
-                        // En MIX, la cosecha es exactamente plan.fechaEntrega
-                        let entrega = new Date(plan.fechaEntrega);
-                        entrega.setDate(entrega.getDate() + (i * plan.frec));
-                        plan.detalleMix.forEach(item => {
-                            const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
-                            // Se calcula hacia atras desde la fecha global de entrega de este plan
-                            let s = new Date(entrega);
-                            s.setDate(s.getDate() - plt.total);
-                            crearHitos(tasks, s, plt, item.cant, plan);
-                        });
-                    }
-                }
-            });
-            const filtradas = tasks.filter(t => t.fecha >= new Date(new Date().setHours(0, 0, 0, 0))).sort((a, b) => a.fecha - b.fecha).slice(0, 30);
-            let lastD = "";
-            filtradas.forEach(t => {
-                const dStr = t.fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
-                if (dStr !== lastD) { body.innerHTML += `<div class="task-date-title">${dStr}</div>`; lastD = dStr; }
-                const isDone = (db.completadas || []).includes(t.tid);
-
-                body.innerHTML += `<div class="task-row ${isDone ? 'completed' : ''}" 
-                    onclick="toggleTask('${t.tid}', '${t.tipo}', '${t.pltNombre}', '${t.cli}', '${t.fStr}', '${t.cant}', '${t.bandeja}', '${t.pltId}')">
-                    <span class="badge-task bg-${t.tipo}">${t.tipo}</span> 
-                    <strong>${t.msg}</strong> (${t.cli})
-                </div>`;
-            });
-        }
-
-        function crearHitos(tasks, s, plt, cant, plan) {
-            const fStr = s.toISOString().split('T')[0];
-            const add = (f, t, m) => tasks.push({
-                fecha: new Date(f),
-                tipo: t,
-                msg: m,
-                cli: plan.cliente,
-                tid: `${t}-${plan.id}-${f.getTime()}`,
-                pltNombre: plt.nombre,
-                pltId: plt.id,
-                fStr: fStr,
-                cant: cant,
-                bandeja: plan.bandeja
-            });
-
-            if (plt.remojo > 0) {
-                let r = new Date(s); r.setDate(r.getDate() - 1);
-                add(r, 'remojo', `REMOJAR ${plt.nombre}`);
-            }
-
-            const area = B_AREAS[plan.bandeja] || 1250;
-            const grPorBandeja = (plt.gramos * (area / 1250)).toFixed(1);
-            const grTotales = (grPorBandeja * cant).toFixed(1);
-            const msgSiembra = `SEMBRAR ${plt.nombre} (x${cant}) - [${plan.bandeja}] - ${grTotales}g total`;
-
-            add(s, 'siembra', msgSiembra);
-
-            let l = new Date(s); l.setDate(l.getDate() + plt.oscuro);
-            add(l, 'luz', `A LUZ ${plt.nombre}`);
-
-            let c = new Date(s); c.setDate(c.getDate() + plt.total);
-            add(c, 'cosecha', `COSECHAR ${plt.nombre}`);
-        }
-
-        function toggleTask(id, tipo, pltNombre, cliente, fecha, cant, bandeja, pltId) {
-            if (!db.completadas) db.completadas = [];
-
-            if (db.completadas.includes(id)) {
-                db.completadas = db.completadas.filter(x => x !== id);
-            } else {
-                db.completadas.push(id);
-                if (tipo === 'siembra') {
-                    generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja);
-                }
-            }
-            save();
-        }
-
-        function generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja) {
-            if (!db.ultimoCorrelativo) db.ultimoCorrelativo = 0;
-            db.ultimoCorrelativo++;
-
-            const cod = pltId + fecha.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
-
-            if (!db.lotes) db.lotes = [];
-            db.lotes.push({
-                id: Date.now(),
-                codigo: cod,
-                plantaNombre: pltNombre,
-                cliente: cliente,
-                cant: cant,
-                fecha: fecha
-            });
-
-            // MODIFICACIÓN: SE ELIMINÓ LA LÍNEA DE CANTIDAD DE LA ETIQUETA
-            const labelHtml = `
-                <strong>CLIENTE:</strong> ${cliente.toUpperCase()}<br>
-                <strong>PRODUCTO:</strong> ${pltNombre.toUpperCase()}<br>
-                <strong>FECHA SIEMBRA:</strong> ${fecha}<br>
-                <strong>LOTE:</strong> ${cod}<br>
-                <strong>BANDEJA:</strong> ${bandeja}
-            `;
-            document.getElementById('label-text').innerHTML = labelHtml;
-            document.getElementById('modal-etiqueta').style.display = 'flex';
-        }
-
-        function copyLabel() {
-            const text = document.getElementById('label-text').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Etiqueta copiada al portapapeles");
-            });
-        }
-
-        function closeLabel() {
-            document.getElementById('modal-etiqueta').style.display = 'none';
-        }
-
-        function showSection(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const items = document.querySelectorAll('.nav-item');
-            items.forEach(item => { if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`showSection('${id}')`)) item.classList.add('active'); });
-            document.getElementById(id).classList.add('active');
-            if (id === 'visitas') renderVisitsCal();
-        }
-        function toggleCalendar() { document.getElementById('calendar-body').classList.toggle('show'); }
-        function togglePlanModo(m) { document.getElementById('panel-individual').style.display = m === 'individual' ? 'block' : 'none'; document.getElementById('panel-mix').style.display = m === 'mix' ? 'block' : 'none'; }
-
-        function addPlanta() {
-            const id = document.getElementById('plt-id').value.toUpperCase();
-            const p = { id, nombre: document.getElementById('plt-nombre').value, remojo: parseInt(document.getElementById('plt-remojo').value), oscuro: parseInt(document.getElementById('plt-oscuro').value), total: parseInt(document.getElementById('plt-total').value), gramos: parseInt(document.getElementById('plt-gramos').value), precio: parseFloat(document.getElementById('plt-precio').value) };
-            if (!db.plantas) db.plantas = [];
-            const idx = db.plantas.findIndex(x => x.id === id);
-            if (idx > -1) db.plantas[idx] = p; else db.plantas.push(p);
-            save();
-        }
-        function editPlanta(id) {
-            const p = db.plantas.find(x => x.id === id);
-            document.getElementById('plt-id').value = p.id;
-            document.getElementById('plt-nombre').value = p.nombre;
-            document.getElementById('plt-remojo').value = p.remojo;
-            document.getElementById('plt-oscuro').value = p.oscuro;
-            document.getElementById('plt-total').value = p.total;
-            document.getElementById('plt-gramos').value = p.gramos;
-            document.getElementById('plt-precio').value = p.precio;
-        }
-
-        function renderClientesTable(data) { document.getElementById('tbody-clientes').innerHTML = data.map(c => `<tr><td>${c.nombreComercial || c.nombre}</td><td>${c.nif || '-'}</td><td>${c.cobro || '-'}</td><td>${c.tel || '-'}</td><td><button class="btn btn-info" onclick="editCliente(${c.id})">E</button><button class="btn btn-danger" onclick="borrar('clientes',${c.id})">X</button></td></tr>`).join(''); }
-
-        function addCliente() {
-            const n_com = document.getElementById('cli-nombre-comercial').value;
-            const n = document.getElementById('cli-nombre').value;
-            const nif = document.getElementById('cli-nif').value;
-            const dir = document.getElementById('cli-dir').value;
-            const cp = document.getElementById('cli-cp').value;
-            const pob = document.getElementById('cli-pob').value;
-            const prov = document.getElementById('cli-prov').value;
-            const pais = document.getElementById('cli-pais').value;
-            const email = document.getElementById('cli-email').value;
-            const tel = document.getElementById('cli-tel').value;
-            const cobro = document.getElementById('cli-cobro').value;
-            const hiddenId = document.getElementById('cli-id').value;
-
-            if (n_com || n) {
-                if (!db.clientes) db.clientes = [];
-                if (hiddenId) {
-                    const idx = db.clientes.findIndex(x => x.id == hiddenId);
-                    if (idx > -1) {
-                        db.clientes[idx] = {
-                            id: Number(hiddenId), nombreComercial: n_com, nombre: n, nif: nif, dir: dir,
-                            cp: cp, pob: pob, prov: prov, pais: pais, email: email, tel: tel, cobro: cobro
-                        };
-                    }
-                } else {
-                    db.clientes.push({ id: Date.now(), nombreComercial: n_com, nombre: n, nif: nif, dir: dir, cp: cp, pob: pob, prov: prov, pais: pais, email: email, tel: tel, cobro: cobro });
-                }
-
-                // reset
-                document.getElementById('cli-nombre-comercial').value = '';
-                document.getElementById('cli-nombre').value = '';
-                document.getElementById('cli-nif').value = '';
-                document.getElementById('cli-dir').value = '';
-                document.getElementById('cli-cp').value = '';
-                document.getElementById('cli-pob').value = '';
-                document.getElementById('cli-prov').value = '';
-                document.getElementById('cli-pais').value = 'España';
-                document.getElementById('cli-email').value = '';
-                document.getElementById('cli-tel').value = '';
-                document.getElementById('cli-id').value = '';
-                save();
-            }
-        }
-
-        function editCliente(id) {
-            const c = db.clientes.find(x => x.id == id);
-            if (c) {
-                document.getElementById('cli-id').value = c.id;
-                document.getElementById('cli-nombre-comercial').value = c.nombreComercial || '';
-                document.getElementById('cli-nombre').value = c.nombre || '';
-                document.getElementById('cli-nif').value = c.nif || '';
-                document.getElementById('cli-dir').value = c.dir || '';
-                document.getElementById('cli-cp').value = c.cp || '';
-                document.getElementById('cli-pob').value = c.pob || '';
-                document.getElementById('cli-prov').value = c.prov || '';
-                document.getElementById('cli-pais').value = c.pais || '';
-                document.getElementById('cli-email').value = c.email || '';
-                document.getElementById('cli-tel').value = c.tel || '';
-                if (c.cobro) document.getElementById('cli-cobro').value = c.cobro;
-
-                showSection('clientes');
-            }
-        }
-
-        function addPlan() {
-            const editId = document.getElementById('plan-id-edicion').value;
-            const p = {
-                id: editId ? Number(editId) : Date.now(),
-                tipo: 'INDIVIDUAL',
-                cliente: document.getElementById('plan-cliente').value,
-                plantaId: document.getElementById('plan-planta').value,
-                bandeja: document.getElementById('plan-tipo-bandeja').value,
-                cant: parseInt(document.getElementById('plan-cant-ind').value),
-                frec: parseInt(document.getElementById('plan-frec').value),
-                fecha: document.getElementById('plan-fecha').value
-            };
-            if (p.fecha) {
-                if (!db.planes) db.planes = [];
-                if (editId) {
-                    const idx = db.planes.findIndex(x => x.id == editId);
-                    if (idx > -1) db.planes[idx] = p;
-                } else {
-                    db.planes.push(p);
-                }
-                document.getElementById('plan-id-edicion').value = '';
-                document.getElementById('btn-save-plan').innerText = 'Guardar Individual';
-                save();
-            }
-        }
-
-        function editPlan(id) {
-            const p = db.planes.find(x => x.id == id);
-            if (p && p.tipo === 'INDIVIDUAL') {
-                togglePlanModo('individual');
-                document.getElementById('plan-id-edicion').value = p.id;
-                document.getElementById('plan-cliente').value = p.cliente;
-                document.getElementById('plan-planta').value = p.plantaId;
-                document.getElementById('plan-tipo-bandeja').value = p.bandeja;
-                document.getElementById('plan-cant-ind').value = p.cant;
-                document.getElementById('plan-frec').value = p.frec;
-                document.getElementById('plan-fecha').value = p.fecha;
-                document.getElementById('btn-save-plan').innerText = 'Actualizar Plan';
-                updateDiasInfo();
-                showSection('planes');
-            } else {
-                alert("La edición de planes MIX aún no está disponible.");
-            }
-        }
-        function addPlanMix() {
-            let sel = [];
-            document.querySelectorAll('.mix-row').forEach(r => {
-                const chk = r.querySelector('.mix-chk'); const qty = r.querySelector('.mix-qty');
-                if (chk.checked && parseInt(qty.value) > 0) sel.push({ id: chk.value, cant: parseInt(qty.value) });
-            });
-            const p = { id: Date.now(), tipo: 'MIX', cliente: document.getElementById('plan-cliente').value, detalleMix: sel, bandeja: document.getElementById('plan-tipo-bandeja').value, frec: parseInt(document.getElementById('plan-frec').value), fechaEntrega: document.getElementById('plan-fecha-entrega').value };
-            if (sel.length > 0) { if (!db.planes) db.planes = []; db.planes.push(p); save(); togglePlanModo('individual'); }
-        }
-        function addLoteManual() {
-            const pltId = document.getElementById('lote-planta').value; const pltObj = db.plantas.find(x => x.id === pltId);
-            if (!db.ultimoCorrelativo) db.ultimoCorrelativo = 0; db.ultimoCorrelativo++;
-            const cod = pltId + document.getElementById('lote-fecha').value.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
-            if (!db.lotes) db.lotes = []; db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltObj.nombre, cliente: document.getElementById('lote-cliente').value, cant: document.getElementById('lote-cant').value, fecha: document.getElementById('lote-fecha').value });
-            save();
-        }
-        function generarEtiquetaCosecha() {
-            const loteCod = document.getElementById('cosecha-lote').value;
-            const fCosecha = document.getElementById('cosecha-fecha').value;
-            if (!loteCod || !fCosecha) { alert("Introduzca todos los datos"); return; }
-
-            const l = db.lotes.find(x => x.codigo === loteCod);
-            if (!l) return;
-
-            document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${l.cliente.toUpperCase()}`;
-            document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre.toUpperCase()}`;
-            document.getElementById('lbl-lote-box').innerHTML = `<strong>LOTE:</strong> ${l.codigo}`;
-            document.getElementById('lbl-siembra-box').innerHTML = `<strong>FECHA SIEMBRA:</strong> ${l.fecha}`;
-            document.getElementById('lbl-cosecha-box').innerHTML = `-> FECHA COSECHA: ${fCosecha} <-`;
-
-            document.getElementById('card-etiqueta-print').style.display = 'block';
-        }
-
-        function descargarPNG() {
-            html2canvas(document.getElementById('label-cosecha-box'), { useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Etiqueta_${document.getElementById('cosecha-lote').value}.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-
-        function renderLotesTable(data) { document.getElementById('tbody-lotes').innerHTML = data.map(l => `<tr><td>${l.codigo}</td><td>${l.plantaNombre}</td><td>${l.cliente}</td><td>${l.cant}</td><td>${l.fecha}</td><td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td></tr>`).join(''); }
-        function addVisita() { if (!db.visitas) db.visitas = []; db.visitas.push({ id: Date.now(), cliente: document.getElementById('visita-cliente').value, fecha: document.getElementById('visita-fecha').value, hora: document.getElementById('visita-hora').value, motivo: document.getElementById('visita-motivo').value }); save(); }
-        function renderVisitsCal() {
-            const grid = document.getElementById('visitas-grid'); if (!grid) return; grid.innerHTML = '';
-            document.getElementById('cal-title').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(curMonth).toUpperCase();
-            const totalDays = new Date(curMonth.getFullYear(), curMonth.getMonth() + 1, 0).getDate();
-            for (let d = 1; d <= totalDays; d++) {
-                const f = `${curMonth.getFullYear()}-${String(curMonth.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const tags = (db.visitas || []).filter(v => v.fecha === f).map(v => `<div class="visit-tag">${v.cliente}</div>`).join('');
-                grid.innerHTML += `<div class="calendar-day"><span class="day-num">${d}</span>${tags}</div>`;
-            }
-        }
-        function changeMonth(d) { curMonth.setMonth(curMonth.getMonth() + d); renderVisitsCal(); }
-        function toggleVisitsView(v) { document.getElementById('visitas-lista').style.display = v === 'lista' ? 'block' : 'none'; document.getElementById('visitas-calendario').style.display = v === 'calendario' ? 'block' : 'none'; }
-        function runCalc() { const p = db.plantas.find(x => x.id === document.getElementById('calc-planta').value); if (!p) return; const g = (p.gramos * (parseFloat(document.getElementById('calc-bandeja').value) / 1250)).toFixed(1); const coste = ((g / 1000) * (p.precio || 0)).toFixed(2); document.getElementById('calc-res').innerHTML = `<strong>${g}g</strong> / <span style="color:var(--primary)">Coste: ${coste}€</span>`; }
-        function filterLotes() { const q = document.getElementById('search-lote-cliente').value.toLowerCase(); renderLotesTable(db.lotes.filter(l => l.cliente.toLowerCase().includes(q) || l.codigo.toLowerCase().includes(q))); }
-        function filterClientes() { const q = document.getElementById('search-cliente').value.toLowerCase(); renderClientesTable(db.clientes.filter(c => (c.nombreComercial && c.nombreComercial.toLowerCase().includes(q)) || (c.nombre && c.nombre.toLowerCase().includes(q)) || (c.nif && c.nif.toLowerCase().includes(q)))); }
-        function borrar(k, id) { if (confirm("¿Borrar?")) { db[k] = db[k].filter(x => x.id != id); save(); } }
-        function exportData() { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `isla_db.json`; a.click(); }
-        function clearData() { if (confirm("¿BORRAR TODO?")) { db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], visitas: [], ultimoCorrelativo: 0 }; save(); } }
-        window.onload = initApp;
-    </script>
+    <script src="app.js"></script>
 </body>
 
 </html>
+```
