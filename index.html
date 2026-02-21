@@ -47,13 +47,16 @@
 
         body.mobile-view .sidebar {
             width: 100%;
-            height: 75px;
+            height: auto;
+            min-height: 80px;
             flex-direction: row;
             order: 2;
             z-index: 100;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
             white-space: nowrap;
+            padding-bottom: env(safe-area-inset-bottom);
+            background: #1a252f;
         }
 
         body.mobile-view .sidebar-header {
@@ -65,17 +68,20 @@
             flex-direction: row;
             padding: 0;
             width: 100%;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         body.mobile-view .nav-item {
             flex: 0 0 auto;
             justify-content: center;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-left: none;
             border-bottom: none;
             border-top: 4px solid transparent;
             flex-direction: column;
             gap: 5px;
+            min-width: 80px;
         }
 
         body.mobile-view .nav-item.active {
@@ -86,18 +92,19 @@
 
         body.mobile-view .nav-item i {
             margin-right: 0;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
         body.mobile-view .nav-item span {
             display: block;
-            font-size: 0.6rem;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
         body.mobile-view .main {
             order: 1;
-            padding: 10px;
-            padding-bottom: 20px;
+            padding: 15px;
+            padding-bottom: 25px;
             overflow-y: auto;
             flex-grow: 1;
         }
@@ -112,16 +119,41 @@
         body.mobile-view .card {
             padding: 15px;
             margin-bottom: 15px;
+            border-radius: 12px;
         }
 
         body.mobile-view input,
         body.mobile-view select {
             font-size: 16px;
-            padding: 12px;
+            padding: 14px;
+            border-radius: 8px;
         }
 
         body.mobile-view .grid-dashboard {
             grid-template-columns: 1fr;
+        }
+
+        body.mobile-view .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 15px;
+            font-size: 1.1rem;
+            margin-top: 10px !important;
+            margin-bottom: 5px;
+            border-radius: 8px;
+        }
+
+        body.mobile-view .btn-sm {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        body.mobile-view td .btn {
+            width: auto;
+            display: inline-block;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            margin-top: 0 !important;
         }
 
         .sidebar {
@@ -1043,23 +1075,32 @@
         }
 
         // --- INICIO ---
-        function autoDetectView() {
-            const isMobile = window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent);
+        function checkDeviceType() {
+            // Detección estricta de dispositivo móvil por userAgent y resolución
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const isMobileBrowser = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+            const isSmallScreen = window.innerWidth <= 768;
+            return isMobileBrowser || isSmallScreen;
+        }
+
+        function forceView() {
+            const isMobile = checkDeviceType();
             const body = document.body;
             const text = document.getElementById('view-text');
+
             if (isMobile) {
                 body.classList.add('mobile-view');
-                if (text) text.innerText = "Vista actual: Móvil";
+                if (text) text.innerHTML = '<i class="fas fa-desktop"></i><span>Vista actual:<br>MÓVIL</span>';
             } else {
                 body.classList.remove('mobile-view');
-                if (text) text.innerText = "Vista actual: PC";
+                if (text) text.innerHTML = 'Vista actual: PC';
             }
         }
 
-        window.addEventListener('resize', autoDetectView);
+        window.addEventListener('resize', () => { setTimeout(forceView, 200); });
 
         function initApp() {
-            autoDetectView();
+            forceView();
             if (sessionStorage.getItem('isla_auth') === 'true') {
                 document.getElementById('login-overlay').style.display = 'none';
             }
@@ -1081,10 +1122,10 @@
             const text = document.getElementById('view-text');
             if (body.classList.contains('mobile-view')) {
                 body.classList.remove('mobile-view');
-                if (text) text.innerText = "Vista actual: PC";
+                if (text) text.innerHTML = 'Vista actual: PC';
             } else {
                 body.classList.add('mobile-view');
-                if (text) text.innerText = "Vista actual: Móvil";
+                if (text) text.innerHTML = '<i class="fas fa-desktop"></i><span>Vista actual:<br>MÓVIL</span>';
             }
         }
 
