@@ -622,9 +622,10 @@
             padding: 15px;
             margin: 15px 0;
             text-align: left;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             background: #fdfdfd;
             font-size: 0.9rem;
+            font-weight: bold;
         }
 
         #login-overlay {
@@ -684,7 +685,7 @@
 
     <div id="modal-etiqueta">
         <div class="etiqueta-content">
-            <h3>🌱 Lote Generado</h3>
+            <h3 style="text-transform: uppercase;">🌱 LOTE GENERADO</h3>
             <div class="label-box" id="label-text"></div>
             <button class="btn btn-primary" onclick="copyLabel()"><i class="fas fa-copy"></i> Copiar Datos</button>
             <button class="btn btn-danger" onclick="closeLabel()" style="margin-top:10px;">Cerrar</button>
@@ -953,7 +954,7 @@
             </div>
             <div class="card" id="card-etiqueta-print" style="display:none;">
                 <div class="label-box" id="label-cosecha-box"
-                    style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family:'Courier New', monospace;">
+                    style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family: Arial, sans-serif;">
                     <div style="text-align:center; margin-bottom:10px;">
                         <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
                     </div>
@@ -1378,8 +1379,8 @@
 
             // MODIFICACIÓN: SE ELIMINÓ LA LÍNEA DE CANTIDAD DE LA ETIQUETA
             const labelHtml = `
-                <strong>CLIENTE:</strong> ${cliente}<br>
-                <strong>PRODUCTO:</strong> ${pltNombre}<br>
+                <strong>CLIENTE:</strong> ${cliente.toUpperCase()}<br>
+                <strong>PRODUCTO:</strong> ${pltNombre.toUpperCase()}<br>
                 <strong>FECHA SIEMBRA:</strong> ${fecha}<br>
                 <strong>LOTE:</strong> ${cod}<br>
                 <strong>BANDEJA:</strong> ${bandeja}
@@ -1563,8 +1564,8 @@
             const l = db.lotes.find(x => x.codigo === loteCod);
             if (!l) return;
 
-            document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${l.cliente}`;
-            document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre}`;
+            document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${l.cliente.toUpperCase()}`;
+            document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre.toUpperCase()}`;
             document.getElementById('lbl-lote-box').innerHTML = `<strong>LOTE:</strong> ${l.codigo}`;
             document.getElementById('lbl-siembra-box').innerHTML = `<strong>FECHA SIEMBRA:</strong> ${l.fecha}`;
             document.getElementById('lbl-cosecha-box').innerHTML = `-> FECHA COSECHA: ${fCosecha} <-`;
