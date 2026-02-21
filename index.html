@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microgreens La Isla - Gestión Profesional Cloud</title>
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="apple-touch-startup-image" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="La Isla">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <div id="login-overlay">
+            <div class="login-box">
+                <img src="logo.png" alt="Logo">
+                <h3>Acceso Restringido</h3>
+                <input type="password" id="login-pwd" placeholder="Contraseña">
+                <button class="btn btn-primary" onclick="checkLogin()" style="width: 100%;">Entrar</button>
+                <p id="login-err" style="color: red; display: none; margin-top: 10px; font-size: 0.8rem;">Contraseña
+                    incorrecta</p>
+            </div>
+        </div>
+
+        <div id="cloud-status">Conectando a la nube...</div>
+
+        <div id="modal-etiqueta">
+            <div class="etiqueta-content">
+                <h3 style="text-transform: uppercase;">🌱 LOTE GENERADO</h3>
+                <div class="label-box" id="label-text"></div>
+                <button class="btn btn-primary" onclick="copyLabel()"><i class="fas fa-copy"></i> Copiar Datos</button>
+                <button class="btn btn-danger" onclick="closeLabel()" style="margin-top:10px;">Cerrar</button>
+            </div>
+        </div>
+
+        <header class="top-nav">
+            <div class="top-nav-container">
+                <div class="nav-brand" onclick="showSection('dashboard')">
+                    <img src="logo.png" alt="Logo" class="nav-logo">
+                    <span class="nav-title">LA ISLA GESTIÓN</span>
+                </div>
+                <nav class="nav-menu">
+                    <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('clientes')"><i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('plantas')"><i class="fas fa-seedling"></i>
+                        <span>Plantas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('planes')"><i class="fas fa-calendar-alt"></i>
+                        <span>Planes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i>
+                        <span>Lotes</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('cosecha')"><i class="fas fa-leaf"></i>
+                        <span>Cosechas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i>
+                        <span>Visitas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i>
+                        <span>Calculadora</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('almacen')"><i class="fas fa-boxes"></i>
+                        <span>Almacén</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('notas')"><i class="fas fa-sticky-note"
+                            style="color:#f1c40f;"></i>
+                        <span>Notas</span>
+                    </div>
+                    <div class="nav-item nav-config" onclick="showSection('config')"><i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="content-container">
+                <section id="dashboard" class="section active">
+                    <div class="section-header">
+                        <h2>Dashboard</h2>
+                        <p>Resumen general operativo</p>
+                    </div>
+                    <div class="grid-dashboard">
+                        <div class="card stat-card">
+                            <h3>Clientes</h3>
+                            <p id="stat-clientes">0</p>
+                        </div>
+                        <div class="card stat-card">
+                            <h3>Planes</h3>
+                            <p id="stat-planes">0</p>
+                        </div>
+                        <div class="card stat-card">
+                            <h3>Lotes</h3>
+                            <p id="stat-lotes">0</p>
+                        </div>
+                    </div>
+                    <div class="calendar-accordion">
+                        <div class="calendar-header" onclick="toggleCalendar()">
+                            <span><i class="fas fa-list-check"></i> TAREAS DIARIAS</span>
+                            <i id="cal-icon" class="fas fa-chevron-down"></i>
+                        </div>
+                        <div id="calendar-body" class="calendar-content"></div>
+                    </div>
+                </section>
+
+                <section id="clientes" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Clientes</h2>
+                        <p>Administre sus clientes y datos de facturación</p>
+                    </div>
+                    <div class="card">
+                        <input type="hidden" id="cli-id" value="">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Nombre Comercial</label><input type="text"
+                                    id="cli-nombre-comercial">
+                            </div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="cli-nombre"></div>
+                            <div class="form-group"><label>NIF / CIF</label><input type="text" id="cli-nif"></div>
+                            <div class="form-group"><label>Dirección Fiscal</label><input type="text" id="cli-dir">
+                            </div>
+                            <div class="form-group"><label>Código Postal</label><input type="text" id="cli-cp"></div>
+                            <div class="form-group"><label>Población</label><input type="text" id="cli-pob"></div>
+                            <div class="form-group"><label>Provincia</label><input type="text" id="cli-prov"></div>
+                            <div class="form-group"><label>País</label><input type="text" id="cli-pais"></div>
+                            <div class="form-group"><label>Email</label><input type="email" id="cli-email"></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
+                            <div class="form-group"><label>Tipo de Cobro</label>
+                                <select id="cli-cobro">
+                                    <option value="Factura 30 dias">Factura 30 días</option>
+                                    <option value="Factura Inmediata">Factura Inmediata</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addCliente()" style="margin-top:15px;"
+                            id="btn-save-cliente">Añadir / Actualizar Cliente</button>
+                    </div>
+                    <div class="card">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-cliente"
+                                placeholder="Buscar cliente..." onkeyup="filterClientes()"></div>
+                        <table id="table-clientes">
+                            <thead>
+                                <tr>
+                                    <th>Nombre Comercial</th>
+                                    <th>NIF</th>
+                                    <th>Cobro</th>
+                                    <th>Teléfono</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-clientes"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="plantas" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Plantas</h2>
+                        <p>Catálogo de semillas y parámetros de cultivo</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>ID (3 letras)</label><input type="text" id="plt-id"
+                                    maxlength="3">
+                            </div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="plt-nombre"></div>
+                            <div class="form-group"><label>Remojo (h)</label><input type="number" id="plt-remojo"
+                                    value="0">
+                            </div>
+                            <div class="form-group"><label>Oscuro (d)</label><input type="number" id="plt-oscuro"
+                                    value="3">
+                            </div>
+                            <div class="form-group"><label>Total (d)</label><input type="number" id="plt-total"
+                                    value="10">
+                            </div>
+                            <div class="form-group"><label>Gr/Band. Est.</label><input type="number" id="plt-gramos"
+                                    value="200"></div>
+                            <div class="form-group"><label>Precio/Kg (€)</label><input type="number" id="plt-precio"
+                                    value="0" step="0.01"></div>
+                            <div class="form-group"><label>Stock Mín. (Kg)</label><input type="number"
+                                    id="plt-stock-min" value="1" step="0.1"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addPlanta()" style="margin-top:15px;">Guardar /
+                            Actualizar
+                            Planta</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-plantas">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Remojo</th>
+                                    <th>Total</th>
+                                    <th>Precio/Kg</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="planes" class="section">
+                    <div class="section-header">
+                        <h2>Planes de Siembra</h2>
+                        <p>Programe siembras regulares para sus clientes</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Cliente</label><select id="plan-cliente"></select></div>
+                            <div class="form-group"><label>Tipo Bandeja</label>
+                                <select id="plan-tipo-bandeja">
+                                    <option value="Estándar (25x50)">Estándar (25x50)</option>
+                                    <option value="Cuadrada (12x12)">Cuadrada (12x12)</option>
+                                    <option value="Pequeña (9x9)">Pequeña (9x9)</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Frecuencia (d)</label><input type="number" id="plan-frec"
+                                    value="7">
+                            </div>
+                        </div>
+
+                        <div id="panel-individual"
+                            style="margin-top:20px; padding:15px; border:1px solid #ddd; border-radius:8px;">
+                            <input type="hidden" id="plan-id-edicion" value="">
+                            <p style="font-weight:bold; color:var(--primary);">MODO INDIVIDUAL (POR ENTREGA)</p>
+                            <div
+                                style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                                <div class="form-group">
+                                    <label>Planta</label>
+                                    <select id="plan-planta" onchange="updateDiasInfo()"></select>
+                                    <small id="plan-dias-info"
+                                        style="color: var(--primary); font-weight: bold; display: block; margin-top: 5px;"></small>
+                                </div>
+                                <div class="form-group"><label>Nº Bandejas</label><input type="number"
+                                        id="plan-cant-ind" value="1"></div>
+                                <div class="form-group">
+                                    <label>Fecha Entrega Final</label>
+                                    <input type="date" id="plan-fecha" onchange="validateLeadTime()">
+                                    <div id="date-alert" class="alert-date">⚠️ No hay tiempo suficiente para cultivar
+                                        esta
+                                        planta.</div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:10px;">
+                                <button class="btn btn-primary" id="btn-save-plan" onclick="addPlan()">Guardar
+                                    Individual</button>
+                                <button class="btn btn-purple" onclick="togglePlanModo('mix')">Cambiar a Modo
+                                    MIX</button>
+                            </div>
+                        </div>
+
+                        <div id="panel-mix" class="mix-selector-box">
+                            <p style="font-weight:bold; color:var(--purple);">MODO MIX</p>
+                            <div class="form-group" style="max-width:300px;">
+                                <label>Fecha 1ª Entrega (Automática)</label>
+                                <input type="date" id="plan-fecha-entrega" readonly
+                                    style="background:#f0f4f8; pointer-events:none;">
+                            </div>
+                            <div class="plt-list-grid" id="mix-lista-check"></div>
+                            <div id="mix-lead-info" class="info-mix-date"></div>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
+                                <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <table id="table-planes">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Tipo</th>
+                                    <th>Detalle de Plantas</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="lotes" class="section">
+                    <div class="section-header">
+                        <h2>Gestión de Lotes</h2>
+                        <p>Trazabilidad individual de bandejas activas</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Planta</label><select id="lote-planta"></select></div>
+                            <div class="form-group"><label>Cliente</label><select id="lote-cliente"></select></div>
+                            <div class="form-group"><label>Cant. Bandejas</label><input type="number" id="lote-cant"
+                                    value="1">
+                            </div>
+                            <div class="form-group"><label>Fecha Siembra</label><input type="date" id="lote-fecha">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:15px;" onclick="addLoteManual()">Generar Lote
+                            Progresivo</button>
+                    </div>
+                    <div class="card">
+                        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="search-lote-cliente"
+                                placeholder="Buscar por cliente/código..." onkeyup="filterLotes()"></div>
+                        <table id="table-lotes">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Planta</th>
+                                    <th>Cliente</th>
+                                    <th>Cant</th>
+                                    <th>Siembra</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-lotes"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="cosecha" class="section">
+                    <div class="section-header">
+                        <h2>Etiquetas de Cosecha</h2>
+                        <p>Generación de albaranes y etiquetas para el empaquetado final</p>
+                    </div>
+                    <div class="card">
+                        <p>Selecciona un Lote existente e indica su Fecha de Cosecha para generar la etiqueta final.</p>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Seleccione Lote</label><select id="cosecha-lote"></select>
+                            </div>
+                            <div class="form-group"><label>Fecha de Cosecha</label><input type="date"
+                                    id="cosecha-fecha"></div>
+                        </div>
+                        <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
+                                class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
+                    </div>
+                    <div class="card" id="card-etiqueta-print" style="display:none;">
+                        <div class="label-box" id="label-cosecha-box"
+                            style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family: Arial, sans-serif;">
+                            <div style="text-align:center; margin-bottom:10px;">
+                                <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+                            </div>
+                            <div id="lbl-cliente-box"></div>
+                            <div id="lbl-prod-box"></div>
+                            <div id="lbl-lote-box"></div>
+                            <div id="lbl-siembra-box"></div>
+                            <div id="lbl-cosecha-box" style="font-weight:bold; margin-top:5px;"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
+                                class="fas fa-download"></i> Descargar PNG</button>
+                    </div>
+                </section>
+
+                <section id="visitas" class="section">
+                    <div class="section-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div>
+                                <h2>Agenda de Visitas</h2>
+                                <p>Programe mantenimientos o entregas en persona</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary"
+                                    onclick="toggleVisitsView('calendario')">Calendario</button>
+                                <button class="btn btn-primary" onclick="toggleVisitsView('lista')">Lista</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Cliente</label><select id="visita-cliente"></select></div>
+                            <div class="form-group"><label>Fecha</label><input type="date" id="visita-fecha"></div>
+                            <div class="form-group"><label>Hora</label><input type="time" id="visita-hora"></div>
+                            <div class="form-group"><label>Motivo</label><input type="text" id="visita-motivo"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()">Registrar
+                            Visita</button>
+                    </div>
+                    <div id="visitas-calendario" class="calendar-container">
+                        <div class="calendar-nav"><button onclick="changeMonth(-1)"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <h3 id="cal-title">MES</h3><button onclick="changeMonth(1)"><i
+                                    class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid" id="visitas-grid"></div>
+                    </div>
+                    <div id="visitas-lista" class="card" style="display:none;">
+                        <table id="table-visitas">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Motivo</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="calculadora" class="section">
+                    <div class="section-header">
+                        <h2>Calculadora de Semillas</h2>
+                        <p>Estime el rendimiento por bandeja instantáneamente</p>
+                    </div>
+                    <div class="card">
+                        <div class="form-group"><label>Planta</label><select id="calc-planta"
+                                onchange="runCalc()"></select>
+                        </div>
+                        <div class="form-group"><label>Tipo Bandeja</label>
+                            <select id="calc-bandeja" onchange="runCalc()">
+                                <option value="1250">Estándar (25x50)</option>
+                                <option value="144">Cuadrada (12x12)</option>
+                                <option value="81">Pequeña (9x9)</option>
+                            </select>
+                        </div>
+                        <div id="calc-res" class="card"
+                            style="margin-top:15px; background:#e8f6ed; font-size: 1.2rem; text-align: center;">
+                            Resultados...
+                        </div>
+                    </div>
+                </section>
+
+                <section id="almacen" class="section">
+                    <div class="section-header">
+                        <h2>Almacén & Inventario</h2>
+                        <p>Control de stock de semillas y otros insumos</p>
+                    </div>
+
+                    <h3 style="margin-top:20px; color:var(--primary-dark);">Stock de Semillas</h3>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Semilla (Planta)</label><select
+                                    id="stock-semilla-id"></select></div>
+                            <div class="form-group"><label>Añadir Cantidad (Kg)</label><input type="number"
+                                    id="stock-semilla-cant" value="1" step="0.1"></div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:15px;" onclick="addStockSemilla()"><i
+                                class="fas fa-plus"></i> Registrar Entrada de Semillas</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-almacen-semillas">
+                            <thead>
+                                <tr>
+                                    <th>Semilla (ID)</th>
+                                    <th>Nombre Planta</th>
+                                    <th>Stock Actual (Kg)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-almacen-semillas"></tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="margin-top:30px; color:var(--purple);">Otros Insumos (Materiales)</h3>
+                    <div class="card">
+                        <input type="hidden" id="insumo-id" value="">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Nombre (Ej: Sustrato, Cajas)</label><input type="text"
+                                    id="insumo-nombre"></div>
+                            <div class="form-group"><label>Cantidad</label><input type="number" id="insumo-cant"
+                                    value="0" step="0.1"></div>
+                            <div class="form-group"><label>Unidad de Medida</label>
+                                <select id="insumo-unidad">
+                                    <option value="Litros">Litros (L)</option>
+                                    <option value="Unidades">Unidades (Ud)</option>
+                                    <option value="Kg">Kilos (Kg)</option>
+                                    <option value="Metros">Metros (m)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-purple" style="margin-top:15px;" id="btn-save-insumo"
+                            onclick="addInsumo()"><i class="fas fa-save"></i> Guardar Insumo</button>
+                    </div>
+                    <div class="card">
+                        <table id="table-almacen-insumos">
+                            <thead>
+                                <tr>
+                                    <th>Insumo</th>
+                                    <th>Stock</th>
+                                    <th>Unidad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-almacen-insumos"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="notas" class="section">
+                    <div class="section-header">
+                        <h2>Bloc de Notas (Recordatorios)</h2>
+                        <p>Anote pendientes y tareas rápidas</p>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>Nuevo Recordatorio</label>
+                            <textarea id="nota-texto" rows="3"
+                                placeholder="Escribe tu recordatorio aquí... (Ej: Comprar semillas de rábano)"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; font-size: 1rem; resize: vertical; margin-bottom: 10px;"></textarea>
+                        </div>
+                        <div class="form-group" style="max-width: 200px;">
+                            <label>Fecha Límite (Opcional)</label>
+                            <input type="date" id="nota-fecha" style="width: 100%;">
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addNota()"><i
+                                class="fas fa-plus"></i>
+                            Añadir Nota</button>
+                    </div>
+                    <div id="notas-grid" class="notas-grid"></div>
+                </section>
+
+                <section id="config" class="section">
+                    <div class="section-header">
+                        <h2>Configuración & Sincronización</h2>
+                        <p>Seguridad de datos y copias locales</p>
+                    </div>
+                    <div class="card">
+                        <p>Usa el botón "Recuperar Datos" para cargar tu archivo anterior en la nube.</p>
+                        <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                            <input type="file" id="import-file" style="display:none" onchange="importToCloud(event)">
+                            <button class="btn btn-info" onclick="document.getElementById('import-file').click()"><i
+                                    class="fas fa-upload"></i> RECUPERAR DATOS (IMPORTAR JSON)</button>
+                            <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i>
+                                Exportar
+                                Copia JSON</button>
+                            <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar
+                                Todo</button>
+                        </div>
+                    </div>
+                </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
+```
