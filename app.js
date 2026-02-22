@@ -13,7 +13,8 @@ async function hashString(str) {
     return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-const SECRET_HASH = "33cf990007d36b063ef5a6a26b15798147235f8e1d40db87466998dd3d12535b";
+const SECRET_HASH = "33cf990007d36b063ef5a6a26b15798147235f8e1d40db87466998dd3d12535b"; // SHA-256 of 'Peluylola2022'
+
 async function checkLogin() {
     const pwd = document.getElementById('login-pwd').value;
     const hashedInput = await hashString(pwd);
