@@ -407,6 +407,8 @@ textarea {
     border-radius: 8px;
     box-sizing: border-box;
     font-family: inherit;
+    font-size: 16px;
+    /* Evita auto-zoom en iOS */
     background-color: #f9fbfd;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
