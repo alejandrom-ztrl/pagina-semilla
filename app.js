@@ -458,8 +458,25 @@ function showSection(id) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const items = document.querySelectorAll('.nav-item');
     items.forEach(item => { if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`showSection('${id}')`)) item.classList.add('active'); });
+
+    // Estado activo en navegación móvil
+    document.querySelectorAll('.nav-item-mobile').forEach(n => n.classList.remove('active'));
+    const mobileTab = document.getElementById(`mob-nav-${id}`);
+    if (mobileTab) mobileTab.classList.add('active');
+
     document.getElementById(id).classList.add('active');
     if (id === 'visitas') renderVisitsCal();
+
+    // Cerrar menú Más si se abre desde ahí
+    const overlay = document.getElementById('more-menu-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function toggleMoreMenu() {
+    const overlay = document.getElementById('more-menu-overlay');
+    if (overlay) {
+        overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
+    }
 }
 function toggleCalendar() { document.getElementById('calendar-body').classList.toggle('show'); }
 function togglePlanModo(m) { document.getElementById('panel-individual').style.display = m === 'individual' ? 'block' : 'none'; document.getElementById('panel-mix').style.display = m === 'mix' ? 'block' : 'none'; }
