@@ -632,23 +632,42 @@ function addPlan() {
 
 function editPlan(id) {
     const p = db.planes.find(x => x.id == id);
-    if (p && p.tipo === 'INDIVIDUAL') {
+    if (!p) return;
+
+    document.getElementById('plan-id-edicion').value = p.id;
+    document.getElementById('plan-cliente').value = p.cliente;
+    document.getElementById('plan-tipo-bandeja').value = p.bandeja;
+    document.getElementById('plan-frec').value = p.frec;
+
+    if (p.tipo === 'INDIVIDUAL') {
         togglePlanModo('individual');
-        document.getElementById('plan-id-edicion').value = p.id;
-        document.getElementById('plan-cliente').value = p.cliente;
         document.getElementById('plan-planta').value = p.plantaId;
-        document.getElementById('plan-tipo-bandeja').value = p.bandeja;
         document.getElementById('plan-cant-ind').value = p.cant;
-        document.getElementById('plan-frec').value = p.frec;
         document.getElementById('plan-fecha').value = p.fecha;
         document.getElementById('btn-save-plan').innerText = 'Actualizar Plan';
         updateDiasInfo();
-        showSection('planes');
     } else {
-        alert("La edición de planes MIX aún no está disponible.");
+        togglePlanModo('mix');
+        // Reset check panel
+        document.querySelectorAll('.mix-chk').forEach(c => c.checked = false);
+        document.querySelectorAll('.mix-qty').forEach(q => q.value = 0);
+
+        // Load data
+        p.detalleMix.forEach(item => {
+            const row = Array.from(document.querySelectorAll('.mix-row')).find(r => r.querySelector('.mix-chk').value === item.id);
+            if (row) {
+                row.querySelector('.mix-chk').checked = true;
+                row.querySelector('.mix-qty').value = item.cant;
+            }
+        });
+        document.getElementById('plan-fecha-entrega').value = p.fechaEntrega;
+        document.getElementById('btn-save-mix').innerText = 'Actualizar Plan Mix';
+        calcMixLeadTime();
     }
+    showSection('planes');
 }
 function addPlanMix() {
+    const editId = document.getElementById('plan-id-edicion').value;
     let sel = [];
     let stockWarnings = [];
     const bandeja = document.getElementById('plan-tipo-bandeja').value;
@@ -663,13 +682,15 @@ function addPlanMix() {
             sel.push({ id: pltId, cant: cant });
 
             // STOCK VALIDATION
-            const pltObj = db.plantas.find(x => x.id === pltId);
-            if (pltObj) {
-                const area = B_AREAS[bandeja] || 1250;
-                const grPorBandeja = pltObj.gramos * (area / 1250);
-                const kgTotales = (grPorBandeja * cant) / 1000;
-                if ((pltObj.stockKg || 0) < kgTotales) {
-                    stockWarnings.push(`- ${pltObj.nombre}: Necesitas ${kgTotales.toFixed(2)} Kg (Quedan ${(pltObj.stockKg || 0).toFixed(2)} Kg)`);
+            if (!editId) {
+                const pltObj = db.plantas.find(x => x.id === pltId);
+                if (pltObj) {
+                    const area = B_AREAS[bandeja] || 1250;
+                    const grPorBandeja = pltObj.gramos * (area / 1250);
+                    const kgTotales = (grPorBandeja * cant) / 1000;
+                    if ((pltObj.stockKg || 0) < kgTotales) {
+                        stockWarnings.push(`- ${pltObj.nombre}: Necesitas ${kgTotales.toFixed(2)} Kg (Quedan ${(pltObj.stockKg || 0).toFixed(2)} Kg)`);
+                    }
                 }
             }
         }
@@ -679,11 +700,28 @@ function addPlanMix() {
         if (!confirm(`⚠️ ATENCIÓN: Stock bajo para las siguientes plantas de este Mix:\n` + stockWarnings.join("\n") + `\n\n¿Deseas guardar el Plan Mix de todas formas?`)) return;
     }
 
-    const p = { id: Date.now(), tipo: 'MIX', cliente: document.getElementById('plan-cliente').value, detalleMix: sel, bandeja: bandeja, frec: parseInt(document.getElementById('plan-frec').value), fechaEntrega: document.getElementById('plan-fecha-entrega').value };
+    const p = {
+        id: editId ? Number(editId) : Date.now(),
+        tipo: 'MIX',
+        cliente: document.getElementById('plan-cliente').value,
+        detalleMix: sel,
+        bandeja: bandeja,
+        frec: parseInt(document.getElementById('plan-frec').value),
+        fechaEntrega: document.getElementById('plan-fecha-entrega').value
+    };
+
     if (sel.length > 0) {
         if (!db.planes) db.planes = [];
-        db.planes.push(p);
+        if (editId) {
+            const idx = db.planes.findIndex(x => x.id == editId);
+            if (idx > -1) db.planes[idx] = p;
+        } else {
+            db.planes.push(p);
+        }
         save('planes');
+        // Reset
+        document.getElementById('plan-id-edicion').value = '';
+        document.getElementById('btn-save-mix').innerText = 'Guardar Plan Mix';
         togglePlanModo('individual');
     }
 }
@@ -710,6 +748,13 @@ function generarEtiquetaCosecha() {
     const l = db.lotes.find(x => x.codigo === loteCod);
     if (!l) return;
 
+    // Registrar distribución si el cliente es diferente al original o si no está en la lista
+    if (!l.distribucion) l.distribucion = [];
+    if (!l.distribucion.includes(clienteEditado)) {
+        l.distribucion.push(clienteEditado);
+        save('lotes');
+    }
+
     document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${clienteEditado.toUpperCase()}`;
     document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre.toUpperCase()}`;
     document.getElementById('lbl-lote-box').innerHTML = `<strong>LOTE:</strong> ${l.codigo}`;
@@ -728,7 +773,24 @@ function descargarPNG() {
     });
 }
 
-function renderLotesTable(data) { document.getElementById('tbody-lotes').innerHTML = data.length === 0 ? `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #999;">No hay lotes registrados</td></tr>` : data.map(l => `<tr><td>${l.codigo}</td><td>${l.plantaNombre}</td><td>${l.cliente}</td><td>${l.cant}</td><td>${l.fecha}</td><td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td></tr>`).join(''); }
+function renderLotesTable(data) {
+    document.getElementById('tbody-lotes').innerHTML = data.length === 0
+        ? `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #999;">No hay lotes registrados</td></tr>`
+        : data.map(l => {
+            const distTags = (l.distribucion || []).map(d => `<span class="dist-tag">${d}</span>`).join('');
+            return `<tr>
+                <td>${l.codigo}</td>
+                <td>${l.plantaNombre}</td>
+                <td>
+                    <div style="font-weight:600;">${l.cliente}</div>
+                    <div class="dist-container">${distTags}</div>
+                </td>
+                <td>${l.cant}</td>
+                <td>${l.fecha}</td>
+                <td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td>
+            </tr>`;
+        }).join('');
+}
 function addVisita() { if (!db.visitas) db.visitas = []; db.visitas.push({ id: Date.now(), cliente: document.getElementById('visita-cliente').value, fecha: document.getElementById('visita-fecha').value, hora: document.getElementById('visita-hora').value, motivo: document.getElementById('visita-motivo').value }); save('visitas'); }
 function renderVisitsCal() {
     const grid = document.getElementById('visitas-grid'); if (!grid) return; grid.innerHTML = '';
@@ -748,6 +810,16 @@ function filterClientes() { const q = document.getElementById('search-cliente').
 function borrar(k, id) { if (confirm("¿Borrar?")) { db[k] = db[k].filter(x => x.id != id); save(k); } }
 function exportData() { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `isla_db.json`; a.click(); }
 function clearData() { if (confirm("¿BORRAR TODO?")) { db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], visitas: [], notas: [], ultimoCorrelativo: 0 }; save(); } }
+function reiniciarLotes() {
+    if (confirm("¿Deseas BORRAR TODOS los lotes y reiniciar el contador a 0? Esta acción no se puede deshacer de forma sencilla.")) {
+        db.lotes = [];
+        db.ultimoCorrelativo = 0;
+        save(['lotes', 'ultimoCorrelativo']);
+        renderLotesTable(db.lotes);
+        initApp(); // Refrescar combos y estados
+        alert("Lotes reiniciados con éxito.");
+    }
+}
 window.onload = initApp;
 
 function addNota() {

@@ -277,7 +277,8 @@
                             <div class="plt-list-grid" id="mix-lista-check"></div>
                             <div id="mix-lead-info" class="info-mix-date"></div>
                             <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button class="btn btn-purple" onclick="addPlanMix()">Guardar Plan Mix</button>
+                                <button class="btn btn-purple" id="btn-save-mix" onclick="addPlanMix()">Guardar Plan
+                                    Mix</button>
                                 <button class="btn" onclick="togglePlanModo('individual')">Volver a Individual</button>
                             </div>
                         </div>
@@ -548,6 +549,8 @@
                             <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i>
                                 Exportar
                                 Copia JSON</button>
+                            <button class="btn btn-warning" onclick="reiniciarLotes()"><i class="fas fa-undo"></i>
+                                Reiniciar Lotes a 0</button>
                             <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar
                                 Todo</button>
                         </div>

@@ -430,8 +430,34 @@ textarea:focus {
     font-weight: 600;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    transition: transform 0.1s, filter 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+}
+
+/* Estilos para distribución de lotes */
+.dist-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.dist-tag {
+    font-size: 0.65rem;
+    background: #eef2f7;
+    color: #64748b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+gap: 8px;
+transition: transform 0.1s,
+filter 0.2s,
+box-shadow 0.2s;
 }
 
 .btn:hover {
