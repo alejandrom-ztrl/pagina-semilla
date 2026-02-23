@@ -551,6 +551,56 @@
                     </div>
                 </section>
         </main>
+
+        <nav class="mobile-bottom-nav">
+            <div class="nav-item-mobile active" id="mob-nav-dashboard" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item-mobile" id="mob-nav-clientes" onclick="showSection('clientes')">
+                <i class="fas fa-users"></i>
+                <span>Clientes</span>
+            </div>
+            <div class="nav-item-mobile" id="mob-nav-lotes" onclick="showSection('lotes')">
+                <i class="fas fa-barcode"></i>
+                <span>Lotes</span>
+            </div>
+            <div class="nav-item-mobile" id="mob-nav-planes" onclick="showSection('planes')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Planes</span>
+            </div>
+            <div class="nav-item-mobile" id="mob-nav-almacen" onclick="showSection('almacen')">
+                <i class="fas fa-boxes"></i>
+                <span>Almacén</span>
+            </div>
+            <div class="nav-item-mobile" onclick="toggleMoreMenu()">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>Más</span>
+            </div>
+        </nav>
+
+        <div id="more-menu-overlay" class="more-menu-overlay" onclick="toggleMoreMenu()">
+            <div class="more-menu-content" onclick="event.stopPropagation()">
+                <div class="more-menu-header">
+                    <h3>Más Opciones</h3>
+                    <button class="close-more" onclick="toggleMoreMenu()">&times;</button>
+                </div>
+                <div class="more-menu-grid">
+                    <div class="more-item" onclick="showSection('plantas')"><i
+                            class="fas fa-seedling"></i><span>Plantas</span></div>
+                    <div class="more-item" onclick="showSection('cosecha')"><i
+                            class="fas fa-leaf"></i><span>Cosechas</span></div>
+                    <div class="more-item" onclick="showSection('visitas')"><i
+                            class="fas fa-map-marker-alt"></i><span>Visitas</span></div>
+                    <div class="more-item" onclick="showSection('calculadora')"><i
+                            class="fas fa-calculator"></i><span>Calculadora</span></div>
+                    <div class="more-item" onclick="showSection('notas')"><i
+                            class="fas fa-sticky-note"></i><span>Notas</span></div>
+                    <div class="more-item" onclick="showSection('config')"><i
+                            class="fas fa-cog"></i><span>Config.</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
