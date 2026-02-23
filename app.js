@@ -694,15 +694,23 @@ function addLoteManual() {
     if (!db.lotes) db.lotes = []; db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltObj.nombre, cliente: document.getElementById('lote-cliente').value, cant: document.getElementById('lote-cant').value, fecha: document.getElementById('lote-fecha').value });
     save(['lotes', 'ultimoCorrelativo']);
 }
+function updateCosechaCliente() {
+    const loteCod = document.getElementById('cosecha-lote').value;
+    const l = db.lotes.find(x => x.codigo === loteCod);
+    if (l) {
+        document.getElementById('cosecha-cliente').value = l.cliente;
+    }
+}
 function generarEtiquetaCosecha() {
     const loteCod = document.getElementById('cosecha-lote').value;
     const fCosecha = document.getElementById('cosecha-fecha').value;
-    if (!loteCod || !fCosecha) { alert("Introduzca todos los datos"); return; }
+    const clienteEditado = document.getElementById('cosecha-cliente').value;
+    if (!loteCod || !fCosecha || !clienteEditado) { alert("Introduzca todos los datos"); return; }
 
     const l = db.lotes.find(x => x.codigo === loteCod);
     if (!l) return;
 
-    document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${l.cliente.toUpperCase()}`;
+    document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${clienteEditado.toUpperCase()}`;
     document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre.toUpperCase()}`;
     document.getElementById('lbl-lote-box').innerHTML = `<strong>LOTE:</strong> ${l.codigo}`;
     document.getElementById('lbl-siembra-box').innerHTML = `<strong>FECHA SIEMBRA:</strong> ${l.fecha}`;
