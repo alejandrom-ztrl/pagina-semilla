@@ -1,4 +1,4 @@
-const CACHE_NAME = 'isla-cache-v7';
+const CACHE_NAME = 'isla-cache-v13';
 const urlsToCache = [
     './',
     './index.html',

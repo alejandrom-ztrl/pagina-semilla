@@ -42,6 +42,20 @@
             </div>
         </div>
 
+        <div id="modal-resumen-flores" class="modal-overlay"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:4000; align-items:center; justify-content:center;">
+            <div class="card" style="width:90%; max-width:500px; padding:25px; position:relative;">
+                <h3 style="margin-top:0;">📋 Resumen de Pedido a Proveedor</h3>
+                <div id="resumen-flores-text"
+                    style="background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px; white-space:pre-wrap; font-family:monospace; max-height:300px; overflow-y:auto;">
+                </div>
+                <button class="btn btn-primary" style="width:100%;" onclick="copyResumenFlores()"><i
+                        class="fas fa-copy"></i> Copiar Resumen</button>
+                <button class="btn btn-danger" style="width:100%; margin-top:10px;"
+                    onclick="closeResumenFlores()">Cerrar</button>
+            </div>
+        </div>
+
         <header class="top-nav">
             <div class="top-nav-container">
                 <div class="nav-brand" onclick="showSection('dashboard')">
@@ -64,13 +78,16 @@
                     <div class="nav-item" onclick="showSection('lotes')"><i class="fas fa-barcode"></i>
                         <span>Lotes</span>
                     </div>
-                    <div class="nav-item" onclick="showSection('cosecha')"><i class="fas fa-leaf"></i>
+                    <div class="nav-item" onclick="showSection('cosechas')"><i class="fas fa-leaf"></i>
                         <span>Cosechas</span>
                     </div>
-                    <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-map-marker-alt"></i>
+                    <div class="nav-item" onclick="showSection('flores')"><i class="fas fa-spa"></i>
+                        <span>Flores</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('visitas')"><i class="fas fa-calendar-alt"></i>
                         <span>Visitas</span>
                     </div>
-                    <div class="nav-item" onclick="showSection('calculadora')"><i class="fas fa-calculator"></i>
+                    <div class="nav-item" onclick="showSection('calc')"><i class="fas fa-calculator"></i>
                         <span>Calculadora</span>
                     </div>
                     <div class="nav-item" onclick="showSection('almacen')"><i class="fas fa-boxes"></i>
@@ -535,6 +552,51 @@
                     <div id="notas-grid" class="notas-grid"></div>
                 </section>
 
+                <section id="flores" class="section">
+                    <div class="section-header">
+                        <h2>Pedidos de Flores</h2>
+                        <p>Gestión de pedidos semanales de flores frescas y deshidratadas</p>
+                    </div>
+                    <div class="card">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label>Cliente</label><select id="fl-cliente"></select></div>
+                            <div class="form-group"><label>Flor / Producto</label><select id="fl-producto"></select>
+                            </div>
+                            <div class="form-group"><label>Frecuencia</label>
+                                <select id="fl-frecuencia">
+                                    <option value="1 vez por semana">1 vez por semana</option>
+                                    <option value="2 veces por semana">2 veces por semana</option>
+                                    <option value="Quincenal">Quincenal</option>
+                                    <option value="Puntual">Puntual</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Cant. (Bandejas)</label><input type="number" id="fl-cant"
+                                    value="1" min="1"></div>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button class="btn btn-purple" onclick="addPedidoFlor()"><i class="fas fa-plus"></i> Guardar
+                                Pedido</button>
+                            <button class="btn btn-info" onclick="generarResumenFlores()"><i
+                                    class="fas fa-file-alt"></i> Generar Resumen</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <table id="table-flores">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Producto</th>
+                                    <th>Frecuencia</th>
+                                    <th>Cant.</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-flores"></tbody>
+                        </table>
+                    </div>
+                </section>
+
                 <section id="config" class="section">
                     <div class="section-header">
                         <h2>Configuración & Sincronización</h2>
@@ -594,11 +656,13 @@
                 <div class="more-menu-grid">
                     <div class="more-item" onclick="showSection('plantas')"><i
                             class="fas fa-seedling"></i><span>Plantas</span></div>
-                    <div class="more-item" onclick="showSection('cosecha')"><i
+                    <div class="more-item" onclick="showSection('cosechas')"><i
                             class="fas fa-leaf"></i><span>Cosechas</span></div>
+                    <div class="more-item" onclick="showSection('flores')"><i class="fas fa-spa"></i><span>Flores</span>
+                    </div>
                     <div class="more-item" onclick="showSection('visitas')"><i
-                            class="fas fa-map-marker-alt"></i><span>Visitas</span></div>
-                    <div class="more-item" onclick="showSection('calculadora')"><i
+                            class="fas fa-calendar-alt"></i><span>Visitas</span></div>
+                    <div class="more-item" onclick="showSection('calc')"><i
                             class="fas fa-calculator"></i><span>Calculadora</span></div>
                     <div class="more-item" onclick="showSection('notas')"><i
                             class="fas fa-sticky-note"></i><span>Notas</span></div>

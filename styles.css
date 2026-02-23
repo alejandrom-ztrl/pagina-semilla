@@ -86,14 +86,17 @@ body {
 
 .nav-item {
     height: 100%;
-    padding: 0 15px;
+    padding: 0 8px;
+    /* Reducido de 15px */
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
+    /* Reducido de 8px */
     color: var(--text-light);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
+    /* Reducido de 0.9rem */
     position: relative;
     transition: color 0.2s ease, background-color 0.2s;
 }

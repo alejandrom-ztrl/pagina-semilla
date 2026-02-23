@@ -6,6 +6,37 @@ let db = { clientes: [], plantas: [], planes: [], lotes: [], completadas: [], vi
 let curMonth = new Date();
 const B_AREAS = { "Estándar (25x50)": 1250, "Cuadrada (12x12)": 144, "Pequeña (9x9)": 81 };
 
+const CAT_FLORES = [
+    { ref: "PT0012", nom: "Alhelí", t: "F", det: "20g (40ud)" },
+    { ref: "PT0024", nom: "Alyssum", t: "F", det: "15g (50ud)" },
+    { ref: "PT0075", nom: "Boca de dragón", t: "F", det: "15g (30ud)" },
+    { ref: "PT0049", nom: "Caléndula", t: "F", det: "42g (20ud)" },
+    { ref: "PT0071", nom: "Clavelina", t: "F", det: "6g (30ud)" },
+    { ref: "PT0126", nom: "Mix de flores", t: "F", det: "30g (40ud)" },
+    { ref: "PT0120", nom: "Mix de pétalos", t: "F", det: "10g" },
+    { ref: "PT0141", nom: "Pensamiento", t: "F", det: "18g (18ud)" },
+    { ref: "PT0146", nom: "Pensamiento mini", t: "F", det: "10g (60ud)" },
+    { ref: "PT0182", nom: "Tagete", t: "F", det: "42g (20ud)" },
+    { ref: "PT0188", nom: "Tulbaghia", t: "F", det: "6g (40ud)" },
+    { ref: "PT0159", nom: "Pétalos de rosa", t: "F", det: "9g (100ud)" },
+    { ref: "PT0159-50", nom: "Pétalos de rosa (50 ud)", t: "F", det: "5g (50ud)" },
+    { ref: "PT0169", nom: "Rosas mini", t: "F", det: "43g (13ud)" },
+    { ref: "PT0169-8", nom: "Rosas mini (8 ud)", t: "F", det: "26g (8ud)" },
+    { ref: "PT0211", nom: "Micro mix pétalos (60g)", t: "F", det: "60g" },
+    { ref: "PT0212", nom: "Micro mix pétalos (120g)", t: "F", det: "120g" },
+    { ref: "PT0241", nom: "Aciano (D)", t: "D", det: "5g" },
+    { ref: "PT0246", nom: "Caléndula (D)", t: "D", det: "5g" },
+    { ref: "PT0254", nom: "Lavanda (D)", t: "D", det: "10g" },
+    { ref: "PT0259", nom: "Mix de pétalos (D)", t: "D", det: "5g" },
+    { ref: "PT0269", nom: "Pensamiento (D)", t: "D", det: "5g" },
+    { ref: "PT0270", nom: "Pensamiento mini (D)", t: "D", det: "5g" },
+    { ref: "PT0271", nom: "Pétalos de rosa rojos (D)", t: "D", det: "5g" },
+    { ref: "PT0272", nom: "Pétalos de rosa fucsias (D)", t: "D", det: "10g" },
+    { ref: "PT0274", nom: "Rosas mini (D)", t: "D", det: "10g" },
+    { ref: "PT0276", nom: "Tagete naranja (D)", t: "D", det: "5g" },
+    { ref: "PT0280", nom: "Tulbaghia (D)", t: "D", det: "5g" }
+];
+
 // --- SEGURIDAD HASH ---
 async function hashString(str) {
     const buffer = new TextEncoder().encode(str);
@@ -89,11 +120,20 @@ function refresh() {
 
     document.getElementById('visita-cliente').innerHTML = cliOpt;
     document.getElementById('plan-cliente').innerHTML = cliOpt;
+    document.getElementById('fl-cliente').innerHTML = cliOpt;
     document.getElementById('plan-planta').innerHTML = pltOpt;
     document.getElementById('lote-planta').innerHTML = pltOpt;
     document.getElementById('lote-cliente').innerHTML = cliOpt;
     document.getElementById('calc-planta').innerHTML = pltOpt;
     document.getElementById('stock-semilla-id').innerHTML = pltOpt;
+
+    const frescas = CAT_FLORES.filter(f => f.t === 'F').map(f => `<option value="${f.nom}">${f.nom} [${f.det}]</option>`).join('');
+    const deshi = CAT_FLORES.filter(f => f.t === 'D').map(f => `<option value="${f.nom}">${f.nom} [${f.det}]</option>`).join('');
+
+    document.getElementById('fl-producto').innerHTML = `
+        <optgroup label="🌸 FLORES FRESCAS">${frescas}</optgroup>
+        <optgroup label="🌼 FLORES DESHIDRATADAS">${deshi}</optgroup>
+    `;
 
     // MODIFICACIÓN: ESTRUCTURA LISTA MIX REFORMADA PARA MÓVIL
     document.getElementById('mix-lista-check').innerHTML = (db.plantas || []).map(p => `
@@ -141,6 +181,7 @@ function refresh() {
     renderNotas(db.notas || []);
     renderAlmacenSemillas();
     renderAlmacenInsumos();
+    renderFloresTable(db.pedidosFlores || []);
 }
 
 // --- ALMACÉN FUNCIONES ---
@@ -858,6 +899,70 @@ function renderNotas(data) {
             </div>
         </div>
     `).join('');
+}
+
+function addPedidoFlor() {
+    const p = {
+        id: Date.now(),
+        cliente: document.getElementById('fl-cliente').value,
+        producto: document.getElementById('fl-producto').value,
+        frecuencia: document.getElementById('fl-frecuencia').value,
+        cant: document.getElementById('fl-cant').value
+    };
+    if (!db.pedidosFlores) db.pedidosFlores = [];
+    db.pedidosFlores.push(p);
+    save('pedidosFlores');
+}
+
+function renderFloresTable(data) {
+    const tbody = document.getElementById('tbody-flores');
+    if (!tbody) return;
+    tbody.innerHTML = data.length === 0 ? `<tr><td colspan="5" style="text-align:center; padding: 20px; color: #999;">No hay pedidos de flores</td></tr>` : data.map(f => `
+        <tr>
+            <td><strong>${f.cliente}</strong></td>
+            <td>${f.producto}</td>
+            <td>${f.frecuencia}</td>
+            <td>${f.cant}</td>
+            <td><button class="btn btn-danger" onclick="borrar('pedidosFlores', ${f.id})">X</button></td>
+        </tr>
+    `).join('');
+}
+
+function generarResumenFlores() {
+    const pedidos = db.pedidosFlores || [];
+    if (pedidos.length === 0) {
+        alert("No hay pedidos registrados para resumir.");
+        return;
+    }
+
+    // Agrupar por producto
+    const resumen = {};
+    pedidos.forEach(p => {
+        if (!resumen[p.producto]) resumen[p.producto] = 0;
+        resumen[p.producto] += parseInt(p.cant);
+    });
+
+    let txt = "🌸 PEDIDO DE FLORES - LA ISLA 🌸\n";
+    txt += "---------------------------------\n";
+    for (const prod in resumen) {
+        txt += `• ${prod}: ${resumen[prod]} bandejas\n`;
+    }
+    txt += "---------------------------------\n";
+    txt += "Resumen generado: " + new Date().toLocaleDateString();
+
+    document.getElementById('resumen-flores-text').innerText = txt;
+    document.getElementById('modal-resumen-flores').style.display = 'flex';
+}
+
+function closeResumenFlores() {
+    document.getElementById('modal-resumen-flores').style.display = 'none';
+}
+
+function copyResumenFlores() {
+    const text = document.getElementById('resumen-flores-text').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("¡Resumen copiado al portapapeles!");
+    });
 }
 
 if ('serviceWorker' in navigator) {
