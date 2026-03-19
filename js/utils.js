@@ -64,3 +64,35 @@ function renderVisitsCal() {
         grid.innerHTML += `<div class="calendar-day"><span class="day-num">${d}</span>${(db.visitas || []).filter(v => v.fecha === f).map(v => `<div class="visit-tag">${v.cliente}</div>`).join('')}</div>`;
     }
 }
+
+function showToast(msg, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span>${msg}</span><i class="fas fa-times" onclick="this.parentElement.remove()"></i>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('show'); }, 10);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => { toast.remove(); }, 500); }, 5000);
+}
+
+window.showToast = showToast;
+window.updateCosechaCliente = updateCosechaCliente;
+window.generarEtiquetaCosecha = generarEtiquetaCosecha;
+window.descargarPNG = descargarPNG;
+window.changeMonth = changeMonth;
+window.toggleVisitsView = toggleVisitsView;
+window.runCalc = runCalc;
+window.filterLotes = filterLotes;
+window.filterClientes = filterClientes;
+window.toggleCalendar = toggleCalendar;
+window.togglePlanModo = togglePlanModo;
+window.updateDiasInfo = updateDiasInfo;
+window.validateLeadTime = validateLeadTime;
+window.calcMixLeadTime = calcMixLeadTime;
+window.reiniciarLotes = reiniciarLotes;
+window.renderVisitsCal = renderVisitsCal;

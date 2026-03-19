@@ -95,35 +95,32 @@ function renderPedidoSemillas() {
 
 function requestNotificationPermission() {
     if (!('Notification' in window)) {
-        alert("Tu navegador no soporta notificaciones de escritorio.");
+        showToast("Tu navegador no soporta notificaciones de sistema. Usaremos avisos internos.", "warning");
         return;
     }
 
     if (Notification.permission === 'granted') {
-        alert("Las notificaciones ya están activadas. Recibirás avisos al abrir la app.");
+        showToast("Las notificaciones ya están activadas.", "info");
         checkNotifications();
         return;
     }
 
     if (Notification.permission === 'denied') {
-        alert("Has bloqueado las notificaciones. Por favor, actívalas en la configuración de tu navegador (clic en el candado junto a la URL).");
+        showToast("Has bloqueado las notificaciones. Usa los avisos internos o actívalas en el candado de la URL.", "warning");
         return;
     }
 
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
-            alert("¡Excelente! Notificaciones activadas.");
+            showToast("¡Excelente! Notificaciones activadas.", "info");
             checkNotifications();
         } else {
-            alert("Las notificaciones han sido rechazadas.");
+            showToast("Notificaciones rechazadas. Usaremos avisos internos.", "warning");
         }
     });
 }
 
 function checkNotifications() {
-    if (!('Notification' in window)) return;
-    if (Notification.permission !== 'granted') return;
-
     const hoy = new Date().toISOString().split('T')[0];
     const tasks = [];
 
@@ -178,10 +175,14 @@ function checkNotifications() {
     });
 
     if (tasks.length > 0) {
-        new Notification("Tareas de hoy en La Isla", {
-            body: `Tienes ${tasks.length} asuntos pendientes: ${tasks.join(", ")}`,
-            icon: 'logo.png'
-        });
+        const title = "Tareas de hoy en La Isla";
+        const body = `Tienes ${tasks.length} asuntos pendientes: ${tasks.join(", ")}`;
+
+        if (('Notification' in window) && Notification.permission === 'granted') {
+            new Notification(title, { body: body, icon: 'logo.png' });
+        } else {
+            showToast(`${title}: ${body}`, "info");
+        }
     }
 }
 
