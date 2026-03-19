@@ -507,6 +507,9 @@ function showSection(id) {
 
     document.getElementById(id).classList.add('active');
     if (id === 'visitas') renderVisitsCal();
+    if (id === 'calc') runCalc();
+    if (id === 'cosechas') updateCosechaCliente();
+    if (id === 'resumen-semanal') renderResumenSemanal();
 
     // Cerrar menú Más si se abre desde ahí
     const overlay = document.getElementById('more-menu-overlay');
@@ -831,6 +834,78 @@ function renderLotesTable(data) {
                 <td><button class="btn btn-danger" onclick="borrar('lotes',${l.id})">X</button></td>
             </tr>`;
         }).join('');
+}
+
+function renderResumenSemanal() {
+    const container = document.getElementById('resumen-semanal-content');
+    if (!container) return;
+    container.innerHTML = 'Generando resumen...';
+
+    const tasks = [];
+    (db.planes || []).forEach(plan => {
+        for (let i = 0; i < 4; i++) {
+            if (plan.tipo === 'INDIVIDUAL') {
+                const plt = db.plantas.find(x => x.id === plan.plantaId);
+                if (!plt) return;
+                let entrega = new Date(plan.fecha);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
+                let s = new Date(entrega);
+                s.setDate(s.getDate() - plt.total);
+                crearHitos(tasks, s, plt, plan.cant, plan);
+            } else {
+                let entrega = new Date(plan.fechaEntrega);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
+                plan.detalleMix.forEach(item => {
+                    const plt = db.plantas.find(x => x.id === item.id);
+                    if (!plt) return;
+                    let s = new Date(entrega);
+                    s.setDate(s.getDate() - plt.total);
+                    crearHitos(tasks, s, plt, item.cant, plan);
+                });
+            }
+        }
+    });
+
+    const siembras = tasks.filter(t => t.tipo === 'siembra' && t.fecha >= new Date(new Date().setHours(0, 0, 0, 0)));
+
+    const weeks = {};
+    siembras.forEach(t => {
+        const d = new Date(t.fecha);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day == 0 ? -6 : 1);
+        const monday = new Date(new Date(d).setDate(diff)).toISOString().split('T')[0];
+
+        if (!weeks[monday]) weeks[monday] = {};
+        const key = `${t.pltNombre} [${t.bandeja}]`;
+        if (!weeks[monday][key]) weeks[monday][key] = 0;
+        weeks[monday][key] += parseInt(t.cant);
+    });
+
+    const sortedWeeks = Object.keys(weeks).sort();
+    if (sortedWeeks.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No hay siembras programadas para las próximas semanas.</p>';
+        return;
+    }
+
+    let html = '';
+    sortedWeeks.forEach(w => {
+        const d1 = new Date(w);
+        const d2 = new Date(w); d2.setDate(d2.getDate() + 6);
+        html += `<div class="card">
+            <h3 style="color:var(--primary-dark); border-bottom:1px solid #eee; padding-bottom:10px;">
+                Semana del ${d1.toLocaleDateString('es-ES')} al ${d2.toLocaleDateString('es-ES')}
+            </h3>
+            <table style="margin-top:10px;">
+                <thead>
+                    <tr><th>Producto</th><th>Total Bandejas</th></tr>
+                </thead>
+                <tbody>`;
+        Object.keys(weeks[w]).sort().forEach(plt => {
+            html += `<tr><td>${plt}</td><td><strong>${weeks[w][plt]}</strong></td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+    });
+    container.innerHTML = html;
 }
 function addVisita() { if (!db.visitas) db.visitas = []; db.visitas.push({ id: Date.now(), cliente: document.getElementById('visita-cliente').value, fecha: document.getElementById('visita-fecha').value, hora: document.getElementById('visita-hora').value, motivo: document.getElementById('visita-motivo').value }); save('visitas'); }
 function renderVisitsCal() {
