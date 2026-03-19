@@ -20,6 +20,110 @@
     --purple: #9b59b6;
 }
 
+body.dark-theme {
+    --bg: #111214;
+    --surface: #1e1f23;
+    --text: #e1e5eb;
+    --text-light: #a0a8b3;
+    --border: #2d2f34;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.top-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+}
+
+.search-container {
+    position: relative;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+body.dark-theme .search-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.search-container:focus-within {
+    background: var(--surface);
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+}
+
+.search-container input {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: var(--text);
+    padding: 5px 0;
+    width: 150px;
+    transition: width 0.3s ease;
+}
+
+.search-container input:focus {
+    width: 250px;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hover);
+    margin-top: 10px;
+    display: none;
+    flex-direction: column;
+    z-index: 5000;
+    overflow: hidden;
+}
+
+.search-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.dark-theme .search-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-theme {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.btn-theme:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .btn-theme:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
 body {
     font-family: 'Segoe UI', sans-serif;
     background-color: var(--bg);
@@ -455,12 +559,6 @@ textarea:focus {
     border-radius: 4px;
     border: 1px solid #e2e8f0;
     white-space: nowrap;
-}
-
-gap: 8px;
-transition: transform 0.1s,
-filter 0.2s,
-box-shadow 0.2s;
 }
 
 .btn:hover {

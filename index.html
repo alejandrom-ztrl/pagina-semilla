@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -100,10 +101,26 @@
                             style="color:#f1c40f;"></i>
                         <span>Notas</span>
                     </div>
+                    <div class="nav-item" onclick="showSection('stats')"><i class="fas fa-chart-pie"></i>
+                        <span>Estadísticas</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('pedido-semillas')"><i class="fas fa-shopping-cart"></i>
+                        <span>Pedido Semillas</span>
+                    </div>
                     <div class="nav-item nav-config" onclick="showSection('config')"><i class="fas fa-cog"></i>
                         <span>Configuración</span>
                     </div>
                 </nav>
+                <div class="top-nav-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="global-search" placeholder="Buscar..." oninput="globalSearch()">
+                        <div id="search-results" class="search-results"></div>
+                    </div>
+                    <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -616,10 +633,39 @@
                     </div>
                 </section>
 
+                <section id="stats" class="section">
+                    <div class="section-header">
+                        <h2>Estadísticas de Producción</h2>
+                        <p>Visualización de datos y rendimiento</p>
+                    </div>
+                    <div class="card" style="margin-bottom:20px;">
+                        <canvas id="chart-produccion" style="max-height: 400px;"></canvas>
+                    </div>
+                    <div class="card">
+                        <canvas id="chart-rentabilidad" style="max-height: 400px;"></canvas>
+                    </div>
+                </section>
+
+                <section id="pedido-semillas" class="section">
+                    <div class="section-header">
+                        <h2>Calculador de Pedido de Semillas</h2>
+                        <p>Estimación de necesidades para los próximos 30 días</p>
+                    </div>
+                    <div id="pedido-semillas-content">
+                        Cargando cálculos...
+                    </div>
+                </section>
+
                 <section id="config" class="section">
                     <div class="section-header">
                         <h2>Configuración & Sincronización</h2>
-                        <p>Seguridad de datos y copias locales</p>
+                        <p>Seguridad de datos y opciones avanzadas</p>
+                    </div>
+                    <div class="card" style="margin-bottom:15px;">
+                        <h3>Notificaciones</h3>
+                        <p>Recibe avisos sobre las siembras de hoy al abrir la app.</p>
+                        <button class="btn btn-purple" onclick="requestNotificationPermission()"><i
+                                class="fas fa-bell"></i> Activar Notificaciones</button>
                     </div>
                     <div class="card">
                         <p>Usa el botón "Recuperar Datos" para cargar tu archivo anterior en la nube.</p>
@@ -628,8 +674,7 @@
                             <button class="btn btn-info" onclick="document.getElementById('import-file').click()"><i
                                     class="fas fa-upload"></i> RECUPERAR DATOS (IMPORTAR JSON)</button>
                             <button class="btn btn-primary" onclick="exportData()"><i class="fas fa-download"></i>
-                                Exportar
-                                Copia JSON</button>
+                                Exportar Copia JSON</button>
                             <button class="btn btn-warning" onclick="reiniciarLotes()"><i class="fas fa-undo"></i>
                                 Reiniciar Lotes a 0</button>
                             <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Borrar
@@ -687,6 +732,10 @@
                             class="fas fa-sticky-note"></i><span>Notas</span></div>
                     <div class="more-item" onclick="showSection('resumen-semanal')"><i
                             class="fas fa-list-ul"></i><span>Resumen</span></div>
+                    <div class="more-item" onclick="showSection('stats')"><i
+                            class="fas fa-chart-pie"></i><span>Estadísticas</span></div>
+                    <div class="more-item" onclick="showSection('pedido-semillas')"><i
+                            class="fas fa-shopping-cart"></i><span>Pedido</span></div>
                     <div class="more-item" onclick="showSection('config')"><i
                             class="fas fa-cog"></i><span>Config.</span></div>
                 </div>
@@ -697,6 +746,17 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- App Modules -->
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/render-helpers.js"></script>
+    <script src="js/scheduler.js"></script>
+    <script src="js/crud.js"></script>
+    <script src="js/extensions.js"></script>
+    <script src="js/components.js"></script>
+
+    <!-- Entry Point -->
     <script src="app.js"></script>
 </body>
 
