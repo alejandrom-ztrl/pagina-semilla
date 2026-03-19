@@ -93,6 +93,9 @@
                     <div class="nav-item" onclick="showSection('almacen')"><i class="fas fa-boxes"></i>
                         <span>Almacén</span>
                     </div>
+                    <div class="nav-item" onclick="showSection('resumen-semanal')"><i class="fas fa-list-ul"></i>
+                        <span>Resumen Semanal</span>
+                    </div>
                     <div class="nav-item" onclick="showSection('notas')"><i class="fas fa-sticky-note"
                             style="color:#f1c40f;"></i>
                         <span>Notas</span>
@@ -461,6 +464,16 @@
                     </div>
                 </section>
 
+                <section id="resumen-semanal" class="section">
+                    <div class="section-header">
+                        <h2>Resumen Semanal de Siembra</h2>
+                        <p>Total de bandejas a sembrar agrupadas por semana y tipo</p>
+                    </div>
+                    <div id="resumen-semanal-content">
+                        Cargando resumen...
+                    </div>
+                </section>
+
                 <section id="almacen" class="section">
                     <div class="section-header">
                         <h2>Almacén & Inventario</h2>
@@ -666,6 +679,8 @@
                             class="fas fa-calculator"></i><span>Calculadora</span></div>
                     <div class="more-item" onclick="showSection('notas')"><i
                             class="fas fa-sticky-note"></i><span>Notas</span></div>
+                    <div class="more-item" onclick="showSection('resumen-semanal')"><i
+                            class="fas fa-list-ul"></i><span>Resumen</span></div>
                     <div class="more-item" onclick="showSection('config')"><i
                             class="fas fa-cog"></i><span>Config.</span></div>
                 </div>
