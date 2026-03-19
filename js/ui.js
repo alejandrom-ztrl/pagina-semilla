@@ -46,3 +46,8 @@ function loadTheme() {
         if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
     }
 }
+
+window.showSection = showSection;
+window.toggleMoreMenu = toggleMoreMenu;
+window.toggleTheme = toggleTheme;
+window.loadTheme = loadTheme;

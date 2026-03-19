@@ -94,34 +94,100 @@ function renderPedidoSemillas() {
 }
 
 function requestNotificationPermission() {
-    if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') { alert("¡Notificaciones activadas!"); checkNotifications(); }
-        });
+    if (!('Notification' in window)) {
+        alert("Tu navegador no soporta notificaciones de escritorio.");
+        return;
     }
+
+    if (Notification.permission === 'granted') {
+        alert("Las notificaciones ya están activadas. Recibirás avisos al abrir la app.");
+        checkNotifications();
+        return;
+    }
+
+    if (Notification.permission === 'denied') {
+        alert("Has bloqueado las notificaciones. Por favor, actívalas en la configuración de tu navegador (clic en el candado junto a la URL).");
+        return;
+    }
+
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            alert("¡Excelente! Notificaciones activadas.");
+            checkNotifications();
+        } else {
+            alert("Las notificaciones han sido rechazadas.");
+        }
+    });
 }
 
 function checkNotifications() {
+    if (!('Notification' in window)) return;
     if (Notification.permission !== 'granted') return;
+
     const hoy = new Date().toISOString().split('T')[0];
     const tasks = [];
+
+    // 1. Tareas de Planes
     (db.planes || []).forEach(plan => {
         const iter = plan.puntual ? 1 : 4;
         for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
-                const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
-                let entrega = new Date(plan.fecha); entrega.setDate(entrega.getDate() + (i * plan.frec));
+                const plt = db.plantas.find(x => x.id === plan.plantaId);
+                if (!plt) return;
+                let entrega = new Date(plan.fecha);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
+
+                // Siembra
                 let s = new Date(entrega); s.setDate(s.getDate() - plt.total);
                 if (s.toISOString().split('T')[0] === hoy) tasks.push(`Siembra ${plt.nombre} (${plan.cliente})`);
+
+                // Luz
+                let l = new Date(s); l.setDate(l.getDate() + plt.oscuro);
+                if (l.toISOString().split('T')[0] === hoy) tasks.push(`Pasar a LUZ ${plt.nombre} (${plan.cliente})`);
+
+                // Cosecha
+                if (entrega.toISOString().split('T')[0] === hoy) tasks.push(`Cosecha ${plt.nombre} (${plan.cliente})`);
+
+                // Remojo (si aplica)
+                if (plt.remojo > 0) {
+                    let r = new Date(s); r.setDate(r.getDate() - 1);
+                    if (r.toISOString().split('T')[0] === hoy) tasks.push(`Remojo ${plt.nombre} (${plan.cliente})`);
+                }
             } else {
-                let entrega = new Date(plan.fechaEntrega); entrega.setDate(entrega.getDate() + (i * plan.frec));
+                let entrega = new Date(plan.fechaEntrega);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
                 plan.detalleMix.forEach(item => {
-                    const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
+                    const plt = db.plantas.find(x => x.id === item.id);
+                    if (!plt) return;
                     let s = new Date(entrega); s.setDate(s.getDate() - plt.total);
+
                     if (s.toISOString().split('T')[0] === hoy) tasks.push(`Siembra ${plt.nombre} (${plan.cliente})`);
+
+                    let l = new Date(s); l.setDate(l.getDate() + (plt.oscuro || 0));
+                    if (l.toISOString().split('T')[0] === hoy) tasks.push(`Pasar a LUZ ${plt.nombre} (${plan.cliente})`);
+
+                    if (entrega.toISOString().split('T')[0] === hoy) tasks.push(`Cosecha ${plt.nombre} (${plan.cliente})`);
                 });
             }
         }
     });
-    if (tasks.length > 0) { new Notification("Tareas de hoy en La Isla", { body: `Tienes ${tasks.length} siembras pendientes para hoy.`, icon: 'logo.png' }); }
+
+    // 2. Visitas
+    (db.visitas || []).forEach(v => {
+        if (v.fecha === hoy) tasks.push(`Visita: ${v.cliente} (${v.hora || ''})`);
+    });
+
+    if (tasks.length > 0) {
+        new Notification("Tareas de hoy en La Isla", {
+            body: `Tienes ${tasks.length} asuntos pendientes: ${tasks.join(", ")}`,
+            icon: 'logo.png'
+        });
+    }
 }
+
+window.requestNotificationPermission = requestNotificationPermission;
+window.checkNotifications = checkNotifications;
+window.globalSearch = globalSearch;
+window.goSearch = goSearch;
+window.renderStats = renderStats;
+window.renderPedidoSemillas = renderPedidoSemillas;
