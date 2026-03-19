@@ -337,7 +337,8 @@ function generateTasks() {
     const body = document.getElementById('calendar-body'); if (!body) return;
     body.innerHTML = ''; const tasks = [];
     (db.planes || []).forEach(plan => {
-        for (let i = 0; i < 4; i++) {
+        const iter = plan.puntual ? 1 : 4;
+        for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
                 const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
                 let entrega = new Date(plan.fecha);
@@ -644,7 +645,8 @@ function addPlan() {
         bandeja: bandeja,
         cant: cant,
         frec: parseInt(document.getElementById('plan-frec').value),
-        fecha: document.getElementById('plan-fecha').value
+        fecha: document.getElementById('plan-fecha').value,
+        puntual: document.getElementById('plan-puntual').checked
     };
 
     // STOCK VALIDATION
@@ -670,6 +672,7 @@ function addPlan() {
         }
         document.getElementById('plan-id-edicion').value = '';
         document.getElementById('btn-save-plan').innerText = 'Guardar Individual';
+        document.getElementById('plan-puntual').checked = false;
         save('planes');
     }
 }
@@ -682,6 +685,7 @@ function editPlan(id) {
     document.getElementById('plan-cliente').value = p.cliente;
     document.getElementById('plan-tipo-bandeja').value = p.bandeja;
     document.getElementById('plan-frec').value = p.frec;
+    document.getElementById('plan-puntual').checked = p.puntual || false;
 
     if (p.tipo === 'INDIVIDUAL') {
         togglePlanModo('individual');
@@ -751,7 +755,8 @@ function addPlanMix() {
         detalleMix: sel,
         bandeja: bandeja,
         frec: parseInt(document.getElementById('plan-frec').value),
-        fechaEntrega: document.getElementById('plan-fecha-entrega').value
+        fechaEntrega: document.getElementById('plan-fecha-entrega').value,
+        puntual: document.getElementById('plan-puntual').checked
     };
 
     if (sel.length > 0) {
@@ -766,6 +771,7 @@ function addPlanMix() {
         // Reset
         document.getElementById('plan-id-edicion').value = '';
         document.getElementById('btn-save-mix').innerText = 'Guardar Plan Mix';
+        document.getElementById('plan-puntual').checked = false;
         togglePlanModo('individual');
     }
 }
@@ -843,7 +849,8 @@ function renderResumenSemanal() {
 
     const tasks = [];
     (db.planes || []).forEach(plan => {
-        for (let i = 0; i < 4; i++) {
+        const iter = plan.puntual ? 1 : 4;
+        for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
                 const plt = db.plantas.find(x => x.id === plan.plantaId);
                 if (!plt) return;
