@@ -1,4 +1,4 @@
-const CACHE_NAME = 'isla-cache-v15';
+const CACHE_NAME = 'isla-cache-v16';
 const urlsToCache = [
     './',
     './index.html',
@@ -11,6 +11,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(urlsToCache))
@@ -22,24 +23,26 @@ self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                if (response) {
+                // Check if we received a valid response
+                if (!response || response.status !== 200 || response.type !== 'basic') {
                     return response;
                 }
-                return fetch(event.request).then(
-                    function (response) {
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-                        var responseToCache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then(function (cache) {
-                                cache.put(event.request, responseToCache);
-                            });
-                        return response;
-                    }
-                );
+
+                // Clone the response because it's a stream and can only be consumed once
+                var responseToCache = response.clone();
+
+                caches.open(CACHE_NAME)
+                    .then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+
+                return response;
+            })
+            .catch(() => {
+                // If fetch fails (offline), try the cache
+                return caches.match(event.request);
             })
     );
 });
@@ -55,6 +58,6 @@ self.addEventListener('activate', event => {
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
