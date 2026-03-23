@@ -121,3 +121,22 @@ function addInsumo() {
         document.getElementById('insumo-id').value = ''; document.getElementById('insumo-nombre').value = ''; document.getElementById('insumo-cant').value = '0'; save('inventario');
     }
 }
+
+function toggleStockAuto() {
+    if (!db.config) db.config = {};
+    db.config.restarStockAuto = document.getElementById('stock-auto-toggle').checked;
+    save('config');
+}
+
+window.addPlanta = addPlanta;
+window.editPlanta = editPlanta;
+window.addCliente = addCliente;
+window.editCliente = editCliente;
+window.addPlan = addPlan;
+window.editPlan = editPlan;
+window.addPlanMix = addPlanMix;
+window.addVisita = addVisita;
+window.addStockSemilla = addStockSemilla;
+window.editInsumo = editInsumo;
+window.addInsumo = addInsumo;
+window.toggleStockAuto = toggleStockAuto;

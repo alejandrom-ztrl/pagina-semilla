@@ -1,4 +1,4 @@
-// MAIN APP BOOTSTRAP
+// MAIN APP BOOTSTRAPs
 const CAT_FLORES = [
     { ref: "PT0012", nom: "Alhelí", t: "F", det: "20g (40ud)" },
     { ref: "PT0024", nom: "Alyssum", t: "F", det: "15g (50ud)" },

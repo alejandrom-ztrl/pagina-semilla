@@ -72,8 +72,10 @@ function toggleTask(id, tipo, pltNombre, cliente, fecha, cant, bandeja, pltId) {
             if (pltIdx > -1) {
                 const plt = db.plantas[pltIdx];
                 const kgTotales = (plt.gramos * (B_AREAS[bandeja] || 1250) / 1250 * cant) / 1000;
-                db.plantas[pltIdx].stockKg = (plt.stockKg || 0) + kgTotales;
-                if (!saveKeys.includes('plantas')) saveKeys.push('plantas');
+                if (!db.config || db.config.restarStockAuto !== false) {
+                    db.plantas[pltIdx].stockKg = (plt.stockKg || 0) + kgTotales;
+                    if (!saveKeys.includes('plantas')) saveKeys.push('plantas');
+                }
             }
         }
     } else {
@@ -87,9 +89,11 @@ function toggleTask(id, tipo, pltNombre, cliente, fecha, cant, bandeja, pltId) {
                 if (pltIdx > -1) {
                     const plt = db.plantas[pltIdx];
                     const kgTotales = (plt.gramos * (B_AREAS[bandeja] || 1250) / 1250 * cant) / 1000;
-                    db.plantas[pltIdx].stockKg = Math.max(0, (plt.stockKg || 0) - kgTotales);
-                    if (db.plantas[pltIdx].stockKg < (plt.stockMin || 1.0)) alert(`¡BAJO STOCK! ${pltNombre}`);
-                    if (!saveKeys.includes('plantas')) saveKeys.push('plantas');
+                    if (!db.config || db.config.restarStockAuto !== false) {
+                        db.plantas[pltIdx].stockKg = Math.max(0, (plt.stockKg || 0) - kgTotales);
+                        if (db.plantas[pltIdx].stockKg < (plt.stockMin || 1.0)) alert(`¡BAJO STOCK! ${pltNombre}`);
+                        if (!saveKeys.includes('plantas')) saveKeys.push('plantas');
+                    }
                 }
             }
         }

@@ -179,7 +179,26 @@ function checkNotifications() {
         const body = `Tienes ${tasks.length} asuntos pendientes: ${tasks.join(", ")}`;
 
         if (('Notification' in window) && Notification.permission === 'granted') {
-            new Notification(title, { body: body, icon: 'logo.png' });
+            const ahora = new Date();
+            const hoyStr = ahora.toISOString().split('T')[0];
+            const lastNotif = localStorage.getItem('isla_last_notif');
+            
+            if (ahora.getHours() >= 8 && lastNotif !== hoyStr) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, { body: body, icon: 'logo.png', tag: 'isla-tareas', vibrate: [200, 100, 200] });
+                        localStorage.setItem('isla_last_notif', hoyStr);
+                    }).catch(err => {
+                        new Notification(title, { body: body, icon: 'logo.png' });
+                        localStorage.setItem('isla_last_notif', hoyStr);
+                    });
+                } else {
+                    new Notification(title, { body: body, icon: 'logo.png' });
+                    localStorage.setItem('isla_last_notif', hoyStr);
+                }
+            } else if (lastNotif !== hoyStr) {
+                 showToast(`${title}: ${body}`, "info");
+            }
         } else {
             showToast(`${title}: ${body}`, "info");
         }

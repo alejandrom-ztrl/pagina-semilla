@@ -112,6 +112,10 @@ function renderLotesTable(data) {
 }
 
 function renderAlmacenSemillas() {
+    const toggle = document.getElementById('stock-auto-toggle');
+    if (toggle) {
+        toggle.checked = !db.config || db.config.restarStockAuto !== false;
+    }
     const tbody = document.getElementById('tbody-almacen-semillas');
     if (!tbody) return;
     const sorted = [...(db.plantas || [])].sort((a, b) => (a.stockKg || 0) - (b.stockKg || 0));
