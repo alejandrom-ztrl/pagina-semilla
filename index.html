@@ -16,6 +16,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dropdown-btn { position: relative; cursor: pointer; }
+        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; min-width: 200px; background-color: var(--surface); box-shadow: var(--shadow-hover); border-radius: var(--radius); z-index: 2000; border: 1px solid var(--border); padding: 5px 0; }
+        .dropdown-btn:hover .dropdown-content { display: block; }
+        .dropdown-item { padding: 12px 16px; display: flex; align-items: center; gap: 10px; color: var(--text-light); font-weight: 600; font-size: 0.85rem; transition: background-color 0.2s, color 0.2s; line-height: 1.2; }
+        .dropdown-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .dropdown-item:hover { background-color: rgba(0,0,0,0.03); color: var(--primary); }
+        body.dark-theme .dropdown-item:hover { background-color: rgba(255,255,255,0.05); }
+    </style>
 </head>
 
 <body>
@@ -97,15 +106,14 @@
                     <div class="nav-item" onclick="showSection('resumen-semanal')"><i class="fas fa-list-ul"></i>
                         <span>Resumen Semanal</span>
                     </div>
-                    <div class="nav-item" onclick="showSection('notas')"><i class="fas fa-sticky-note"
-                            style="color:#f1c40f;"></i>
-                        <span>Notas</span>
-                    </div>
-                    <div class="nav-item" onclick="showSection('stats')"><i class="fas fa-chart-pie"></i>
-                        <span>Estadísticas</span>
-                    </div>
-                    <div class="nav-item" onclick="showSection('pedido-semillas')"><i class="fas fa-shopping-cart"></i>
-                        <span>Pedido Semillas</span>
+                    <div class="nav-item dropdown-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span>Otros</span>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item" onclick="showSection('notas')"><i class="fas fa-sticky-note" style="color:#f1c40f;"></i><span>Notas</span></div>
+                            <div class="dropdown-item" onclick="showSection('stats')"><i class="fas fa-chart-pie"></i><span>Estadísticas</span></div>
+                            <div class="dropdown-item" onclick="showSection('pedido-semillas')"><i class="fas fa-shopping-cart"></i><span>Pedido Semillas</span></div>
+                        </div>
                     </div>
                     <div class="nav-item nav-config" onclick="showSection('config')"><i class="fas fa-cog"></i>
                         <span>Configuración</span>
