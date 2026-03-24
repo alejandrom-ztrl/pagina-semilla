@@ -5,16 +5,41 @@ function updateCosechaCliente() {
 }
 
 function generarEtiquetaCosecha() {
-    const loteCod = document.getElementById('cosecha-lote').value, fCosecha = document.getElementById('cosecha-fecha').value, clienteEditado = document.getElementById('cosecha-cliente').value;
-    if (!loteCod || !fCosecha || !clienteEditado) { alert("Datos incompletos"); return; }
-    const l = db.lotes.find(x => x.codigo === loteCod); if (!l) return;
+    const loteCod = document.getElementById('cosecha-lote').value;
+    const fCosecha = document.getElementById('cosecha-fecha').value;
+    const clienteEditado = document.getElementById('cosecha-cliente').value;
+    const cantGramos = document.getElementById('cosecha-cant').value;
+
+    if (!loteCod || !fCosecha || !clienteEditado || !cantGramos) {
+        alert("Faltan datos por rellenar");
+        return;
+    }
+
+    const l = db.lotes.find(x => x.codigo === loteCod);
+    if (!l) return;
+
     if (!l.distribucion) l.distribucion = [];
-    if (!l.distribucion.includes(clienteEditado)) { l.distribucion.push(clienteEditado); save('lotes'); }
-    document.getElementById('lbl-cliente-box').innerHTML = `<strong>CLIENTE:</strong> ${clienteEditado.toUpperCase()}`;
-    document.getElementById('lbl-prod-box').innerHTML = `<strong>PRODUCTO:</strong> ${l.plantaNombre.toUpperCase()}`;
-    document.getElementById('lbl-lote-box').innerHTML = `<strong>LOTE:</strong> ${l.codigo}`;
-    document.getElementById('lbl-siembra-box').innerHTML = `<strong>FECHA SIEMBRA:</strong> ${l.fecha}`;
-    document.getElementById('lbl-cosecha-box').innerHTML = `-> FECHA COSECHA: ${fCosecha} <-`;
+    if (!l.distribucion.includes(clienteEditado)) {
+        l.distribucion.push(clienteEditado);
+        save('lotes');
+    }
+
+    // Calcula Caducidad (+8 días)
+    const f = new Date(fCosecha);
+    f.setDate(f.getDate() + 8);
+    const cadFormat = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}`;
+
+    const cortadoParts = fCosecha.split('-');
+    const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
+
+    const imgName = l.plantaNombre.toUpperCase();
+    document.getElementById('etiq-bg-img').src = `img/${imgName}.png`;
+
+    document.getElementById('txt-lote').innerText = loteCod;
+    document.getElementById('txt-cortado').innerText = cortadoFormat;
+    document.getElementById('txt-cad').innerText = cadFormat;
+    document.getElementById('txt-cant').innerText = cantGramos + "g";
+
     document.getElementById('card-etiqueta-print').style.display = 'block';
 }
 

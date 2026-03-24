@@ -403,22 +403,21 @@
                                     id="cosecha-cliente" placeholder="Cliente..."></div>
                             <div class="form-group"><label>Fecha de Cosecha</label><input type="date"
                                     id="cosecha-fecha"></div>
+                            <div class="form-group"><label>Cantidad (Gramos)</label><input type="number"
+                                    id="cosecha-cant" placeholder="Ej: 150"></div>
                         </div>
                         <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
                                 class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
                     </div>
-                    <div class="card" id="card-etiqueta-print" style="display:none;">
-                        <div class="label-box" id="label-cosecha-box"
-                            style="background:#fff; border:2px solid #333; width: 300px; padding: 20px; font-family: Arial, sans-serif;">
-                            <div style="text-align:center; margin-bottom:10px;">
-                                <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
-                            </div>
-                            <div id="lbl-cliente-box"></div>
-                            <div id="lbl-prod-box"></div>
-                            <div id="lbl-lote-box"></div>
-                            <div id="lbl-siembra-box"></div>
-                            <div id="lbl-cosecha-box" style="font-weight:bold; margin-top:5px;"></div>
+                    <div class="card" id="card-etiqueta-print" style="display:none; overflow-x: auto;">
+                        <div class="label-box" id="label-cosecha-box" style="position:relative; display:inline-block; border:1px solid #ccc; font-family: Arial, sans-serif; background: #fff;">
+                            <img id="etiq-bg-img" style="display:block; width: 600px; height: auto;" crossOrigin="anonymous">
+                            <span id="txt-lote" style="position:absolute; top: 69%; left: 32%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cortado" style="position:absolute; top: 78.5%; left: 35%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cad" style="position:absolute; top: 78.5%; left: 55%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cant" style="position:absolute; top: 78.5%; left: 74%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
                         </div>
+                        <br>
                         <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
                                 class="fas fa-download"></i> Descargar PNG</button>
                     </div>
