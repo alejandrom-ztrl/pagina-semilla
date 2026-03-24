@@ -17,13 +17,55 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .dropdown-btn { position: relative; cursor: pointer; }
-        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; min-width: 200px; background-color: var(--surface); box-shadow: var(--shadow-hover); border-radius: var(--radius); z-index: 2000; border: 1px solid var(--border); padding: 5px 0; }
-        .dropdown-btn:hover .dropdown-content { display: block; }
-        .dropdown-item { padding: 12px 16px; display: flex; align-items: center; gap: 10px; color: var(--text-light); font-weight: 600; font-size: 0.85rem; transition: background-color 0.2s, color 0.2s; line-height: 1.2; }
-        .dropdown-item i { font-size: 1.1rem; width: 20px; text-align: center; }
-        .dropdown-item:hover { background-color: rgba(0,0,0,0.03); color: var(--primary); }
-        body.dark-theme .dropdown-item:hover { background-color: rgba(255,255,255,0.05); }
+        .dropdown-btn {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 200px;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-hover);
+            border-radius: var(--radius);
+            z-index: 2000;
+            border: 1px solid var(--border);
+            padding: 5px 0;
+        }
+
+        .dropdown-btn:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color 0.2s, color 0.2s;
+            line-height: 1.2;
+        }
+
+        .dropdown-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+            color: var(--primary);
+        }
+
+        body.dark-theme .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 
@@ -110,9 +152,12 @@
                         <i class="fas fa-ellipsis-h"></i>
                         <span>Otros</span>
                         <div class="dropdown-content">
-                            <div class="dropdown-item" onclick="showSection('notas')"><i class="fas fa-sticky-note" style="color:#f1c40f;"></i><span>Notas</span></div>
-                            <div class="dropdown-item" onclick="showSection('stats')"><i class="fas fa-chart-pie"></i><span>Estadísticas</span></div>
-                            <div class="dropdown-item" onclick="showSection('pedido-semillas')"><i class="fas fa-shopping-cart"></i><span>Pedido Semillas</span></div>
+                            <div class="dropdown-item" onclick="showSection('notas')"><i class="fas fa-sticky-note"
+                                    style="color:#f1c40f;"></i><span>Notas</span></div>
+                            <div class="dropdown-item" onclick="showSection('stats')"><i
+                                    class="fas fa-chart-pie"></i><span>Estadísticas</span></div>
+                            <div class="dropdown-item" onclick="showSection('pedido-semillas')"><i
+                                    class="fas fa-shopping-cart"></i><span>Pedido Semillas</span></div>
                         </div>
                     </div>
                     <div class="nav-item nav-config" onclick="showSection('config')"><i class="fas fa-cog"></i>
@@ -285,7 +330,9 @@
                         <div class="form-group"
                             style="display:flex; align-items:center; gap:8px; padding-top:15px; padding-bottom:5px; margin-top:10px; border-top: 1px dashed #ccc;">
                             <input type="checkbox" id="plan-puntual" style="width:24px; height:24px; margin:0;">
-                            <label for="plan-puntual" style="margin:0; cursor:pointer; font-size:1.1rem; color:var(--primary-dark);">¿Plan Puntual? (Entrega única, sin repetir)</label>
+                            <label for="plan-puntual"
+                                style="margin:0; cursor:pointer; font-size:1.1rem; color:var(--primary-dark);">¿Plan
+                                Puntual? (Entrega única, sin repetir)</label>
                         </div>
 
                         <div id="panel-individual"
@@ -410,12 +457,18 @@
                                 class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
                     </div>
                     <div class="card" id="card-etiqueta-print" style="display:none; overflow-x: auto;">
-                        <div class="label-box" id="label-cosecha-box" style="position:relative; display:inline-block; border:1px solid #ccc; font-family: Arial, sans-serif; background: #fff;">
-                            <img id="etiq-bg-img" style="display:block; width: 600px; height: auto;" crossOrigin="anonymous">
-                            <span id="txt-lote" style="position:absolute; top: 65.5%; left: 36%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
-                            <span id="txt-cortado" style="position:absolute; top: 73%; left: 33%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
-                            <span id="txt-cad" style="position:absolute; top: 73%; left: 54%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
-                            <span id="txt-cant" style="position:absolute; top: 73%; left: 71%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                        <div class="label-box" id="label-cosecha-box"
+                            style="position:relative; display:inline-block; border:1px solid #ccc; font-family: Arial, sans-serif; background: #fff;">
+                            <img id="etiq-bg-img" style="display:block; width: 600px; height: auto;"
+                                crossOrigin="anonymous">
+                            <span id="txt-lote"
+                                style="position:absolute; top: 58.5%; left: 36%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cortado"
+                                style="position:absolute; top: 73%; left: 50%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cad"
+                                style="position:absolute; top: 73%; left: 49%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                            <span id="txt-cant"
+                                style="position:absolute; top: 73%; left: 80%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
                         </div>
                         <br>
                         <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
@@ -511,9 +564,13 @@
                     </div>
 
                     <h3 style="margin-top:20px; color:var(--primary-dark);">Stock de Semillas</h3>
-                    <div class="form-group" style="display:flex; align-items:center; gap:8px; padding:15px; margin-bottom:15px; background:#fff; border-radius:8px; border:1px solid var(--border);">
-                        <input type="checkbox" id="stock-auto-toggle" checked onchange="toggleStockAuto()" style="width:22px; height:22px; margin:0;">
-                        <label for="stock-auto-toggle" style="margin:0; cursor:pointer; font-size:1rem; color:var(--text);">Descontar stock automáticamente al completar siembras en agenda</label>
+                    <div class="form-group"
+                        style="display:flex; align-items:center; gap:8px; padding:15px; margin-bottom:15px; background:#fff; border-radius:8px; border:1px solid var(--border);">
+                        <input type="checkbox" id="stock-auto-toggle" checked onchange="toggleStockAuto()"
+                            style="width:22px; height:22px; margin:0;">
+                        <label for="stock-auto-toggle"
+                            style="margin:0; cursor:pointer; font-size:1rem; color:var(--text);">Descontar stock
+                            automáticamente al completar siembras en agenda</label>
                     </div>
                     <div class="card">
                         <div
