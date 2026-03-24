@@ -41,7 +41,6 @@ function initApp() {
             db = cloudData;
             refresh();
             document.getElementById('cloud-status').innerText = "Nube sincronizada";
-            checkNotifications();
         } else {
             document.getElementById('cloud-status').innerText = "Nube vacía. Importa tu copia.";
         }

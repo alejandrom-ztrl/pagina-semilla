@@ -33,7 +33,7 @@ function generarEtiquetaCosecha() {
     const cortadoParts = fCosecha.split('-');
     const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
 
-    const imgName = l.plantaNombre.toUpperCase();
+    const imgName = l.plantaNombre.trim().toUpperCase();
     document.getElementById('etiq-bg-img').src = `img/${imgName}.png`;
 
     document.getElementById('txt-cliente').innerText = clienteEditado;
