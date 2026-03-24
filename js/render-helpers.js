@@ -176,3 +176,84 @@ function renderFloresTable(data) {
         </tr>
     `).join('');
 }
+
+function renderResumenSemanal() {
+    const container = document.getElementById('resumen-semanal-content');
+    if (!container) return;
+    
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+    const en7dias = new Date(hoy);
+    en7dias.setDate(en7dias.getDate() + 7);
+
+    let siembrasSemana = {};
+    let siembrasFuturas = {};
+    let cosechasSemana = {};
+
+    (db.planes || []).forEach(plan => {
+        const iter = plan.puntual ? 1 : 4;
+        for (let i = 0; i < iter; i++) {
+            if (plan.tipo === 'INDIVIDUAL') {
+                const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
+                let entrega = new Date(plan.fecha);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
+                let s = new Date(entrega);
+                s.setDate(s.getDate() - plt.total);
+                
+                if (s >= hoy && s <= en7dias) {
+                    siembrasSemana[plt.nombre] = (siembrasSemana[plt.nombre] || 0) + parseInt(plan.cant);
+                } else if (s > en7dias) {
+                    siembrasFuturas[plt.nombre] = (siembrasFuturas[plt.nombre] || 0) + parseInt(plan.cant);
+                }
+                
+                if (entrega >= hoy && entrega <= en7dias) {
+                    cosechasSemana[plt.nombre] = (cosechasSemana[plt.nombre] || 0) + parseInt(plan.cant);
+                }
+            } else {
+                let entrega = new Date(plan.fechaEntrega);
+                entrega.setDate(entrega.getDate() + (i * plan.frec));
+                plan.detalleMix.forEach(item => {
+                    const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
+                    let s = new Date(entrega);
+                    s.setDate(s.getDate() - plt.total);
+                    
+                    if (s >= hoy && s <= en7dias) {
+                        siembrasSemana[plt.nombre] = (siembrasSemana[plt.nombre] || 0) + parseInt(item.cant);
+                    } else if (s > en7dias) {
+                        siembrasFuturas[plt.nombre] = (siembrasFuturas[plt.nombre] || 0) + parseInt(item.cant);
+                    }
+                    
+                    if (entrega >= hoy && entrega <= en7dias) {
+                        cosechasSemana[plt.nombre] = (cosechasSemana[plt.nombre] || 0) + parseInt(item.cant);
+                    }
+                });
+            }
+        }
+    });
+
+    let html = `<div class="card" style="margin-bottom:20px;">
+        <h3 style="color:var(--primary);"><i class="fas fa-seedling"></i> Siembras de Esta Semana</h3>
+        <p style="font-size:0.9rem; color:#666;">Bandejas programadas para sembrar en los próximos 7 días.</p>
+        <ul style="list-style:none; padding:0;">`;
+    if (Object.keys(siembrasSemana).length === 0) html += `<li style="padding:10px 0;">No hay siembras programadas para estos días.</li>`;
+    for(const [p, c] of Object.entries(siembrasSemana)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
+    html += `</ul></div>`;
+
+    html += `<div class="card" style="margin-bottom:20px;">
+        <h3 style="color:var(--purple);"><i class="fas fa-leaf"></i> Salidas / Cosechas de Esta Semana</h3>
+        <p style="font-size:0.9rem; color:#666;">Bandejas que van saliendo en los próximos 7 días.</p>
+        <ul style="list-style:none; padding:0;">`;
+    if (Object.keys(cosechasSemana).length === 0) html += `<li style="padding:10px 0;">No hay cosechas programadas para estos días.</li>`;
+    for(const [p, c] of Object.entries(cosechasSemana)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
+    html += `</ul></div>`;
+
+    html += `<div class="card">
+        <h3 style="color:#f39c12;"><i class="fas fa-calendar-alt"></i> Siembras Restantes / Futuras</h3>
+        <p style="font-size:0.9rem; color:#666;">Bandejas programadas a más de 7 días vista.</p>
+        <ul style="list-style:none; padding:0;">`;
+    if (Object.keys(siembrasFuturas).length === 0) html += `<li style="padding:10px 0;">No hay siembras futuras registradas.</li>`;
+    for(const [p, c] of Object.entries(siembrasFuturas)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
+    html += `</ul></div>`;
+
+    container.innerHTML = html;
+}
