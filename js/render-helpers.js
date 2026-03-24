@@ -183,13 +183,12 @@ function renderResumenSemanal() {
     
     const hoy = new Date();
     hoy.setHours(0,0,0,0);
-    const en7dias = new Date(hoy);
-    en7dias.setDate(en7dias.getDate() + 7);
+    const en10dias = new Date(hoy);
+    en10dias.setDate(en10dias.getDate() + 10);
 
-    let siembrasSemana = {};
-    let siembrasFuturas = {};
-    let cosechasSemana = {};
+    const salidasPorDia = {};
 
+    // Salidas programadas por Planes
     (db.planes || []).forEach(plan => {
         const iter = plan.puntual ? 1 : 4;
         for (let i = 0; i < iter; i++) {
@@ -197,63 +196,78 @@ function renderResumenSemanal() {
                 const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
                 let entrega = new Date(plan.fecha);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
-                let s = new Date(entrega);
-                s.setDate(s.getDate() - plt.total);
                 
-                if (s >= hoy && s <= en7dias) {
-                    siembrasSemana[plt.nombre] = (siembrasSemana[plt.nombre] || 0) + parseInt(plan.cant);
-                } else if (s > en7dias) {
-                    siembrasFuturas[plt.nombre] = (siembrasFuturas[plt.nombre] || 0) + parseInt(plan.cant);
-                }
-                
-                if (entrega >= hoy && entrega <= en7dias) {
-                    cosechasSemana[plt.nombre] = (cosechasSemana[plt.nombre] || 0) + parseInt(plan.cant);
+                if (entrega >= hoy && entrega <= en10dias) {
+                    const dStr = entrega.toISOString().split('T')[0];
+                    if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
+                    salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(plan.cant), cliente: plan.cliente, isPlan: true });
                 }
             } else {
                 let entrega = new Date(plan.fechaEntrega);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
-                plan.detalleMix.forEach(item => {
-                    const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
-                    let s = new Date(entrega);
-                    s.setDate(s.getDate() - plt.total);
-                    
-                    if (s >= hoy && s <= en7dias) {
-                        siembrasSemana[plt.nombre] = (siembrasSemana[plt.nombre] || 0) + parseInt(item.cant);
-                    } else if (s > en7dias) {
-                        siembrasFuturas[plt.nombre] = (siembrasFuturas[plt.nombre] || 0) + parseInt(item.cant);
-                    }
-                    
-                    if (entrega >= hoy && entrega <= en7dias) {
-                        cosechasSemana[plt.nombre] = (cosechasSemana[plt.nombre] || 0) + parseInt(item.cant);
-                    }
-                });
+                
+                if (entrega >= hoy && entrega <= en10dias) {
+                    const dStr = entrega.toISOString().split('T')[0];
+                    if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
+                    plan.detalleMix.forEach(item => {
+                        const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
+                        salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(item.cant), cliente: plan.cliente, isPlan: true });
+                    });
+                }
             }
         }
     });
 
-    let html = `<div class="card" style="margin-bottom:20px;">
-        <h3 style="color:var(--primary);"><i class="fas fa-seedling"></i> Siembras de Esta Semana</h3>
-        <p style="font-size:0.9rem; color:#666;">Bandejas programadas para sembrar en los próximos 7 días.</p>
-        <ul style="list-style:none; padding:0;">`;
-    if (Object.keys(siembrasSemana).length === 0) html += `<li style="padding:10px 0;">No hay siembras programadas para estos días.</li>`;
-    for(const [p, c] of Object.entries(siembrasSemana)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
-    html += `</ul></div>`;
+    // Salidas físicas reales por Lotes sembrados
+    (db.lotes || []).forEach(lote => {
+        const plt = db.plantas.find(x => x.nombre === lote.plantaNombre);
+        if (plt) {
+            let siembra = new Date(lote.fecha);
+            let cosecha = new Date(siembra);
+            cosecha.setDate(cosecha.getDate() + plt.total);
+            if (cosecha >= hoy && cosecha <= en10dias) {
+                const dStr = cosecha.toISOString().split('T')[0];
+                if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
+                // Solo añadir si no es un lote repetido de un plan ya calculado. Para mantenerlo simple, lo mostramos indicando que viene de lote.
+                salidasPorDia[dStr].push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, isLote: true });
+            }
+        }
+    });
 
-    html += `<div class="card" style="margin-bottom:20px;">
-        <h3 style="color:var(--purple);"><i class="fas fa-leaf"></i> Salidas / Cosechas de Esta Semana</h3>
-        <p style="font-size:0.9rem; color:#666;">Bandejas que van saliendo en los próximos 7 días.</p>
-        <ul style="list-style:none; padding:0;">`;
-    if (Object.keys(cosechasSemana).length === 0) html += `<li style="padding:10px 0;">No hay cosechas programadas para estos días.</li>`;
-    for(const [p, c] of Object.entries(cosechasSemana)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
-    html += `</ul></div>`;
+    let html = `<div class="card">
+        <h3 style="color:var(--primary);"><i class="fas fa-truck"></i> Próximas Salidas (10 días)</h3>
+        <p style="font-size:0.9rem; color:#666;">Bandejas listas para salir (cosecha) en los próximos 10 días por agenda o lote.</p>`;
 
-    html += `<div class="card">
-        <h3 style="color:#f39c12;"><i class="fas fa-calendar-alt"></i> Siembras Restantes / Futuras</h3>
-        <p style="font-size:0.9rem; color:#666;">Bandejas programadas a más de 7 días vista.</p>
-        <ul style="list-style:none; padding:0;">`;
-    if (Object.keys(siembrasFuturas).length === 0) html += `<li style="padding:10px 0;">No hay siembras futuras registradas.</li>`;
-    for(const [p, c] of Object.entries(siembrasFuturas)) html += `<li style="padding:8px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><strong>${p}</strong> <span>${c} bandejas</span></li>`;
-    html += `</ul></div>`;
+    const fechasOrds = Object.keys(salidasPorDia).sort();
+    if (fechasOrds.length === 0) {
+        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas estimadas en los próximos 10 días.</p>`;
+    } else {
+        fechasOrds.forEach(f => {
+            const fechaObj = new Date(f);
+            const fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
+            
+            // Agrupar por planta dentro de ese día
+            const resumenDia = {};
+            salidasPorDia[f].forEach(item => {
+                if(!resumenDia[item.planta]) resumenDia[item.planta] = [];
+                resumenDia[item.planta].push(item);
+            });
+
+            html += `<h4 style="margin-top:20px; border-bottom:2px solid var(--border); padding-bottom:5px; color:var(--text); font-size:1.2rem;">📅 ${fechaStr}</h4>
+            <ul style="list-style:none; padding:0; margin-top:10px;">`;
+            
+            for(const [planta, items] of Object.entries(resumenDia)) {
+                let col = items.map(i => `<strong>${i.cant}</strong> ud &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Del Lote]</small>' : ''}`);
+                let totalDiaPlanta = items.reduce((sum, i) => sum + i.cant, 0);
+                html += `<li style="padding:10px 0; border-bottom:1px dashed #e0e0e0;">
+                            <div style="font-weight:bold; color:var(--primary); font-size:1.1rem; margin-bottom:5px;">🥬 ${planta} (Total: ${totalDiaPlanta})</div>
+                            <div style="font-size:0.9rem; color:var(--text-light); margin-left:15px; line-height:1.6;">• ${col.join('<br>• ')}</div>
+                        </li>`;
+            }
+            html += `</ul>`;
+        });
+    }
+    html += `</div>`;
 
     container.innerHTML = html;
 }
