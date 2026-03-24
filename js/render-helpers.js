@@ -187,15 +187,23 @@ function renderResumenSemanal() {
     en10dias.setDate(en10dias.getDate() + 10);
 
     const salidasPorDia = {};
+    const completadas = db.completadas || [];
 
-    // Salidas programadas por Planes
+    // Salidas programadas por Planes (solo si NO se ha sembrado aún)
     (db.planes || []).forEach(plan => {
         const iter = plan.puntual ? 1 : 4;
         for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
-                const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) return;
+                const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) continue;
                 let entrega = new Date(plan.fecha);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
+                
+                let s = new Date(entrega);
+                s.setDate(s.getDate() - plt.total);
+                const tid = `siembra-${plan.id}-${s.getTime()}`;
+                
+                // Si la siembra está completada, ya existe como LOTE REAl (db.lotes), no duplicar.
+                if (completadas.includes(tid)) continue;
                 
                 if (entrega >= hoy && entrega <= en10dias) {
                     const dStr = entrega.toISOString().split('T')[0];
@@ -209,8 +217,15 @@ function renderResumenSemanal() {
                 if (entrega >= hoy && entrega <= en10dias) {
                     const dStr = entrega.toISOString().split('T')[0];
                     if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
+                    
                     plan.detalleMix.forEach(item => {
                         const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
+                        
+                        let s = new Date(entrega);
+                        s.setDate(s.getDate() - plt.total);
+                        const tid = `siembra-${plan.id}-${s.getTime()}`;
+                        if (completadas.includes(tid)) return;
+                        
                         salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(item.cant), cliente: plan.cliente, isPlan: true });
                     });
                 }
@@ -228,7 +243,6 @@ function renderResumenSemanal() {
             if (cosecha >= hoy && cosecha <= en10dias) {
                 const dStr = cosecha.toISOString().split('T')[0];
                 if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
-                // Solo añadir si no es un lote repetido de un plan ya calculado. Para mantenerlo simple, lo mostramos indicando que viene de lote.
                 salidasPorDia[dStr].push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, isLote: true });
             }
         }
@@ -246,7 +260,6 @@ function renderResumenSemanal() {
             const fechaObj = new Date(f);
             const fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
             
-            // Agrupar por planta dentro de ese día
             const resumenDia = {};
             salidasPorDia[f].forEach(item => {
                 if(!resumenDia[item.planta]) resumenDia[item.planta] = [];
