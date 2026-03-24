@@ -450,8 +450,16 @@
                                     id="cosecha-cliente" placeholder="Cliente..."></div>
                             <div class="form-group"><label>Fecha de Cosecha</label><input type="date"
                                     id="cosecha-fecha"></div>
-                            <div class="form-group"><label>Cantidad (Gramos)</label><input type="number"
-                                    id="cosecha-cant" placeholder="Ej: 150"></div>
+                            <div class="form-group">
+                                <label>Cantidad</label>
+                                <div style="display:flex; gap:10px;">
+                                    <input type="number" id="cosecha-cant" placeholder="Ej: 150" style="flex:1;">
+                                    <select id="cosecha-unidad" style="width:120px;">
+                                        <option value="g">Gramos (g)</option>
+                                        <option value="Hjs">Hojas (Hjs)</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
                                 class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
@@ -461,6 +469,8 @@
                             style="position:relative; display:inline-block; border:1px solid #ccc; font-family: Arial, sans-serif; background: #fff;">
                             <img id="etiq-bg-img" style="display:block; width: 600px; height: auto;"
                                 crossOrigin="anonymous">
+                            <span id="txt-cliente"
+                                style="position:absolute; top: 58%; left: 50%; transform: translateX(-50%); font-size: 1.2rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-transform: uppercase; text-align: center; width: 100%;"></span>
                             <span id="txt-lote"
                                 style="position:absolute; top: 67%; left: 40%; font-size: 1.1rem; font-weight:bold; color:black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
                             <span id="txt-cortado"

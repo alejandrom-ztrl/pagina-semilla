@@ -9,6 +9,7 @@ function generarEtiquetaCosecha() {
     const fCosecha = document.getElementById('cosecha-fecha').value;
     const clienteEditado = document.getElementById('cosecha-cliente').value;
     const cantGramos = document.getElementById('cosecha-cant').value;
+    const unidad = document.getElementById('cosecha-unidad').value;
 
     if (!loteCod || !fCosecha || !clienteEditado || !cantGramos) {
         alert("Faltan datos por rellenar");
@@ -35,10 +36,11 @@ function generarEtiquetaCosecha() {
     const imgName = l.plantaNombre.toUpperCase();
     document.getElementById('etiq-bg-img').src = `img/${imgName}.png`;
 
+    document.getElementById('txt-cliente').innerText = clienteEditado;
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
     document.getElementById('txt-cad').innerText = cadFormat;
-    document.getElementById('txt-cant').innerText = cantGramos + "g";
+    document.getElementById('txt-cant').innerText = cantGramos + unidad;
 
     document.getElementById('card-etiqueta-print').style.display = 'block';
 }
