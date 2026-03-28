@@ -131,6 +131,36 @@ function restarBandejaLoteByData(planta, cliente, cantActual) {
     }
 }
 
+function restarBandejaPorPlanta(plantaNombre) {
+    if (!db.lotes) return;
+    
+    // Buscar lotes de esa planta y ordenarlos por fecha (más antiguo primero)
+    const lotesPlanta = db.lotes
+        .filter(l => l.plantaNombre === plantaNombre)
+        .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    
+    if (lotesPlanta.length > 0) {
+        const loteOldest = lotesPlanta[0];
+        // Encontrar índice original en db.lotes
+        const idx = db.lotes.findIndex(l => l.id === loteOldest.id);
+        
+        if (idx > -1) {
+            let nuevaCant = parseInt(db.lotes[idx].cant) - 1;
+            if (nuevaCant <= 0) {
+                db.lotes.splice(idx, 1);
+            } else {
+                db.lotes[idx].cant = nuevaCant;
+            }
+            
+            save('lotes');
+            renderLotesTable(db.lotes);
+            renderResumenSemanal();
+            showToast(`Bandeja de ${plantaNombre} restada del stock`, "info");
+        }
+    }
+}
+
+window.restarBandejaPorPlanta = restarBandejaPorPlanta;
 window.restarBandejaLoteByData = restarBandejaLoteByData;
 window.showToast = showToast;
 window.updateCosechaCliente = updateCosechaCliente;

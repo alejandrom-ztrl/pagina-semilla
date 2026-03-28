@@ -187,9 +187,10 @@ function renderResumenSemanal() {
     en10dias.setDate(en10dias.getDate() + 10);
 
     const salidasPorDia = {};
+    const salidasListas = []; // Lotes con fecha de cosecha <= hoy
     const completadas = db.completadas || [];
 
-    // Salidas programadas por Planes (solo si NO se ha sembrado aún)
+    // 1. Salidas programadas por Planes (Previsión futura)
     (db.planes || []).forEach(plan => {
         const iter = plan.puntual ? 1 : 4;
         for (let i = 0; i < iter; i++) {
@@ -201,8 +202,6 @@ function renderResumenSemanal() {
                 let s = new Date(entrega);
                 s.setDate(s.getDate() - plt.total);
                 const tid = `siembra-${plan.id}-${s.getTime()}`;
-                
-                // Si la siembra está completada, ya existe como LOTE REAl (db.lotes), no duplicar.
                 if (completadas.includes(tid)) continue;
                 
                 if (entrega >= hoy && entrega <= en10dias) {
@@ -213,19 +212,15 @@ function renderResumenSemanal() {
             } else {
                 let entrega = new Date(plan.fechaEntrega);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
-                
                 if (entrega >= hoy && entrega <= en10dias) {
                     const dStr = entrega.toISOString().split('T')[0];
                     if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
-                    
                     plan.detalleMix.forEach(item => {
                         const plt = db.plantas.find(x => x.id === item.id); if (!plt) return;
-                        
                         let s = new Date(entrega);
                         s.setDate(s.getDate() - plt.total);
                         const tid = `siembra-${plan.id}-${s.getTime()}`;
                         if (completadas.includes(tid)) return;
-                        
                         salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(item.cant), cliente: plan.cliente, isPlan: true });
                     });
                 }
@@ -233,14 +228,20 @@ function renderResumenSemanal() {
         }
     });
 
-    // Salidas físicas reales por Lotes sembrados
+    // 2. Salidas físicas reales por Lotes sembrados
     (db.lotes || []).forEach(lote => {
         const plt = db.plantas.find(x => x.nombre === lote.plantaNombre);
         if (plt) {
             let siembra = new Date(lote.fecha);
             let cosecha = new Date(siembra);
             cosecha.setDate(cosecha.getDate() + plt.total);
-            if (cosecha >= hoy && cosecha <= en10dias) {
+            cosecha.setHours(0,0,0,0);
+
+            if (cosecha <= hoy) {
+                // YA ESTÁ LISTA (Cosechada o para hoy)
+                salidasListas.push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, fechaCosecha: cosecha, isLote: true });
+            } else if (cosecha <= en10dias) {
+                // FUTURA (Próximos días)
                 const dStr = cosecha.toISOString().split('T')[0];
                 if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
                 salidasPorDia[dStr].push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, isLote: true });
@@ -248,67 +249,92 @@ function renderResumenSemanal() {
         }
     });
 
-    let html = `<div class="card">
-        <h3 style="color:var(--primary);"><i class="fas fa-truck"></i> Próximas Salidas (10 días)</h3>
-        <p style="font-size:0.9rem; color:#666;">Bandejas listas para salir (cosecha) en los próximos 10 días por agenda o lote.</p>`;
+    let html = ``;
+
+    // --- SECCIÓN: BANDEJAS LISTAS (Cosechadas) ---
+    html += `<div class="card" style="border-left: 5px solid var(--primary); margin-bottom: 30px;">
+        <h3 style="color:var(--primary); margin-top:0;"><i class="fas fa-check-circle"></i> ✅ BANDEJAS LISTAS (Cosechadas)</h3>
+        <p style="font-size:0.85rem; color:#666;">Bandejas que ya han cumplido su tiempo de cultivo y están preparadas para salir.</p>`;
+    
+    if (salidasListas.length === 0) {
+        html += `<p style="padding:10px; color:#999; text-align:center;">No hay bandejas listas actualmente.</p>`;
+    } else {
+        html += `<ul style="list-style:none; padding:0; margin-top:10px;">`;
+        salidasListas.forEach(i => {
+            const btnRestar = `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${i.planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja"> -1 </button>`;
+            html += `<li style="padding:10px; border-bottom:1px dashed #e0e0e0; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="font-weight:bold; color:var(--primary);">🥬 ${i.planta}</span> 
+                            <span style="margin-left:10px; color:#666;">(${i.cliente})</span>
+                        </div>
+                        <div style="font-weight:bold; font-size:1.1rem;">
+                            ${i.cant} ud ${btnRestar}
+                        </div>
+                    </li>`;
+        });
+        html += `</ul>`;
+    }
+    html += `</div>`;
+
+    // --- SECCIÓN: PRÓXIMAS SALIDAS (Agenda Futura) ---
+    html += `<div class="card" style="margin-bottom: 30px;">
+        <h3 style="color:var(--info); margin-top:0;"><i class="fas fa-calendar-alt"></i> 📅 PRÓXIMAS SALIDAS (Previsión 10 días)</h3>
+        <p style="font-size:0.85rem; color:#666;">Agenda de lo que se cosechará en los próximos días.</p>`;
 
     const fechasOrds = Object.keys(salidasPorDia).sort();
     if (fechasOrds.length === 0) {
-        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas estimadas en los próximos 10 días.</p>`;
+        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas programadas a corto plazo.</p>`;
     } else {
         fechasOrds.forEach(f => {
             const fechaObj = new Date(f);
             const fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
-            
             const resumenDia = {};
             salidasPorDia[f].forEach(item => {
                 if(!resumenDia[item.planta]) resumenDia[item.planta] = [];
                 resumenDia[item.planta].push(item);
             });
 
-            html += `<h4 style="margin-top:20px; border-bottom:2px solid var(--border); padding-bottom:5px; color:var(--text); font-size:1.2rem;">📅 ${fechaStr}</h4>
-            <ul style="list-style:none; padding:0; margin-top:10px;">`;
-            
+            html += `<h4 style="margin-top:15px; border-bottom:1px solid var(--border); padding-bottom:3px; color:var(--text); font-size:1rem;">📅 ${fechaStr}</h4>
+            <ul style="list-style:none; padding:0; margin-top:5px;">`;
             for(const [planta, items] of Object.entries(resumenDia)) {
                 let col = items.map(i => {
-                    const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja de este lote"> -1 </button>` : '';
-                    return `<strong>${i.cant}</strong> ud ${btnRestar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Del Lote]</small>' : ''}`;
+                    const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja"> -1 </button>` : '';
+                    return `<strong>${i.cant}</strong> ud ${btnRestar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Lote]</small>' : ''}`;
                 });
-                let totalDiaPlanta = items.reduce((sum, i) => sum + i.cant, 0);
-                html += `<li style="padding:10px 0; border-bottom:1px dashed #e0e0e0;">
-                            <div style="font-weight:bold; color:var(--primary); font-size:1.1rem; margin-bottom:5px;">🥬 ${planta} (Total: ${totalDiaPlanta})</div>
-                            <div style="font-size:0.9rem; color:var(--text-light); margin-left:15px; line-height:1.6;">• ${col.join('<br>• ')}</div>
+                html += `<li style="padding:5px 0; font-size:0.9rem;">
+                            <span style="font-weight:bold; color:var(--info);">🥬 ${planta}:</span> ${col.join(' | ')}
                         </li>`;
             }
             html += `</ul>`;
         });
     }
+    html += `</div>`;
 
-    // NUEVA SECCIÓN: STOCK FÍSICO TOTAL (Todas las bandejas en cultivo/listas)
+    // --- SECCIÓN: STOCK FÍSICO TOTAL (Interactiva) ---
     const stockDeBandejas = {};
     (db.lotes || []).forEach(l => {
         if (!stockDeBandejas[l.plantaNombre]) stockDeBandejas[l.plantaNombre] = 0;
         stockDeBandejas[l.plantaNombre] += parseInt(l.cant);
     });
 
-    html += `<div style="margin-top:40px; border-top: 3px solid var(--primary); padding-top:20px;">
-        <h3 style="color:var(--primary-dark);"><i class="fas fa-boxes"></i> 📦 STOCK FÍSICO TOTAL (Bandejas en curso)</h3>
-        <p style="font-size:0.85rem; color:#666;">Bandejas totales que tienes físicamente en la sala en este momento.</p>
-        <div class="grid-dashboard" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top:15px;">`;
+    html += `<div class="card" style="background:#f0f4f8;">
+        <h3 style="color:var(--primary-dark); margin-top:0;"><i class="fas fa-boxes"></i> 📦 STOCK FÍSICO TOTAL (Bandejas actuales)</h3>
+        <p style="font-size:0.85rem; color:#666;">Bandejas totales que hay en la sala. Puedes restar desde aquí del lote más antiguo.</p>
+        <div class="grid-dashboard" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top:15px;">`;
     
     const sortedStocks = Object.entries(stockDeBandejas).sort((a,b) => b[1] - a[1]);
     if (sortedStocks.length === 0) {
-        html += `<p style="grid-column: 1/-1; text-align:center; color:#999; padding:20px;">No hay bandejas en stock actualmente.</p>`;
+        html += `<p style="grid-column: 1/-1; text-align:center; color:#999; padding:20px;">No hay unidades en stock.</p>`;
     } else {
         sortedStocks.forEach(([planta, cant]) => {
-            html += `<div class="card stat-card" style="padding:15px; background:#f9fbff; border:1px solid #e1e7f0;">
-                <h4 style="margin:0; font-size:0.9rem; color:var(--text);">${planta}</h4>
+            html += `<div class="card stat-card" style="padding:15px; background:#fff; border:1px solid #c8d6e5; position:relative;">
+                <h4 style="margin:0; font-size:0.85rem; color:var(--text);">${planta}</h4>
                 <p style="margin:5px 0 0; font-size:1.8rem; color:var(--primary);">${cant}</p>
-                <small style="color:#888;">bandejas</small>
+                <button class="btn-micro-minus" style="position:absolute; top:10px; right:12px; margin:0;" onclick="restarBandejaPorPlanta('${planta}')">-1</button>
             </div>`;
         });
     }
-    html += `</div></div></div>`;
+    html += `</div></div>`;
 
     container.innerHTML = html;
 }
