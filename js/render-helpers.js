@@ -239,12 +239,12 @@ function renderResumenSemanal() {
 
             if (cosecha <= hoy) {
                 // YA ESTÁ LISTA (Cosechada o para hoy)
-                salidasListas.push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, fechaCosecha: cosecha, isLote: true });
+                salidasListas.push({ id: lote.id, planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, fechaCosecha: cosecha, isLote: true });
             } else if (cosecha <= en10dias) {
                 // FUTURA (Próximos días)
                 const dStr = cosecha.toISOString().split('T')[0];
                 if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
-                salidasPorDia[dStr].push({ planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, isLote: true });
+                salidasPorDia[dStr].push({ id: lote.id, planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, isLote: true });
             }
         }
     });
@@ -261,7 +261,7 @@ function renderResumenSemanal() {
     } else {
         html += `<ul style="list-style:none; padding:0; margin-top:10px;">`;
         salidasListas.forEach(i => {
-            const btnRestar = `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${i.planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja"> -1 </button>`;
+            const btnRestar = `<button class="btn-micro-minus" onclick="restarBandejaID(${i.id})" title="Restar 1 bandeja"> -1 </button>`;
             html += `<li style="padding:10px; border-bottom:1px dashed #e0e0e0; display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <span style="font-weight:bold; color:var(--primary);">🥬 ${i.planta}</span> 
@@ -298,7 +298,7 @@ function renderResumenSemanal() {
             <ul style="list-style:none; padding:0; margin-top:5px;">`;
             for(const [planta, items] of Object.entries(resumenDia)) {
                 let col = items.map(i => {
-                    const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja"> -1 </button>` : '';
+                    const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaID(${i.id})" title="Restar 1 bandeja"> -1 </button>` : '';
                     return `<strong>${i.cant}</strong> ud ${btnRestar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Lote]</small>' : ''}`;
                 });
                 html += `<li style="padding:5px 0; font-size:0.9rem;">
