@@ -45,27 +45,29 @@ const PRINTER_BLE = {
 
         showToast("Procesando etiqueta...", "info");
 
-        // 1. Capturar DOM a Canvas
-        const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+        // 1. Capturar DOM a Canvas (Forzamos fondo blanco para evitar problemas de transparencia o modo oscuro)
+        const canvas = await html2canvas(el, { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: '#ffffff' 
+        });
         
         // 2. Rotar 90 grados y ajustar a 384px de ancho (48mm a 203dpi)
-        // La Detonger P1 tiene un ancho físico de 384px.
         const targetWidth = 384; 
         const aspectRatio = canvas.height / canvas.width;
-        const targetHeight = Math.round(targetWidth * (canvas.width / canvas.height)); // Altura proporcional después de rotar
+        const targetHeight = Math.round(targetWidth * (canvas.width / canvas.height));
 
         const rotatedCanvas = document.createElement('canvas');
         rotatedCanvas.width = targetWidth;
         rotatedCanvas.height = targetHeight;
         const ctx = rotatedCanvas.getContext('2d');
 
-        // Rotar el contenido: El ancho original se convierte en el largo del rollo
+        // Fondo blanco también en el canvas de rotación
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+
         ctx.translate(targetWidth, 0);
         ctx.rotate(Math.PI / 2);
-        
-        // Dibujamos el canvas original ajustado al nuevo tamaño
-        // Original: canvas.width, canvas.height
-        // Al rotar 90: El eje X del dibujo es el eje Y original.
         ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
 
         // 3. Convertir a Bitmap de 1 bit (TSPL)
@@ -78,7 +80,7 @@ const PRINTER_BLE = {
             `GAP 3 mm, 0 mm\r\n`,
             `DIRECTION 0\r\n`,
             `CLS\r\n`,
-            `BITMAP 0,0,${widthBytes},${targetHeight},0,`,
+            `BITMAP 0,0,${widthBytes},${targetHeight},1,`, // Modo 1 (OR) a veces ayuda, pero probamos con 0 si falla
         ];
 
         // 5. Enviar comandos
