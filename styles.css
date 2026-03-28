@@ -815,7 +815,7 @@ textarea:focus {
 }
 
 #txt-cliente {
-    top: 63%;
+    top: 58%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.22rem;
@@ -825,27 +825,36 @@ textarea:focus {
 }
 
 #txt-lote {
-    top: 72.1%;
-    left: 37%;
+    top: 67%;
+    left: 42%;
     font-size: 1.6rem;
 }
 
 #txt-cortado {
-    top: 80.5%;
-    left: 33.1%;
+    top: 75.3%;
+    left: 37.5%;
     font-size: 1.6rem;
 }
 
 #txt-cad {
-    top: 80.5%;
-    left: 55.5%;
+    top: 75.3%;
+    left: 54.5%;
     font-size: 1.6rem;
 }
 
 #txt-cant {
-    top: 80.5%;
-    left: 77%;
+    top: 75.3%;
+    left: 69.5%;
     font-size: 1.6rem;
+}
+
+#txt-footer {
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
 }
 
 #login-overlay {
