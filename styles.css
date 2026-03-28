@@ -788,14 +788,63 @@ textarea:focus {
 }
 
 .label-box {
-    border: 1px dashed #333;
-    padding: 15px;
-    margin: 15px 0;
-    text-align: left;
-    font-family: Arial, sans-serif;
-    background: #fdfdfd;
-    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+    width: 800px;
+    height: 500px;
+    border: 1px solid #ccc;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #fff;
+    overflow: hidden;
+    box-sizing: border-box;
+    color: black;
+}
+
+#etiq-bg-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.label-box span {
+    position: absolute;
     font-weight: bold;
+    white-space: nowrap;
+}
+
+#txt-cliente {
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
+#txt-lote {
+    top: 67%;
+    left: 40%;
+    font-size: 1.6rem;
+}
+
+#txt-cortado {
+    top: 73.5%;
+    left: 37%;
+    font-size: 1.6rem;
+}
+
+#txt-cad {
+    top: 73.5%;
+    left: 54%;
+    font-size: 1.6rem;
+}
+
+#txt-cant {
+    top: 73.5%;
+    left: 69%;
+    font-size: 1.6rem;
 }
 
 #login-overlay {

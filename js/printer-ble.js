@@ -52,10 +52,9 @@ const PRINTER_BLE = {
             backgroundColor: '#ffffff' 
         });
         
-        // 2. Rotar 90 grados y ajustar a 400px de ancho (50mm reales a 203dpi)
+        // 2. Rotar 90 grados y ajustar a 400px de ancho y 640px de largo (50x80mm reales)
         const targetWidth = 400; 
-        const aspectRatio = canvas.height / canvas.width;
-        const targetHeight = Math.round(targetWidth * (canvas.width / canvas.height));
+        const targetHeight = 640;
 
         const rotatedCanvas = document.createElement('canvas');
         rotatedCanvas.width = targetWidth;
