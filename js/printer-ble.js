@@ -52,9 +52,9 @@ const PRINTER_BLE = {
             backgroundColor: '#ffffff' 
         });
         
-        // 2. Rotar 90 grados y ajustar a 384px de ancho y 600px de largo (48x75mm reales)
-        const targetWidth = 384; 
-        const targetHeight = 600;
+        // 2. Rotar 90 grados y ajustar a 400px de ancho y 640px de largo (50x80mm reales)
+        const targetWidth = 400; 
+        const targetHeight = 640;
 
         const rotatedCanvas = document.createElement('canvas');
         rotatedCanvas.width = targetWidth;
@@ -72,12 +72,12 @@ const PRINTER_BLE = {
         // 3. Convertir a Bitmap de 1 bit (TSPL)
         const bitmapData = this.canvasToTsplBitmap(rotatedCanvas);
         
-        // 4. Generar comandos TSPL (Margen de seguridad 75mm)
-        const widthBytes = Math.ceil(targetWidth / 8); // 384 / 8 = 48 bytes
+        // 4. Generar comandos TSPL (50x80mm)
+        const widthBytes = Math.ceil(targetWidth / 8); // 400 / 8 = 50 bytes
         const xOffset = 0; 
         
         const cmds = [
-            `SIZE 48 mm, 75 mm\r\n`,
+            `SIZE 50 mm, 80 mm\r\n`,
             `GAP 3 mm, 0 mm\r\n`,
             `REFERENCE 0,0\r\n`,
             `OFFSET 0\r\n`,
