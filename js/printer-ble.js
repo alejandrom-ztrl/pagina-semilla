@@ -45,15 +45,15 @@ const PRINTER_BLE = {
 
         showToast("Procesando etiqueta...", "info");
 
-        // 1. Capturar DOM a Canvas (Forzamos fondo blanco para evitar problemas de transparencia o modo oscuro)
+        // 1. Capturar DOM a Canvas (Forzamos fondo blanco y alta escala para nitidez)
         const canvas = await html2canvas(el, { 
-            scale: 2, 
+            scale: 3, 
             useCORS: true,
             backgroundColor: '#ffffff' 
         });
         
-        // 2. Rotar 90 grados y ajustar a 384px de ancho (48mm a 203dpi)
-        const targetWidth = 384; 
+        // 2. Rotar 90 grados y ajustar a 400px de ancho (50mm reales a 203dpi)
+        const targetWidth = 400; 
         const aspectRatio = canvas.height / canvas.width;
         const targetHeight = Math.round(targetWidth * (canvas.width / canvas.height));
 
@@ -62,7 +62,7 @@ const PRINTER_BLE = {
         rotatedCanvas.height = targetHeight;
         const ctx = rotatedCanvas.getContext('2d');
 
-        // Fondo blanco también en el canvas de rotación
+        // Fondo blanco
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
@@ -71,19 +71,18 @@ const PRINTER_BLE = {
         ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
 
         // 3. Convertir a Bitmap de 1 bit (TSPL)
-        // Invertimos bits: Inicia en FF (blanco) y ponemos 0 en lo oscuro (negro)
         const bitmapData = this.canvasToTsplBitmap(rotatedCanvas);
         
         // 4. Generar comandos TSPL
-        const widthBytes = Math.ceil(targetWidth / 8);
-        const xOffset = 8; // Centrado: (400px papel - 384px area) / 2 = 8 píxeles (1mm)
+        const widthBytes = Math.ceil(targetWidth / 8); // 400 / 8 = 50 bytes
+        const xOffset = 0; // Sin margen para aprovechar todo el ancho
         
         const cmds = [
             `SIZE 50 mm, 80 mm\r\n`,
             `GAP 3 mm, 0 mm\r\n`,
             `DIRECTION 0\r\n`,
             `CLS\r\n`,
-            `BITMAP ${xOffset},0,${widthBytes},${targetHeight},0,`, // Usamos xOffset y Modo 0 (Overwrite)
+            `BITMAP ${xOffset},0,${widthBytes},${targetHeight},0,`, 
         ];
 
         // 5. Enviar comandos
