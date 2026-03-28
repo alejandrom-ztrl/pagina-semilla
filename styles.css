@@ -805,7 +805,7 @@ textarea:focus {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.15); /* Zoom 15% para agrandar logo y planta */
+    transform: scale(1.30); /* Zoom 30% para agrandar logo y planta */
 }
 
 .label-box span {
@@ -815,7 +815,7 @@ textarea:focus {
 }
 
 #txt-cliente {
-    top: 61.5%;
+    top: 63%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.22rem;
@@ -825,26 +825,26 @@ textarea:focus {
 }
 
 #txt-lote {
-    top: 69.5%;
-    left: 38.5%;
+    top: 72.1%;
+    left: 37%;
     font-size: 1.6rem;
 }
 
 #txt-cortado {
-    top: 77.2%;
-    left: 35%;
+    top: 80.5%;
+    left: 33.1%;
     font-size: 1.6rem;
 }
 
 #txt-cad {
-    top: 77.2%;
-    left: 55%;
+    top: 80.5%;
+    left: 55.5%;
     font-size: 1.6rem;
 }
 
 #txt-cant {
-    top: 77.2%;
-    left: 72%;
+    top: 80.5%;
+    left: 77%;
     font-size: 1.6rem;
 }
 
