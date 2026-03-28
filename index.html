@@ -496,6 +496,7 @@
                         </div>
                     </div>
                     <div class="card">
+                        <input type="hidden" id="visita-id-edicion" value="">
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
                             <div class="form-group"><label>Cliente</label><select id="visita-cliente"></select></div>
@@ -503,7 +504,7 @@
                             <div class="form-group"><label>Hora</label><input type="time" id="visita-hora"></div>
                             <div class="form-group"><label>Motivo</label><input type="text" id="visita-motivo"></div>
                         </div>
-                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()">Registrar
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="addVisita()" id="btn-save-visita">Registrar
                             Visita</button>
                     </div>
                     <div id="visitas-calendario" class="calendar-container">

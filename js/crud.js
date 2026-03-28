@@ -100,7 +100,44 @@ function addPlanMix() {
     }
 }
 
-function addVisita() { if (!db.visitas) db.visitas = []; db.visitas.push({ id: Date.now(), cliente: document.getElementById('visita-cliente').value, fecha: document.getElementById('visita-fecha').value, hora: document.getElementById('visita-hora').value, motivo: document.getElementById('visita-motivo').value }); save('visitas'); }
+function addVisita() {
+    if (!db.visitas) db.visitas = [];
+    const editId = document.getElementById('visita-id-edicion').value;
+    const v = {
+        id: editId ? Number(editId) : Date.now(),
+        cliente: document.getElementById('visita-cliente').value,
+        fecha: document.getElementById('visita-fecha').value,
+        hora: document.getElementById('visita-hora').value,
+        motivo: document.getElementById('visita-motivo').value
+    };
+
+    if (editId) {
+        const idx = db.visitas.findIndex(x => x.id == editId);
+        if (idx > -1) db.visitas[idx] = v;
+    } else {
+        db.visitas.push(v);
+    }
+
+    // Resetear formulario
+    document.getElementById('visita-id-edicion').value = '';
+    document.getElementById('btn-save-visita').innerText = 'Registrar Visita';
+    ['visita-cliente', 'visita-fecha', 'visita-hora', 'visita-motivo'].forEach(id => document.getElementById(id).value = '');
+    
+    save('visitas');
+}
+
+function editVisita(id) {
+    const v = db.visitas.find(x => x.id == id);
+    if (v) {
+        document.getElementById('visita-id-edicion').value = v.id;
+        document.getElementById('visita-cliente').value = v.cliente;
+        document.getElementById('visita-fecha').value = v.fecha || '';
+        document.getElementById('visita-hora').value = v.hora || '';
+        document.getElementById('visita-motivo').value = v.motivo || '';
+        document.getElementById('btn-save-visita').innerText = 'Actualizar Visita';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
 
 function addStockSemilla() {
     const id = document.getElementById('stock-semilla-id').value, kilos = parseFloat(document.getElementById('stock-semilla-cant').value) || 0;
@@ -136,6 +173,7 @@ window.addPlan = addPlan;
 window.editPlan = editPlan;
 window.addPlanMix = addPlanMix;
 window.addVisita = addVisita;
+window.editVisita = editVisita;
 window.addStockSemilla = addStockSemilla;
 window.editInsumo = editInsumo;
 window.addInsumo = addInsumo;

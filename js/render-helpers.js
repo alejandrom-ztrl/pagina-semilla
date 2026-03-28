@@ -89,7 +89,7 @@ function renderClientesTable(data) {
 }
 
 function renderVisitasTable() {
-    document.querySelector('#table-visitas tbody').innerHTML = (db.visitas || []).length === 0 ? `<tr><td colspan="4" style="text-align:center; padding: 20px; color: #999;">No hay visitas registradas</td></tr>` : (db.visitas || []).map(v => `<tr><td>${v.cliente}</td><td>${v.fecha}</td><td>${v.motivo}</td><td><button class="btn btn-danger" onclick="borrar('visitas',${v.id})">X</button></td></tr>`).join('');
+    document.querySelector('#table-visitas tbody').innerHTML = (db.visitas || []).length === 0 ? `<tr><td colspan="5" style="text-align:center; padding: 20px; color: #999;">No hay visitas registradas</td></tr>` : (db.visitas || []).map(v => `<tr><td>${v.cliente}</td><td>${v.fecha}</td><td>${v.hora || '-'}</td><td>${v.motivo}</td><td><button class="btn btn-info" onclick="editVisita(${v.id})">E</button> <button class="btn btn-danger" onclick="borrar('visitas',${v.id})">X</button></td></tr>`).join('');
 }
 
 function renderLotesTable(data) {
@@ -270,7 +270,10 @@ function renderResumenSemanal() {
             <ul style="list-style:none; padding:0; margin-top:10px;">`;
             
             for(const [planta, items] of Object.entries(resumenDia)) {
-                let col = items.map(i => `<strong>${i.cant}</strong> ud &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Del Lote]</small>' : ''}`);
+                let col = items.map(i => {
+                    const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaLoteByData('${planta}', '${i.cliente}', ${i.cant})" title="Restar 1 bandeja de este lote"> -1 </button>` : '';
+                    return `<strong>${i.cant}</strong> ud ${btnRestar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Del Lote]</small>' : ''}`;
+                });
                 let totalDiaPlanta = items.reduce((sum, i) => sum + i.cant, 0);
                 html += `<li style="padding:10px 0; border-bottom:1px dashed #e0e0e0;">
                             <div style="font-weight:bold; color:var(--primary); font-size:1.1rem; margin-bottom:5px;">🥬 ${planta} (Total: ${totalDiaPlanta})</div>
@@ -280,7 +283,32 @@ function renderResumenSemanal() {
             html += `</ul>`;
         });
     }
-    html += `</div>`;
+
+    // NUEVA SECCIÓN: STOCK FÍSICO TOTAL (Todas las bandejas en cultivo/listas)
+    const stockDeBandejas = {};
+    (db.lotes || []).forEach(l => {
+        if (!stockDeBandejas[l.plantaNombre]) stockDeBandejas[l.plantaNombre] = 0;
+        stockDeBandejas[l.plantaNombre] += parseInt(l.cant);
+    });
+
+    html += `<div style="margin-top:40px; border-top: 3px solid var(--primary); padding-top:20px;">
+        <h3 style="color:var(--primary-dark);"><i class="fas fa-boxes"></i> 📦 STOCK FÍSICO TOTAL (Bandejas en curso)</h3>
+        <p style="font-size:0.85rem; color:#666;">Bandejas totales que tienes físicamente en la sala en este momento.</p>
+        <div class="grid-dashboard" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top:15px;">`;
+    
+    const sortedStocks = Object.entries(stockDeBandejas).sort((a,b) => b[1] - a[1]);
+    if (sortedStocks.length === 0) {
+        html += `<p style="grid-column: 1/-1; text-align:center; color:#999; padding:20px;">No hay bandejas en stock actualmente.</p>`;
+    } else {
+        sortedStocks.forEach(([planta, cant]) => {
+            html += `<div class="card stat-card" style="padding:15px; background:#f9fbff; border:1px solid #e1e7f0;">
+                <h4 style="margin:0; font-size:0.9rem; color:var(--text);">${planta}</h4>
+                <p style="margin:5px 0 0; font-size:1.8rem; color:var(--primary);">${cant}</p>
+                <small style="color:#888;">bandejas</small>
+            </div>`;
+        });
+    }
+    html += `</div></div></div>`;
 
     container.innerHTML = html;
 }

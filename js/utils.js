@@ -107,6 +107,31 @@ function showToast(msg, type = 'info') {
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => { toast.remove(); }, 500); }, 5000);
 }
 
+function restarBandejaLoteByData(planta, cliente, cantActual) {
+    if (!db.lotes) return;
+    // Buscamos el lote que coincida con planta, cliente y cantidad (para ser precisos)
+    const idx = db.lotes.findIndex(l => l.plantaNombre === planta && l.cliente === cliente && parseInt(l.cant) === cantActual);
+    
+    if (idx > -1) {
+        let nuevaCant = parseInt(db.lotes[idx].cant) - 1;
+        if (nuevaCant <= 0) {
+            if (confirm(`¿El lote de ${planta} para ${cliente} se ha terminado? Se eliminará de la lista.`)) {
+                db.lotes.splice(idx, 1);
+            } else {
+                return; // No hacer nada
+            }
+        } else {
+            db.lotes[idx].cant = nuevaCant;
+        }
+        
+        save('lotes');
+        renderLotesTable(db.lotes);
+        renderResumenSemanal();
+        showToast("Bandeja restada del stock", "info");
+    }
+}
+
+window.restarBandejaLoteByData = restarBandejaLoteByData;
 window.showToast = showToast;
 window.updateCosechaCliente = updateCosechaCliente;
 window.generarEtiquetaCosecha = generarEtiquetaCosecha;
