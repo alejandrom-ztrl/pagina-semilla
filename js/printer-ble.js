@@ -71,16 +71,19 @@ const PRINTER_BLE = {
         ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
 
         // 3. Convertir a Bitmap de 1 bit (TSPL)
+        // Invertimos bits: Inicia en FF (blanco) y ponemos 0 en lo oscuro (negro)
         const bitmapData = this.canvasToTsplBitmap(rotatedCanvas);
         
         // 4. Generar comandos TSPL
         const widthBytes = Math.ceil(targetWidth / 8);
+        const xOffset = 8; // Centrado: (400px papel - 384px area) / 2 = 8 píxeles (1mm)
+        
         const cmds = [
             `SIZE 50 mm, 80 mm\r\n`,
             `GAP 3 mm, 0 mm\r\n`,
             `DIRECTION 0\r\n`,
             `CLS\r\n`,
-            `BITMAP 0,0,${widthBytes},${targetHeight},1,`, // Modo 1 (OR) a veces ayuda, pero probamos con 0 si falla
+            `BITMAP ${xOffset},0,${widthBytes},${targetHeight},0,`, // Usamos xOffset y Modo 0 (Overwrite)
         ];
 
         // 5. Enviar comandos
@@ -97,22 +100,21 @@ const PRINTER_BLE = {
         const width = canvas.width;
         const height = canvas.height;
         const widthBytes = Math.ceil(width / 8);
+        
+        // Inicializamos con 255 (Blanco = 1)
         const bitmap = new Uint8Array(widthBytes * height);
+        bitmap.fill(0xFF);
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const i = (y * width + x) * 4;
-                // Luminosidad: 0.299R + 0.587G + 0.114B
                 const gray = (pixels[i] * 0.299 + pixels[i + 1] * 0.587 + pixels[i + 2] * 0.114);
                 
-                // Umbral (Threshold)
+                // Si es un color oscuro (como el texto), ponemos el bit a 0 (Negro = 0)
                 if (gray < 128) {
-                    // Píxel Negro (En TSPL 0 suele ser negro dependiendo del modo BITMAP, 
-                    // pero para BITMAP x,y,w,h,m suele ser: bit 1 = negro, bit 0 = blanco si mode=0)
-                    // Invertimos porque TSPL BITMAP 1 = negro
                     const bytePos = (y * widthBytes) + Math.floor(x / 8);
                     const bitPos = 7 - (x % 8);
-                    bitmap[bytePos] |= (1 << bitPos);
+                    bitmap[bytePos] &= ~(1 << bitPos);
                 }
             }
         }
