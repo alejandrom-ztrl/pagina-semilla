@@ -262,13 +262,14 @@ function renderResumenSemanal() {
         html += `<ul style="list-style:none; padding:0; margin-top:10px;">`;
         salidasListas.forEach(i => {
             const btnRestar = `<button class="btn-micro-minus" onclick="restarBandejaID(${i.id})" title="Restar 1 bandeja"> -1 </button>`;
+            const btnSumar = `<button class="btn-micro-plus" onclick="sumarBandejaID(${i.id})" title="Sumar 1 bandeja"> +1 </button>`;
             html += `<li style="padding:10px; border-bottom:1px dashed #e0e0e0; display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <span style="font-weight:bold; color:var(--primary);">🥬 ${i.planta}</span> 
                             <span style="margin-left:10px; color:#666;">(${i.cliente})</span>
                         </div>
                         <div style="font-weight:bold; font-size:1.1rem;">
-                            ${i.cant} ud ${btnRestar}
+                            ${i.cant} ud ${btnRestar} ${btnSumar}
                         </div>
                     </li>`;
         });
@@ -299,7 +300,8 @@ function renderResumenSemanal() {
             for(const [planta, items] of Object.entries(resumenDia)) {
                 let col = items.map(i => {
                     const btnRestar = i.isLote ? `<button class="btn-micro-minus" onclick="restarBandejaID(${i.id})" title="Restar 1 bandeja"> -1 </button>` : '';
-                    return `<strong>${i.cant}</strong> ud ${btnRestar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Lote]</small>' : ''}`;
+                    const btnSumar = i.isLote ? `<button class="btn-micro-plus" onclick="sumarBandejaID(${i.id})" title="Sumar 1 bandeja"> +1 </button>` : '';
+                    return `<strong>${i.cant}</strong> ud ${btnRestar}${btnSumar} &rarr; <em>${i.cliente}</em> ${i.isLote ? '<small style="color:orange">[Lote]</small>' : ''}`;
                 });
                 html += `<li style="padding:5px 0; font-size:0.9rem;">
                             <span style="font-weight:bold; color:var(--info);">🥬 ${planta}:</span> ${col.join(' | ')}
@@ -330,7 +332,10 @@ function renderResumenSemanal() {
             html += `<div class="card stat-card" style="padding:15px; background:#fff; border:1px solid #c8d6e5; position:relative;">
                 <h4 style="margin:0; font-size:0.85rem; color:var(--text);">${planta}</h4>
                 <p style="margin:5px 0 0; font-size:1.8rem; color:var(--primary);">${cant}</p>
-                <button class="btn-micro-minus" style="position:absolute; top:10px; right:12px; margin:0;" onclick="restarBandejaPorPlanta('${planta}')">-1</button>
+                <div style="position:absolute; top:10px; right:12px; display:flex; gap:4px;">
+                    <button class="btn-micro-minus" style="margin:0;" onclick="restarBandejaPorPlanta('${planta}')">-1</button>
+                    <button class="btn-micro-plus" style="margin:0;" onclick="sumarBandejaPorPlanta('${planta}')">+1</button>
+                </div>
             </div>`;
         });
     }

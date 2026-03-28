@@ -1244,3 +1244,22 @@ textarea:focus {
     background: #e74c3c;
     color: white;
 }
+
+.btn-micro-plus {
+    background: #e9f7ef;
+    color: #27ae60;
+    border: 1px solid #2ecc71;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: all 0.2s;
+    line-height: 1;
+    display: inline-block;
+}
+
+.btn-micro-plus:hover {
+    background: #27ae60;
+    color: white;
+}

@@ -129,6 +129,16 @@ function restarBandejaID(id) {
     }
 }
 
+function sumarBandejaID(id) {
+    if (!db.lotes) return;
+    const idx = db.lotes.findIndex(l => l.id === id);
+    if (idx > -1) {
+        db.lotes[idx].cant = (parseInt(db.lotes[idx].cant) || 0) + 1;
+        save('lotes'); renderLotesTable(db.lotes); renderResumenSemanal();
+        showToast(`Bandeja añadida al lote`, "info");
+    }
+}
+
 function restarBandejaPorPlanta(plantaNombre) {
     if (!db.lotes) return;
     
@@ -158,8 +168,18 @@ function restarBandejaPorPlanta(plantaNombre) {
     }
 }
 
+function sumarBandejaPorPlanta(plantaNombre) {
+    if (!db.lotes) return;
+    const lote = db.lotes
+        .filter(l => l.plantaNombre === plantaNombre)
+        .sort((a,b) => new Date(a.fecha) - new Date(b.fecha))[0];
+    if (lote) sumarBandejaID(lote.id);
+}
+
+window.restarBandejaID = restarBandejaID;
+window.sumarBandejaID = sumarBandejaID;
 window.restarBandejaPorPlanta = restarBandejaPorPlanta;
-window.restarBandejaLoteByData = restarBandejaLoteByData;
+window.sumarBandejaPorPlanta = sumarBandejaPorPlanta;
 window.showToast = showToast;
 window.updateCosechaCliente = updateCosechaCliente;
 window.generarEtiquetaCosecha = generarEtiquetaCosecha;
