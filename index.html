@@ -476,8 +476,10 @@
                         <br>
                         <button class="btn btn-primary" style="margin-top:10px;" onclick="descargarPNG()"><i
                                 class="fas fa-download"></i> Descargar PNG</button>
-                        <button class="btn btn-purple" style="margin-top:10px;" onclick="printLabelBLE()"><i
-                                class="fas fa-print"></i> Imprimir Bluetooth (P1)</button>
+                        <button class="btn btn-purple" style="margin-top:10px; background-color: #6a1b9a;" onclick="printLabelBLE()"><i
+                                class="fas fa-bluetooth"></i> Imprimir x Bluetooth (P1)</button>
+                        <button class="btn btn-info" style="margin-top:10px; background-color: #00838f;" onclick="printLabelUSB()"><i
+                                class="fas fa-usb"></i> Imprimir x USB (CABLE)</button>
                     </div>
                 </section>
 
@@ -832,6 +834,7 @@
 
     <!-- Entry Point -->
     <script src="js/printer-ble.js"></script>
+    <script src="js/printer-serial.js"></script>
     <script src="app.js"></script>
 </body>
 

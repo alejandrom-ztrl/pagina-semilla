@@ -127,11 +127,17 @@ const PRINTER_BLE = {
             await this.sendCommand(encoder.encode(cmd));
         }
 
-        // Enviar datos del bitmap en chunks de 20 bytes (estándar BLE MTU seguro)
-        const chunkSize = 20;
+        // Aumentar Chunk Size (512 es seguro para Web BLE)
+        // Usamos writeValueWithoutResponse para no esperar confirmación por cada trozo
+        const chunkSize = 512;
         for (let i = 0; i < bitmapData.length; i += chunkSize) {
             const chunk = bitmapData.slice(i, i + chunkSize);
-            await this.characteristic.writeValue(chunk);
+            try {
+                await this.characteristic.writeValueWithoutResponse(chunk);
+            } catch (e) {
+                // Fallback si no soporta writeValueWithoutResponse
+                await this.characteristic.writeValue(chunk);
+            }
         }
 
         // Enviar salto de línea tras el bitmap
@@ -142,11 +148,14 @@ const PRINTER_BLE = {
         if (typeof data === 'string') {
             data = new TextEncoder().encode(data);
         }
-        // Fragmentar si es necesario
-        const chunkSize = 20;
+        const chunkSize = 512;
         for (let i = 0; i < data.length; i += chunkSize) {
             const chunk = data.slice(i, i + chunkSize);
-            await this.characteristic.writeValue(chunk);
+            try {
+                await this.characteristic.writeValueWithoutResponse(chunk);
+            } catch (e) {
+                await this.characteristic.writeValue(chunk);
+            }
         }
     }
 };
