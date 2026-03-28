@@ -53,7 +53,7 @@ const PRINTER_SERIAL = {
         });
         
         const targetWidth = 384; 
-        const targetHeight = 624;
+        const targetHeight = 600;
         const rotatedCanvas = document.createElement('canvas');
         rotatedCanvas.width = targetWidth;
         rotatedCanvas.height = targetHeight;
@@ -70,10 +70,10 @@ const PRINTER_SERIAL = {
         const widthBytes = Math.ceil(targetWidth / 8);
         const xOffset = 0;
         
-        // Comandos TSPL (48x78mm)
+        // Comandos TSPL (Margen de seguridad 75mm)
         const encoder = new TextEncoder();
-        const header = encoder.encode(`SIZE 48 mm, 78 mm\r\nGAP 3 mm, 0 mm\r\nDIRECTION 0\r\nCLS\r\nBITMAP ${xOffset},0,${widthBytes},${targetHeight},0,`);
-        const footer = encoder.encode(`\r\nPRINT 1\r\n`);
+        const header = encoder.encode(`SIZE 48 mm, 75 mm\r\nGAP 3 mm, 0 mm\r\nREFERENCE 0,0\r\nOFFSET 0\r\nDIRECTION 0\r\nCLS\r\nBITMAP ${xOffset},0,${widthBytes},${targetHeight},0,`);
+        const footer = encoder.encode(`PRINT 1\r\n`);
 
         // Enviar todo por el puerto serie (mucho más rápido que BLE)
         try {
