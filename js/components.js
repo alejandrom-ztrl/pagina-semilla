@@ -45,19 +45,38 @@ function closeLabel() { document.getElementById('modal-etiqueta').style.display 
 function copyLabel() { navigator.clipboard.writeText(document.getElementById('label-text').innerText).then(() => alert("Copiado")); }
 
 function addLoteManual() {
-    const pltId = document.getElementById('lote-planta').value; const pltObj = db.plantas.find(x => x.id === pltId);
+    const pltId = document.getElementById('lote-planta').value; 
+    const pltObj = db.plantas.find(x => x.id === pltId);
+    let fechaInput = document.getElementById('lote-fecha').value;
+    
+    // Si es hoy y tarde, sugerir cambio o aplicar regla 14:00 si el usuario no cambió el default?
+    // Por ahora, si es manual, respetamos lo que el usuario ponga, pero el input date suele ser hoy por defecto.
+    
     if (!db.ultimoCorrelativo) db.ultimoCorrelativo = 0; db.ultimoCorrelativo++;
-    const cod = pltId + document.getElementById('lote-fecha').value.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
-    if (!db.lotes) db.lotes = []; db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltObj.nombre, cliente: document.getElementById('lote-cliente').value, cant: document.getElementById('lote-cant').value, fecha: document.getElementById('lote-fecha').value });
+    const cod = pltId + fechaInput.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
+    if (!db.lotes) db.lotes = []; 
+    db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltObj.nombre, cliente: document.getElementById('lote-cliente').value, cant: document.getElementById('lote-cant').value, fecha: fechaInput });
     save(['lotes', 'ultimoCorrelativo']);
 }
 
 function generarLoteAutomatico(pltId, pltNombre, cliente, fecha, cant, bandeja) {
+    const hoyStr = new Date().toISOString().split('T')[0];
+    let fechaFinal = fecha;
+
+    // REGLA 14:00: Si se siembra hoy a partir de las 14:00, cuenta como mañana
+    if (fecha === hoyStr) {
+        fechaFinal = getAdjustedDate();
+        if (fechaFinal !== hoyStr) {
+            showToast("Siembra después de las 14:00: Registrada con fecha de mañana.", "info");
+        }
+    }
+
     if (!db.ultimoCorrelativo) db.ultimoCorrelativo = 0; db.ultimoCorrelativo++;
-    const cod = pltId + fecha.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
+    const cod = pltId + fechaFinal.replace(/-/g, '').slice(2) + "-" + db.ultimoCorrelativo;
     if (!db.lotes) db.lotes = [];
-    db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltNombre, cliente: cliente, cant: cant, fecha: fecha });
-    document.getElementById('label-text').innerHTML = `<strong>CLIENTE:</strong> ${cliente.toUpperCase()}<br><strong>PRODUCTO:</strong> ${pltNombre.toUpperCase()}<br><strong>FECHA:</strong> ${fecha}<br><strong>LOTE:</strong> ${cod}<br><strong>BANDEJA:</strong> ${bandeja}`;
+    db.lotes.push({ id: Date.now(), codigo: cod, plantaNombre: pltNombre, cliente: cliente, cant: cant, fecha: fechaFinal });
+    
+    document.getElementById('label-text').innerHTML = `<strong>CLIENTE:</strong> ${cliente.toUpperCase()}<br><strong>PRODUCTO:</strong> ${pltNombre.toUpperCase()}<br><strong>FECHA:</strong> ${fechaFinal}<br><strong>LOTE:</strong> ${cod}<br><strong>BANDEJA:</strong> ${bandeja}`;
     document.getElementById('modal-etiqueta').style.display = 'flex';
 }
 

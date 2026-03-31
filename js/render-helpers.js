@@ -196,11 +196,13 @@ function renderResumenSemanal() {
         for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
                 const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) continue;
-                let entrega = new Date(plan.fecha);
+                let entrega = parseDateLocal(plan.fecha);
+                entrega.setHours(0,0,0,0);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
                 
                 let s = new Date(entrega);
                 s.setDate(s.getDate() - plt.total);
+                s.setHours(0,0,0,0);
                 const tid = `siembra-${plan.id}-${s.getTime()}`;
                 if (completadas.includes(tid)) continue;
                 
@@ -210,7 +212,8 @@ function renderResumenSemanal() {
                     salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(plan.cant), cliente: plan.cliente, isPlan: true });
                 }
             } else {
-                let entrega = new Date(plan.fechaEntrega);
+                let entrega = parseDateLocal(plan.fechaEntrega);
+                entrega.setHours(0,0,0,0);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
                 if (entrega >= hoy && entrega <= en10dias) {
                     const dStr = entrega.toISOString().split('T')[0];
@@ -232,7 +235,7 @@ function renderResumenSemanal() {
     (db.lotes || []).forEach(lote => {
         const plt = db.plantas.find(x => x.nombre === lote.plantaNombre);
         if (plt) {
-            let siembra = new Date(lote.fecha);
+            let siembra = parseDateLocal(lote.fecha);
             let cosecha = new Date(siembra);
             cosecha.setDate(cosecha.getDate() + plt.total);
             cosecha.setHours(0,0,0,0);

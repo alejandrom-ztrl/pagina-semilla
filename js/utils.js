@@ -176,6 +176,22 @@ function sumarBandejaPorPlanta(plantaNombre) {
     if (lote) sumarBandejaID(lote.id);
 }
 
+function parseDateLocal(dateStr) {
+    if (!dateStr) return new Date();
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day, 0, 0, 0, 0);
+}
+
+function getAdjustedDate() {
+    const ahora = new Date();
+    if (ahora.getHours() >= 14) {
+        ahora.setDate(ahora.getDate() + 1);
+    }
+    return ahora.toISOString().split('T')[0];
+}
+
+window.parseDateLocal = parseDateLocal;
+window.getAdjustedDate = getAdjustedDate;
 window.restarBandejaID = restarBandejaID;
 window.sumarBandejaID = sumarBandejaID;
 window.restarBandejaPorPlanta = restarBandejaPorPlanta;

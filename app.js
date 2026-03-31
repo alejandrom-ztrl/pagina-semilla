@@ -39,6 +39,33 @@ function initApp() {
         const cloudData = snapshot.val();
         if (cloudData) {
             db = cloudData;
+            
+            // MIGRACIÓN GUISANTE -> GUISANTE FOXY (Solo una vez)
+            if (!localStorage.getItem('isla_migra_guisante')) {
+                let changed = false;
+                // 1. Plantas
+                (db.plantas || []).forEach(p => {
+                    if (p.nombre === "Guisante") { p.nombre = "Guisante Foxy"; changed = true; }
+                });
+                // 2. Lotes
+                (db.lotes || []).forEach(l => {
+                    if (l.plantaNombre === "Guisante") { l.plantaNombre = "Guisante Foxy"; changed = true; }
+                });
+                // 3. Planes
+                (db.planes || []).forEach(p => {
+                    if (p.tipo === 'INDIVIDUAL' && p.plantaId === "GUI") {
+                        // El ID es GUI, pero el nombre se saca de plantas. 
+                        // Sin embargo, si el nombre se guarda en algún sitio (como en detalle de Lotes generados), se actualiza arriba.
+                    }
+                });
+
+                if (changed) {
+                    save(); // Guarda en Firebase
+                    console.log("Migración Guisante Foxy completada");
+                }
+                localStorage.setItem('isla_migra_guisante', 'true');
+            }
+
             refresh();
             document.getElementById('cloud-status').innerText = "Nube sincronizada";
         } else {
