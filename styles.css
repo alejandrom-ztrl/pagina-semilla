@@ -813,6 +813,16 @@ textarea:focus {
     white-space: nowrap;
 }
 
+#txt-planta {
+    top: 48%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
 #txt-cliente {
     top: 60%;
     left: 50%;

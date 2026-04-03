@@ -32,10 +32,16 @@ function generarEtiquetaCosecha() {
 
     const cortadoParts = fCosecha.split('-');
     const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
+    const pNombre = l.plantaNombre || "SIN NOMBRE";
 
-    const imgName = l.plantaNombre.trim().toUpperCase();
-    document.getElementById('etiq-bg-img').src = `img/${imgName}.png`;
+    let imgName = pNombre.trim().toUpperCase();
+    // Mapeo robusto para Guisante
+    if (imgName === "GUISANTE" || imgName === "GUISANTES") imgName = "GUISANTE FOXY";
+    
+    // Codificación segura para la URL (manejo de espacios)
+    document.getElementById('etiq-bg-img').src = `img/${imgName.replace(/ /g, '%20')}.png`;
 
+    document.getElementById('txt-planta').innerText = pNombre;
     document.getElementById('txt-cliente').innerText = clienteEditado;
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
