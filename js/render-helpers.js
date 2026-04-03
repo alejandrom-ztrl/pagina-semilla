@@ -53,7 +53,8 @@ function refresh() {
     renderLotesTable(db.lotes || []);
 
     const lotesOpt = (db.lotes || []).map(l => `<option value="${l.codigo}">${l.codigo} - ${l.plantaNombre} (${l.cliente})</option>`).reverse().join('');
-    document.getElementById('cosecha-lote').innerHTML = lotesOpt;
+    const dlLoteCosecha = document.getElementById('dl-lotes-cosecha');
+    if (dlLoteCosecha) dlLoteCosecha.innerHTML = lotesOpt;
     document.getElementById('stat-clientes').innerText = (db.clientes || []).length;
     document.getElementById('stat-planes').innerText = (db.planes || []).length;
     document.getElementById('stat-lotes').innerText = (db.lotes || []).length;
