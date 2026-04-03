@@ -32,28 +32,10 @@ function generarEtiquetaCosecha() {
 
     const cortadoParts = fCosecha.split('-');
     const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
-    const pNombre = l.plantaNombre || "SIN NOMBRE";
 
-    let imgName = pNombre.trim().toUpperCase();
-    // Mapeo robusto para Guisante
-    if (imgName === "GUISANTE" || imgName === "GUISANTES") imgName = "GUISANTE FOXY";
-    
-    // Codificación segura para la URL (manejo de espacios y caracteres especiales)
-    const imgSrc = `img/${imgName}.png`;
-    const imgElement = document.getElementById('etiq-bg-img');
-    
-    imgElement.onerror = () => {
-        console.error("No se pudo cargar la imagen:", imgSrc);
-        imgElement.style.opacity = "0"; // Ocultar si falla para que no se vea el icono de error
-    };
-    
-    imgElement.onload = () => {
-        imgElement.style.opacity = "1";
-    };
+    const imgName = l.plantaNombre.trim().toUpperCase();
+    document.getElementById('etiq-bg-img').src = `img/${imgName}.png`;
 
-    imgElement.src = encodeURI(imgSrc);
-
-    document.getElementById('txt-planta').innerText = pNombre;
     document.getElementById('txt-cliente').innerText = clienteEditado;
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
