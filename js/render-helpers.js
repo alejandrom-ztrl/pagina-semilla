@@ -21,6 +21,10 @@ function refresh() {
     document.getElementById('lote-cliente').innerHTML = cliOpt;
     document.getElementById('calc-planta').innerHTML = pltOpt;
     document.getElementById('stock-semilla-id').innerHTML = pltOpt;
+    
+    // Lista de clientes para input sugerido en Cosechas
+    const dlCosecha = document.getElementById('dl-clientes-cosecha');
+    if (dlCosecha) dlCosecha.innerHTML = cliOpt;
 
     const frescas = CAT_FLORES.filter(f => f.t === 'F').map(f => `<option value="${f.nom}">${f.nom} [${f.det}]</option>`).join('');
     const deshi = CAT_FLORES.filter(f => f.t === 'D').map(f => `<option value="${f.nom}">${f.nom} [${f.det}]</option>`).join('');

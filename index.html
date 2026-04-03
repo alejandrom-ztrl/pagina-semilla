@@ -446,8 +446,11 @@
                             <div class="form-group"><label>Seleccione Lote</label><select id="cosecha-lote"
                                     onchange="updateCosechaCliente()"></select>
                             </div>
-                            <div class="form-group"><label>Nombre del Cliente (Editable)</label><input type="text"
-                                    id="cosecha-cliente" placeholder="Cliente..."></div>
+                            <div class="form-group">
+                                <label>Nombre del Cliente (Editable)</label>
+                                <input type="text" id="cosecha-cliente" list="dl-clientes-cosecha" placeholder="Escribe o selecciona...">
+                                <datalist id="dl-clientes-cosecha"></datalist>
+                            </div>
                             <div class="form-group"><label>Fecha de Cosecha</label><input type="date"
                                     id="cosecha-fecha"></div>
                             <div class="form-group">
