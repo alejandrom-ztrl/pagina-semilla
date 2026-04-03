@@ -814,46 +814,51 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 48%;
+    top: 25%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2.8rem;
+    font-size: 3.5rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
+    color: #111;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
 }
 
 #txt-cliente {
-    top: 60%;
+    top: 45%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2.22rem;
+    font-size: 2.4rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
+    color: #333;
 }
 
 #txt-lote {
-    top: 67%;
-    left: 40%;
-    font-size: 1.6rem;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    color: #444;
 }
 
 #txt-cortado {
-    top: 73.5%;
-    left: 37%;
+    top: 72%;
+    left: 33%;
     font-size: 1.6rem;
 }
 
 #txt-cad {
-    top: 73.5%;
-    left: 54%;
+    top: 72%;
+    left: 48%;
     font-size: 1.6rem;
 }
 
 #txt-cant {
-    top: 73.5%;
-    left: 69%;
+    top: 72%;
+    left: 63%;
     font-size: 1.6rem;
 }
 

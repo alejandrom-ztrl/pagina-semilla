@@ -38,8 +38,20 @@ function generarEtiquetaCosecha() {
     // Mapeo robusto para Guisante
     if (imgName === "GUISANTE" || imgName === "GUISANTES") imgName = "GUISANTE FOXY";
     
-    // Codificación segura para la URL (manejo de espacios)
-    document.getElementById('etiq-bg-img').src = `img/${imgName.replace(/ /g, '%20')}.png`;
+    // Codificación segura para la URL (manejo de espacios y caracteres especiales)
+    const imgSrc = `img/${imgName}.png`;
+    const imgElement = document.getElementById('etiq-bg-img');
+    
+    imgElement.onerror = () => {
+        console.error("No se pudo cargar la imagen:", imgSrc);
+        imgElement.style.opacity = "0"; // Ocultar si falla para que no se vea el icono de error
+    };
+    
+    imgElement.onload = () => {
+        imgElement.style.opacity = "1";
+    };
+
+    imgElement.src = encodeURI(imgSrc);
 
     document.getElementById('txt-planta').innerText = pNombre;
     document.getElementById('txt-cliente').innerText = clienteEditado;
