@@ -320,6 +320,63 @@ function renderResumenSemanal() {
     }
     html += `</div>`;
 
+    // --- NUEVA SECCIÓN: RESUMEN ACUMULADO POR CLIENTE (Próximos 7 días) ---
+    html += `<div class="card" style="margin-bottom: 30px; border-left: 5px solid var(--purple);">
+        <h3 style="color:var(--purple); margin-top:0;"><i class="fas fa-users"></i> 🧑‍🍳 RESUMEN ACUMULADO POR CLIENTE (Esta Semana)</h3>
+        <p style="font-size:0.85rem; color:#666;">Total acumulado de bandejas que cada cliente (restaurante) requerirá en los próximos 7 días (incluye bandejas que ya están listas).</p>`;
+
+    const en7dias = new Date(hoy);
+    en7dias.setDate(en7dias.getDate() + 7);
+    
+    const resumenClientes = {};
+    
+    // Sumamos lo que ya está listo
+    salidasListas.forEach(item => {
+        if (!resumenClientes[item.cliente]) resumenClientes[item.cliente] = {};
+        if (!resumenClientes[item.cliente][item.planta]) resumenClientes[item.cliente][item.planta] = 0;
+        resumenClientes[item.cliente][item.planta] += item.cant;
+    });
+
+    // Sumamos la previsión de los próximos 7 días
+    Object.keys(salidasPorDia).forEach(dStr => {
+        const fechaObj = new Date(dStr);
+        if (fechaObj <= en7dias) {
+            salidasPorDia[dStr].forEach(item => {
+                if (!resumenClientes[item.cliente]) resumenClientes[item.cliente] = {};
+                if (!resumenClientes[item.cliente][item.planta]) resumenClientes[item.cliente][item.planta] = 0;
+                resumenClientes[item.cliente][item.planta] += item.cant;
+            });
+        }
+    });
+
+    const clientesOrds = Object.keys(resumenClientes).sort();
+    if (clientesOrds.length === 0) {
+        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas programadas para clientes en los próximos 7 días.</p>`;
+    } else {
+        html += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:15px;">`;
+        clientesOrds.forEach(cli => {
+            html += `<div style="background:#f9f9f9; border:1px solid #ddd; border-radius:8px; padding:15px; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                        <h4 style="margin:0 0 10px 0; color:var(--text); font-size:1.1rem; border-bottom:1px solid #ccc; padding-bottom:5px;"><i class="fas fa-utensils"></i> ${cli}</h4>
+                        <ul style="list-style:none; padding:0; margin:0;">`;
+            let totalBandejasCli = 0;
+            for (const [planta, cant] of Object.entries(resumenClientes[cli])) {
+                totalBandejasCli += cant;
+                html += `<li style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.95rem;">
+                            <span>🥬 ${planta}</span>
+                            <strong style="color:var(--purple);">${cant} ud</strong>
+                         </li>`;
+            }
+            html += `       <li style="display:flex; justify-content:space-between; margin-top:10px; border-top:1px dashed #ccc; padding-top:5px; font-size:1rem;">
+                            <strong>Total:</strong>
+                            <strong style="color:var(--primary-dark);">${totalBandejasCli} ud</strong>
+                         </li>
+                     </ul>
+                 </div>`;
+        });
+        html += `</div>`;
+    }
+    html += `</div>`;
+
     // --- SECCIÓN: STOCK FÍSICO TOTAL (Interactiva) ---
     const stockDeBandejas = {};
     (db.lotes || []).forEach(l => {
