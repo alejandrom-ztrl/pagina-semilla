@@ -188,8 +188,8 @@ function renderResumenSemanal() {
     
     const hoy = new Date();
     hoy.setHours(0,0,0,0);
-    const en10dias = new Date(hoy);
-    en10dias.setDate(en10dias.getDate() + 10);
+    const en21dias = new Date(hoy);
+    en21dias.setDate(en21dias.getDate() + 21);
 
     const salidasPorDia = {};
     const salidasListas = []; // Lotes con fecha de cosecha <= hoy
@@ -197,7 +197,7 @@ function renderResumenSemanal() {
 
     // 1. Salidas programadas por Planes (Previsión futura)
     (db.planes || []).forEach(plan => {
-        const iter = plan.puntual ? 1 : 4;
+        const iter = plan.puntual ? 1 : 4; // Check up to 4 deliveries
         for (let i = 0; i < iter; i++) {
             if (plan.tipo === 'INDIVIDUAL') {
                 const plt = db.plantas.find(x => x.id === plan.plantaId); if (!plt) continue;
@@ -211,7 +211,7 @@ function renderResumenSemanal() {
                 const tid = `siembra-${plan.id}-${s.getTime()}`;
                 if (completadas.includes(tid)) continue;
                 
-                if (entrega >= hoy && entrega <= en10dias) {
+                if (entrega >= hoy && entrega <= en21dias) {
                     const dStr = entrega.toISOString().split('T')[0];
                     if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
                     salidasPorDia[dStr].push({ planta: plt.nombre, cant: parseInt(plan.cant), cliente: plan.cliente, isPlan: true });
@@ -220,7 +220,7 @@ function renderResumenSemanal() {
                 let entrega = parseDateLocal(plan.fechaEntrega);
                 entrega.setHours(0,0,0,0);
                 entrega.setDate(entrega.getDate() + (i * plan.frec));
-                if (entrega >= hoy && entrega <= en10dias) {
+                if (entrega >= hoy && entrega <= en21dias) {
                     const dStr = entrega.toISOString().split('T')[0];
                     if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
                     plan.detalleMix.forEach(item => {
@@ -248,7 +248,7 @@ function renderResumenSemanal() {
             if (cosecha <= hoy) {
                 // YA ESTÁ LISTA (Cosechada o para hoy)
                 salidasListas.push({ id: lote.id, planta: lote.plantaNombre, cant: parseInt(lote.cant), cliente: lote.cliente, fechaCosecha: cosecha, isLote: true });
-            } else if (cosecha <= en10dias) {
+            } else if (cosecha <= en21dias) {
                 // FUTURA (Próximos días)
                 const dStr = cosecha.toISOString().split('T')[0];
                 if(!salidasPorDia[dStr]) salidasPorDia[dStr] = [];
@@ -287,7 +287,7 @@ function renderResumenSemanal() {
 
     // --- SECCIÓN: PRÓXIMAS SALIDAS (Agenda Futura) ---
     html += `<div class="card" style="margin-bottom: 30px;">
-        <h3 style="color:var(--info); margin-top:0;"><i class="fas fa-calendar-alt"></i> 📅 PRÓXIMAS SALIDAS (Previsión 10 días)</h3>
+        <h3 style="color:var(--info); margin-top:0;"><i class="fas fa-calendar-alt"></i> 📅 PRÓXIMAS SALIDAS (Previsión 3 Semanas)</h3>
         <p style="font-size:0.85rem; color:#666;">Agenda de lo que se cosechará en los próximos días.</p>`;
 
     const fechasOrds = Object.keys(salidasPorDia).sort();
@@ -320,58 +320,84 @@ function renderResumenSemanal() {
     }
     html += `</div>`;
 
-    // --- NUEVA SECCIÓN: RESUMEN ACUMULADO POR CLIENTE (Próximos 7 días) ---
+    // --- NUEVA SECCIÓN: PREVISIÓN POR CLIENTE (3 Semanas) ---
     html += `<div class="card" style="margin-bottom: 30px; border-left: 5px solid var(--purple);">
-        <h3 style="color:var(--purple); margin-top:0;"><i class="fas fa-users"></i> 🧑‍🍳 RESUMEN ACUMULADO POR CLIENTE (Esta Semana)</h3>
-        <p style="font-size:0.85rem; color:#666;">Total acumulado de bandejas que cada cliente (restaurante) requerirá en los próximos 7 días (incluye bandejas que ya están listas).</p>`;
+        <h3 style="color:var(--purple); margin-top:0;"><i class="fas fa-users"></i> 🧑‍🍳 PREVISIÓN POR CLIENTE (3 Semanas)</h3>
+        <p style="font-size:0.85rem; color:#666;">Bandejas programadas para cada cliente desglosadas por semana (Semana 1 incluye bandejas ya listas).</p>`;
 
-    const en7dias = new Date(hoy);
-    en7dias.setDate(en7dias.getDate() + 7);
+    const resumenClientes = {}; // { cliente: { sem1: { planta: cant }, sem2: {}, sem3: {} } }
     
-    const resumenClientes = {};
-    
-    // Sumamos lo que ya está listo
+    function addACliente(cliente, planta, cant, diffDays) {
+        if (!resumenClientes[cliente]) {
+            resumenClientes[cliente] = { sem1: {}, sem2: {}, sem3: {} };
+        }
+        let sem;
+        if (diffDays < 7) sem = 'sem1';
+        else if (diffDays < 14) sem = 'sem2';
+        else if (diffDays <= 21) sem = 'sem3';
+        else return;
+
+        if (!resumenClientes[cliente][sem][planta]) resumenClientes[cliente][sem][planta] = 0;
+        resumenClientes[cliente][sem][planta] += cant;
+    }
+
+    // Sumamos lo que ya está listo a la SEMANA 1 (offset 0)
     salidasListas.forEach(item => {
-        if (!resumenClientes[item.cliente]) resumenClientes[item.cliente] = {};
-        if (!resumenClientes[item.cliente][item.planta]) resumenClientes[item.cliente][item.planta] = 0;
-        resumenClientes[item.cliente][item.planta] += item.cant;
+        addACliente(item.cliente, item.planta, item.cant, 0);
     });
 
-    // Sumamos la previsión de los próximos 7 días
+    // Sumamos la previsión de los próximos 21 días
     Object.keys(salidasPorDia).forEach(dStr => {
         const fechaObj = new Date(dStr);
-        if (fechaObj <= en7dias) {
-            salidasPorDia[dStr].forEach(item => {
-                if (!resumenClientes[item.cliente]) resumenClientes[item.cliente] = {};
-                if (!resumenClientes[item.cliente][item.planta]) resumenClientes[item.cliente][item.planta] = 0;
-                resumenClientes[item.cliente][item.planta] += item.cant;
-            });
-        }
+        const diffDays = Math.round((fechaObj - hoy) / 86400000); 
+        
+        salidasPorDia[dStr].forEach(item => {
+            addACliente(item.cliente, item.planta, item.cant, diffDays);
+        });
     });
 
     const clientesOrds = Object.keys(resumenClientes).sort();
     if (clientesOrds.length === 0) {
-        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas programadas para clientes en los próximos 7 días.</p>`;
+        html += `<p style="padding:15px; font-weight:bold; color:#777; text-align:center;">No hay salidas programadas para clientes en las próximas semanas.</p>`;
     } else {
-        html += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:15px;">`;
+        html += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:15px; margin-top:15px;">`;
         clientesOrds.forEach(cli => {
             html += `<div style="background:#f9f9f9; border:1px solid #ddd; border-radius:8px; padding:15px; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
-                        <h4 style="margin:0 0 10px 0; color:var(--text); font-size:1.1rem; border-bottom:1px solid #ccc; padding-bottom:5px;"><i class="fas fa-utensils"></i> ${cli}</h4>
-                        <ul style="list-style:none; padding:0; margin:0;">`;
-            let totalBandejasCli = 0;
-            for (const [planta, cant] of Object.entries(resumenClientes[cli])) {
-                totalBandejasCli += cant;
-                html += `<li style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.95rem;">
-                            <span>🥬 ${planta}</span>
-                            <strong style="color:var(--purple);">${cant} ud</strong>
-                         </li>`;
+                        <h4 style="margin:0 0 15px 0; color:var(--text); font-size:1.2rem; border-bottom:2px solid #ccc; padding-bottom:5px;"><i class="fas fa-utensils"></i> ${cli}</h4>`;
+            
+            const renderSemana = (semKey, tituloSema) => {
+                const plantasObj = resumenClientes[cli][semKey];
+                if (Object.keys(plantasObj).length === 0) return '';
+                
+                let res = `<div style="margin-bottom: 12px; border-left: 3px solid var(--info); padding-left: 10px; background:#fff; padding-top:5px; padding-bottom:5px; border-radius:0 4px 4px 0;">
+                              <h5 style="margin:0 0 5px 0; color:var(--info); font-size:0.95rem;">${tituloSema}</h5>
+                              <ul style="list-style:none; padding:0; margin:0;">`;
+                let totalSem = 0;
+                for (const [planta, cant] of Object.entries(plantasObj)) {
+                    totalSem += cant;
+                    res += `<li style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:0.9rem;">
+                                <span>🥬 ${planta}</span>
+                                <strong style="color:var(--text);">${cant} ud</strong>
+                             </li>`;
+                }
+                res += `<li style="display:flex; justify-content:space-between; border-top:1px dashed #ccc; padding-top:3px; margin-top:3px; font-size:0.95rem;">
+                            <strong>Total Semana:</strong>
+                            <strong style="color:var(--primary-dark);">${totalSem} ud</strong>
+                        </li></ul></div>`;
+                return res;
+            };
+
+            const htmlSem1 = renderSemana('sem1', 'Semana 1 (Esta semana)');
+            const htmlSem2 = renderSemana('sem2', 'Semana 2 (Próxima semana)');
+            const htmlSem3 = renderSemana('sem3', 'Semana 3 (En 2 semanas)');
+
+            if (!htmlSem1 && !htmlSem2 && !htmlSem3) {
+                 html += `<p style="font-size:0.9rem; color:#777; font-style:italic;">Sin pedidos programados</p>`;
+            } else {
+                 html += htmlSem1 + htmlSem2 + htmlSem3;
             }
-            html += `       <li style="display:flex; justify-content:space-between; margin-top:10px; border-top:1px dashed #ccc; padding-top:5px; font-size:1rem;">
-                            <strong>Total:</strong>
-                            <strong style="color:var(--primary-dark);">${totalBandejasCli} ud</strong>
-                         </li>
-                     </ul>
-                 </div>`;
+
+            html += `</div>`;
         });
         html += `</div>`;
     }
