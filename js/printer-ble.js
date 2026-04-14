@@ -15,7 +15,11 @@ const PRINTER_BLE = {
             if (this.device && this.device.gatt.connected) return true;
 
             this.device = await navigator.bluetooth.requestDevice({
-                filters: [{ services: [this.serviceUuid] }, { namePrefix: 'P1' }]
+                filters: [
+                    { services: [this.serviceUuid] }, 
+                    { namePrefix: 'P1' },
+                    { namePrefix: 'M110' }
+                ]
             });
 
             this.server = await this.device.gatt.connect();
@@ -52,25 +56,23 @@ const PRINTER_BLE = {
             backgroundColor: '#ffffff' 
         });
         
-        // 2. Rotar 90 grados y ajustar a 400px de ancho y 640px de largo (50x80mm reales)
         const targetWidth = 400; 
         const targetHeight = 640;
 
-        const rotatedCanvas = document.createElement('canvas');
-        rotatedCanvas.width = targetWidth;
-        rotatedCanvas.height = targetHeight;
-        const ctx = rotatedCanvas.getContext('2d');
+        const processedCanvas = document.createElement('canvas');
+        processedCanvas.width = targetWidth;
+        processedCanvas.height = targetHeight;
+        const ctx = processedCanvas.getContext('2d');
 
         // Fondo blanco
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-        ctx.translate(targetWidth, 0);
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
+        // Dibujar directamente (el DOM ya es vertical)
+        ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
 
         // 3. Convertir a Bitmap de 1 bit (TSPL)
-        const bitmapData = this.canvasToTsplBitmap(rotatedCanvas);
+        const bitmapData = this.canvasToTsplBitmap(processedCanvas);
         
         // 4. Generar comandos TSPL (50x80mm)
         const widthBytes = Math.ceil(targetWidth / 8); // 400 / 8 = 50 bytes

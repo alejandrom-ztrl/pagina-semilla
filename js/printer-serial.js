@@ -54,18 +54,16 @@ const PRINTER_SERIAL = {
         
         const targetWidth = 400; 
         const targetHeight = 640;
-        const rotatedCanvas = document.createElement('canvas');
-        rotatedCanvas.width = targetWidth;
-        rotatedCanvas.height = targetHeight;
-        const ctx = rotatedCanvas.getContext('2d');
+        const processedCanvas = document.createElement('canvas');
+        processedCanvas.width = targetWidth;
+        processedCanvas.height = targetHeight;
+        const ctx = processedCanvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
-        ctx.translate(targetWidth, 0);
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
+        ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
 
         // Convertir a Bitmap TSPL
-        const bitmapData = this.canvasToTsplBitmap(rotatedCanvas);
+        const bitmapData = this.canvasToTsplBitmap(processedCanvas);
         
         const widthBytes = Math.ceil(targetWidth / 8);
         const xOffset = 0;
