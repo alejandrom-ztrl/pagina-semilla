@@ -810,55 +810,44 @@ textarea:focus {
     object-fit: cover;
 }
 
-#txt-planta {
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 3.5rem;
-    text-transform: uppercase;
-    text-align: center;
-    width: 100%;
-    color: var(--primary-dark);
+.label-box span {
+    position: absolute;
+    font-weight: bold;
     z-index: 10;
 }
 
 #txt-cliente {
-    bottom: 23%;
+    top: 60%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.22rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
-    z-index: 10;
 }
 
 #txt-lote {
-    bottom: 17%;
-    left: 45%;
+    top: 67%;
+    left: 40%;
     font-size: 1.6rem;
-    z-index: 10;
 }
 
 #txt-cortado {
-    bottom: 11.5%;
+    top: 73.5%;
     left: 37%;
     font-size: 1.6rem;
-    z-index: 10;
 }
 
 #txt-cad {
-    bottom: 11.5%;
+    top: 73.5%;
     left: 54%;
     font-size: 1.6rem;
-    z-index: 10;
 }
 
 #txt-cant {
-    bottom: 11.5%;
+    top: 73.5%;
     left: 69%;
     font-size: 1.6rem;
-    z-index: 10;
 }
 
 #login-overlay {
