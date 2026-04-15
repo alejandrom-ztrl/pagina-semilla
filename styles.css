@@ -817,7 +817,7 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 15%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 3rem;
