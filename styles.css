@@ -790,8 +790,8 @@ textarea:focus {
 .label-box {
     position: relative;
     display: inline-block;
-    width: 500px;
-    height: 800px;
+    width: 800px;
+    height: 500px;
     border: 1px solid #ccc;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: #fff;
@@ -815,8 +815,18 @@ textarea:focus {
     z-index: 10;
 }
 
+#txt-planta {
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
 #txt-cliente {
-    top: 60%;
+    top: 55%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.22rem;
