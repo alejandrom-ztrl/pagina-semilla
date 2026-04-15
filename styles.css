@@ -814,10 +814,11 @@ textarea:focus {
     position: absolute;
     font-weight: bold;
     z-index: 10;
+    color: #000;
 }
 
 #txt-planta {
-    top: 5%;
+    top: 1%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 3rem;
