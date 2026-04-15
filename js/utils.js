@@ -33,10 +33,12 @@ function generarEtiquetaCosecha() {
     const cortadoParts = fCosecha.split('-');
     const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
 
-    // Siempre usamos la plantilla genérica
-    document.getElementById('etiq-bg-img').src = `img/PLANTILLA.png`;
+    const pNombre = l.plantaNombre.trim().toUpperCase();
+    let imgName = pNombre;
+    if (imgName === "GUISANTE" || imgName === "GUISANTES") imgName = "GUISANTE FOXY";
+    
+    document.getElementById('etiq-bg-img').src = `img/${imgName.replace(/ /g, '%20')}.png`;
 
-    document.getElementById('txt-planta').innerText = l.plantaNombre.toUpperCase();
     document.getElementById('txt-cliente').innerText = clienteEditado;
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
