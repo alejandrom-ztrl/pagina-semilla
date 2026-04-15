@@ -68,8 +68,12 @@ const PRINTER_BLE = {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-        // Dibujar directamente (el DOM ya es vertical)
-        ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+        // Rotar 90 grados hacia la derecha para adaptar el diseño horizontal al rollo vertical
+        ctx.translate(targetWidth, 0);
+        ctx.rotate(Math.PI / 2);
+        
+        // Dibujar el canvas original escalado al nuevo espacio rotado
+        ctx.drawImage(canvas, 0, 0, targetHeight, targetWidth);
 
         // 3. Convertir a Bitmap de 1 bit (TSPL)
         const bitmapData = this.canvasToTsplBitmap(processedCanvas);

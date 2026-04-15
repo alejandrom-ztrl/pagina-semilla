@@ -837,26 +837,26 @@ textarea:focus {
 }
 
 #txt-lote {
-    top: 67%;
+    top: 73%;
     left: 40%;
     font-size: 1.6rem;
 }
 
 #txt-cortado {
-    top: 73.5%;
+    top: 78.5%;
     left: 37%;
     font-size: 1.6rem;
 }
 
 #txt-cad {
-    top: 73.5%;
-    left: 54%;
+    top: 78.5%;
+    left: 64%;
     font-size: 1.6rem;
 }
 
 #txt-cant {
-    top: 73.5%;
-    left: 69%;
+    top: 78.5%;
+    left: 80%;
     font-size: 1.6rem;
 }
 
