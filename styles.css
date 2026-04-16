@@ -856,9 +856,11 @@ textarea:focus {
 }
 
 #txt-cant {
-    top: 82.5%;
-    left: 88%;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 1.6rem;
+    text-align: center;
 }
 
 #txt-footer {
