@@ -42,6 +42,7 @@ function generarEtiquetaCosecha() {
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
     document.getElementById('txt-cad').innerText = cadFormat;
+    document.getElementById('txt-cant').innerText = cantGramos + unidad;
     
     document.getElementById('card-etiqueta-print').style.display = 'block';
 }

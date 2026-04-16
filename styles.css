@@ -837,6 +837,15 @@ textarea:focus {
     width: 100%;
 }
 
+#txt-cant {
+    top: 23%;
+    left: 52%;
+    transform: translateX(-50%);
+    font-size: 1.6rem;
+    text-align: center;
+    width: 100%;
+}
+
 #txt-lote {
     top: 68%;
     left: 40%;
