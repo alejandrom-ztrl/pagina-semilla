@@ -814,7 +814,7 @@ textarea:focus {
     position: absolute;
     font-weight: bold;
     z-index: 10;
-    color: #000;
+    color: #fff;
 }
 
 #txt-planta {
@@ -828,7 +828,7 @@ textarea:focus {
 }
 
 #txt-cliente {
-    top: 55%;
+    top: 61%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.22rem;
