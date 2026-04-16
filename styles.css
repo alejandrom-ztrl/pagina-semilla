@@ -861,6 +861,15 @@ textarea:focus {
     font-size: 1.6rem;
 }
 
+#txt-footer {
+    top: 92%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
+}
+
 #login-overlay {
     position: fixed;
     top: 0;
