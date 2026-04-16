@@ -35,7 +35,7 @@ function generarEtiquetaCosecha() {
 
     const pNombre = l.plantaNombre.trim().toUpperCase();
     
-    document.getElementById('etiq-bg-img').src = `img/PLANTILLA.png`;
+    document.getElementById('etiq-bg-img').src = `img/PLANTILLA.png?t=` + new Date().getTime();
 
     document.getElementById('txt-planta').innerText = pNombre;
     document.getElementById('txt-cliente').innerText = clienteEditado;
