@@ -184,8 +184,9 @@ const PRINTER_BLE = {
     /**
      * Imprimir una etiqueta desde un elemento DOM
      * @param {string} domElementId - ID del elemento HTML a imprimir
+     * @param {number} copies - Número de copias a imprimir
      */
-    async printLabel(domElementId) {
+    async printLabel(domElementId, copies = 1) {
         if (!await this.connect()) return;
 
         const el = document.getElementById(domElementId);
@@ -194,10 +195,10 @@ const PRINTER_BLE = {
             return;
         }
 
-        showToast("Procesando etiqueta M110S...", "info");
+        showToast(`Procesando ${copies > 1 ? copies + ' etiquetas' : 'etiqueta'} M110S...`, "info");
 
         try {
-            // 1. Capturar DOM a Canvas con alta resolución
+            // 1. Capturar DOM a Canvas con alta resolución (UNA SOLA VEZ)
             const sourceCanvas = await html2canvas(el, {
                 scale: 3,
                 useCORS: true,
@@ -206,7 +207,6 @@ const PRINTER_BLE = {
 
             // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX; // 384
-            // El ancho físico (384) ahora corresponde a la altura original para imprimir a lo largo
             const scale = targetWidth / sourceCanvas.height; 
             const targetHeight = Math.round(sourceCanvas.width * scale);
 
@@ -215,22 +215,31 @@ const PRINTER_BLE = {
             printCanvas.height = targetHeight;
             const ctx = printCanvas.getContext('2d');
 
-            // Fondo blanco
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-            // 3. Rotar y Dibujar (Giro de 90 grados para impresión vertical)
+            // 3. Rotar y Dibujar
             ctx.translate(targetWidth, 0);
             ctx.rotate(90 * Math.PI / 180);
             ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidth);
 
-            // 3. Convertir a bitmap de 1 bit (monocromo)
+            // 4. Convertir a bitmap de 1 bit (monocromo)
             const bitmapData = this.canvasToMonoBitmap(printCanvas);
 
-            // 4. Enviar a la impresora usando protocolo M110
-            await this._printM110(bitmapData, this.PRINT_WIDTH_BYTES, targetHeight);
+            // 5. Enviar a la impresora en bucle según número de copias
+            for (let i = 0; i < copies; i++) {
+                if (copies > 1) {
+                    console.log(`Imprimiendo copia ${i + 1} de ${copies}...`);
+                }
+                await this._printM110(bitmapData, this.PRINT_WIDTH_BYTES, targetHeight);
+                
+                // Pequeño delay entre etiquetas para que la impresora respire
+                if (i < copies - 1) {
+                    await this.delay(800);
+                }
+            }
 
-            showToast("Etiqueta M110S impresa 🖨️", "success");
+            showToast(`${copies > 1 ? copies + ' etiquetas impresas' : 'Etiqueta impresa'} 🖨️`, "success");
         } catch (err) {
             console.error('Error al imprimir:', err);
             showToast("Error durante la impresión: " + err.message, "danger");
@@ -241,29 +250,24 @@ const PRINTER_BLE = {
      * Protocolo de impresión M110 (ESC/POS + phomemo-tools)
      */
     async _printM110(bitmapData, widthBytes, heightLines) {
-        console.log(`Imprimiendo: ${widthBytes}x${heightLines} (${bitmapData.length} bytes)`);
+        // console.log(`Imprimiendo: ${widthBytes}x${heightLines} (${bitmapData.length} bytes)`);
 
         // Paso 1: Configurar velocidad (5 = normal)
-        console.log('Configurando velocidad...');
         await this.send(this.CMD.SPEED(5));
         await this.delay(30);
 
         // Paso 2: Configurar densidad (10 = buena para etiquetas)
-        console.log('Configurando densidad...');
         await this.send(this.CMD.DENSITY(10));
         await this.delay(30);
 
         // Paso 3: Tipo de medio (10 = etiquetas con gap)
-        console.log('Configurando tipo de medio...');
         await this.send(this.CMD.MEDIA_TYPE(10));
         await this.delay(30);
 
         // Paso 4: Cabecera raster (GS v 0)
-        console.log('Enviando cabecera raster...');
         await this.send(this.CMD.RASTER_HEADER(widthBytes, heightLines));
 
         // Paso 5: Enviar datos bitmap en chunks de 128 bytes
-        console.log('Enviando datos de imagen...');
         for (let i = 0; i < bitmapData.length; i += this.CHUNK_SIZE) {
             const chunk = bitmapData.slice(i, Math.min(i + this.CHUNK_SIZE, bitmapData.length));
             await this.send(chunk);
@@ -272,11 +276,8 @@ const PRINTER_BLE = {
 
         // Paso 6: Footer de finalización
         await this.delay(300);
-        console.log('Enviando footer...');
         await this.send(this.CMD.FOOTER);
-        await this.delay(500);
-
-        console.log('Impresión completada!');
+        await this.delay(200);
     },
 
     /**
@@ -315,15 +316,13 @@ const PRINTER_BLE = {
         }
 
         // Convertir a bitmap empaquetado (1 bit por pixel)
-        // Phomemo M110: bit 1 = negro (punto caliente), bit 0 = blanco
         const bitmap = new Uint8Array(widthBytes * height);
-        bitmap.fill(0x00); // Todo blanco por defecto
+        bitmap.fill(0x00); 
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const i = y * width + x;
                 if (gray[i] < 128) {
-                    // Pixel negro
                     const bytePos = y * widthBytes + Math.floor(x / 8);
                     const bitPos = 7 - (x % 8);
                     bitmap[bytePos] |= (1 << bitPos);
@@ -335,4 +334,7 @@ const PRINTER_BLE = {
     }
 };
 
-window.printLabelBLE = () => PRINTER_BLE.printLabel('label-cosecha-box');
+window.printLabelBLE = () => {
+    const copies = parseInt(document.getElementById('cosecha-copias').value) || 1;
+    PRINTER_BLE.printLabel('label-cosecha-box', copies);
+};

@@ -49,7 +49,12 @@ const PRINTER_SERIAL = {
         }
     },
 
-    async printLabel(domElementId) {
+    /**
+     * Imprimir una etiqueta desde un elemento DOM via USB
+     * @param {string} domElementId - ID del elemento HTML a imprimir
+     * @param {number} copies - Número de copias a imprimir
+     */
+    async printLabel(domElementId, copies = 1) {
         if (!("serial" in navigator)) {
             showToast("Tu navegador no soporta impresión USB (Serial). Usa Chrome o Edge.", "danger");
             return;
@@ -60,10 +65,10 @@ const PRINTER_SERIAL = {
         const el = document.getElementById(domElementId);
         if (!el) return;
 
-        showToast("Procesando etiqueta USB M110S...", "info");
+        showToast(`Procesando ${copies > 1 ? copies + ' etiquetas' : 'etiqueta'} USB M110S...`, "info");
 
         try {
-            // 1. Capturar DOM a Canvas
+            // 1. Capturar DOM a Canvas (UNA SOLA VEZ)
             const sourceCanvas = await html2canvas(el, {
                 scale: 3,
                 useCORS: true,
@@ -88,18 +93,28 @@ const PRINTER_SERIAL = {
             ctx.rotate(90 * Math.PI / 180);
             ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidth);
 
-            // 3. Convertir a bitmap monocromo con dithering
+            // 4. Convertir a bitmap monocromo con dithering
             const bitmapData = this.canvasToMonoBitmap(printCanvas);
 
-            // 4. Enviar por USB Serial
-            await this.writer.write(this.CMD.SPEED(5));
-            await this.writer.write(this.CMD.DENSITY(10));
-            await this.writer.write(this.CMD.MEDIA_TYPE(10));
-            await this.writer.write(this.CMD.RASTER_HEADER(this.PRINT_WIDTH_BYTES, targetHeight));
-            await this.writer.write(bitmapData);
-            await this.writer.write(this.CMD.FOOTER);
+            // 5. Enviar por USB Serial en bucle
+            for (let i = 0; i < copies; i++) {
+                if (copies > 1) {
+                    console.log(`Imprimiendo copia ${i + 1} de ${copies} por USB...`);
+                }
+                await this.writer.write(this.CMD.SPEED(5));
+                await this.writer.write(this.CMD.DENSITY(10));
+                await this.writer.write(this.CMD.MEDIA_TYPE(10));
+                await this.writer.write(this.CMD.RASTER_HEADER(this.PRINT_WIDTH_BYTES, targetHeight));
+                await this.writer.write(bitmapData);
+                await this.writer.write(this.CMD.FOOTER);
+                
+                // Pequeño delay opcional para USB
+                if (i < copies - 1) {
+                    await new Promise(r => setTimeout(r, 500));
+                }
+            }
 
-            showToast("Etiqueta M110S USB impresa 🖨️", "success");
+            showToast(`${copies > 1 ? copies + ' etiquetas impresas por USB' : 'Etiqueta impresa por USB'} 🖨️`, "success");
         } catch (err) {
             console.error(err);
             showToast("Error durante la impresión USB: " + err.message, "danger");
@@ -163,4 +178,7 @@ const PRINTER_SERIAL = {
     }
 };
 
-window.printLabelUSB = () => PRINTER_SERIAL.printLabel('label-cosecha-box');
+window.printLabelUSB = () => {
+    const copies = parseInt(document.getElementById('cosecha-copias').value) || 1;
+    PRINTER_SERIAL.printLabel('label-cosecha-box', copies);
+};
