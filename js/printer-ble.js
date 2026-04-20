@@ -204,10 +204,11 @@ const PRINTER_BLE = {
                 backgroundColor: '#ffffff'
             });
 
-            // 2. Escalar al ancho de la M110S (384px)
+            // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX; // 384
-            const aspectRatio = sourceCanvas.height / sourceCanvas.width;
-            const targetHeight = Math.round(targetWidth * aspectRatio);
+            // El ancho físico (384) ahora corresponde a la altura original para imprimir a lo largo
+            const scale = targetWidth / sourceCanvas.height; 
+            const targetHeight = Math.round(sourceCanvas.width * scale);
 
             const printCanvas = document.createElement('canvas');
             printCanvas.width = targetWidth;
@@ -218,8 +219,10 @@ const PRINTER_BLE = {
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-            // Dibujar escalado
-            ctx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
+            // 3. Rotar y Dibujar (Giro de 90 grados para impresión vertical)
+            ctx.translate(targetWidth, 0);
+            ctx.rotate(90 * Math.PI / 180);
+            ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidth);
 
             // 3. Convertir a bitmap de 1 bit (monocromo)
             const bitmapData = this.canvasToMonoBitmap(printCanvas);

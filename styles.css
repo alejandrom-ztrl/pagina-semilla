@@ -790,8 +790,8 @@ textarea:focus {
 .label-box {
     position: relative;
     display: inline-block;
-    width: 500px;
-    height: 800px;
+    width: 800px;
+    height: 500px;
     border: 1px solid #ccc;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: #fff;
@@ -806,9 +806,8 @@ textarea:focus {
     height: 100%;
     top: 0;
     left: 0;
-    transform: rotate(90deg);
-    object-fit: contain;
-    background: #fff;
+    transform: none;
+    object-fit: cover;
 }
 
 .label-box span {
@@ -819,53 +818,50 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 5%;
+    top: 3%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 3.5rem;
+    font-size: 3rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
 }
 
 #txt-cliente {
-    top: 25%;
-    left: 50%;
+    top: 18%;
+    left: 52%;
     transform: translateX(-50%);
-    font-size: 2.2rem;
+    font-size: 1.6rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
 }
 
 #txt-cant {
-    top: 35%;
-    left: 50%;
+    top: 23%;
+    left: 52%;
     transform: translateX(-50%);
-    font-size: 2.5rem;
+    font-size: 1.6rem;
     text-align: center;
     width: 100%;
 }
 
 #txt-lote {
-    top: 60%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2rem;
-    text-align: center;
-    width: 100%;
+    top: 68%;
+    left: 40%;
+    font-size: 1.6rem;
 }
 
 #txt-cortado {
-    top: 75%;
-    left: 20%;
-    font-size: 1.8rem;
+    top: 77.5%;
+    left: 37%;
+    font-size: 1.6rem;
 }
 
 #txt-cad {
-    top: 75%;
-    left: 60%;
-    font-size: 1.8rem;
+    top: 77.5%;
+    left: 74%;
+    font-size: 1.6rem;
 }
 
 #txt-footer {

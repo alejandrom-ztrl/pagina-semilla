@@ -70,10 +70,10 @@ const PRINTER_SERIAL = {
                 backgroundColor: '#ffffff'
             });
 
-            // 2. Escalar al ancho de la M110S (384px)
+            // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX;
-            const aspectRatio = sourceCanvas.height / sourceCanvas.width;
-            const targetHeight = Math.round(targetWidth * aspectRatio);
+            const scale = targetWidth / sourceCanvas.height;
+            const targetHeight = Math.round(sourceCanvas.width * scale);
 
             const printCanvas = document.createElement('canvas');
             printCanvas.width = targetWidth;
@@ -82,7 +82,11 @@ const PRINTER_SERIAL = {
 
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, targetWidth, targetHeight);
-            ctx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
+            
+            // 3. Rotar y Dibujar
+            ctx.translate(targetWidth, 0);
+            ctx.rotate(90 * Math.PI / 180);
+            ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidth);
 
             // 3. Convertir a bitmap monocromo con dithering
             const bitmapData = this.canvasToMonoBitmap(printCanvas);
