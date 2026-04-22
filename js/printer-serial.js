@@ -27,11 +27,25 @@ const PRINTER_SERIAL = {
 
     async connect() {
         try {
-            if (this.port && this.port.writable) return true;
+            if (this.port && this.port.writable && this.writer) return true;
 
-            this.port = await navigator.serial.requestPort();
+            // Si el puerto existe pero no es writable, intentar reabrir
+            if (this.port && !this.port.writable) {
+                try {
+                    await this.port.open({ baudRate: 115200 });
+                    this.writer = this.port.writable.getWriter();
+                    return true;
+                } catch (e) {
+                    this.port = null;
+                }
+            }
+
+            // Solicitar puerto si no hay uno seleccionado o falló la reapertura
+            if (!this.port) {
+                this.port = await navigator.serial.requestPort();
+            }
+
             await this.port.open({ baudRate: 115200 });
-
             this.writer = this.port.writable.getWriter();
 
             this.port.addEventListener('disconnect', () => {
@@ -43,8 +57,14 @@ const PRINTER_SERIAL = {
             showToast("M110S USB conectada ✅", "success");
             return true;
         } catch (error) {
-            console.error(error);
+            console.error('Error de conexión Serial:', error);
+            if (error.name === 'InvalidStateError') {
+                showToast("La impresora USB ya está conectada o en uso.", "info");
+                return true;
+            }
             showToast("Error al conectar por USB. Asegúrate de que el cable esté conectado.", "danger");
+            this.port = null;
+            this.writer = null;
             return false;
         }
     },

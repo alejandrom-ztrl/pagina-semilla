@@ -15,6 +15,16 @@ const PRINTER_BLE = {
     writeCharUuid: 0xff02,
     notifyCharUuid: 0xff03,
 
+    // UUIDs adicionales conocidos para Phomemo/D30/M110
+    ALT_SERVICES: [
+        0xff00,
+        0xfe01,
+        0xffe0,
+        '0000ff00-0000-1000-8000-00805f9b34fb',
+        '0000fe01-0000-1000-8000-00805f9b34fb',
+        'e7810a71-73ae-499d-8c15-faa9aef0c3f2'
+    ],
+
     // Estado de conexión
     device: null,
     server: null,
@@ -69,19 +79,21 @@ const PRINTER_BLE = {
                 }
             }
 
-            // Solicitar dispositivo nuevo
+            // Solicitar dispositivo nuevo con filtros más amplios
             this.device = await navigator.bluetooth.requestDevice({
                 filters: [
+                    { name: 'M110' },
+                    { name: 'M110S' },
+                    { name: 'M1100S' },
                     { namePrefix: 'M110' },
                     { namePrefix: 'M120' },
-                    { namePrefix: 'Q' },        // M110S a veces se anuncia como Q199E...
+                    { namePrefix: 'M220' },
                     { namePrefix: 'Phomemo' },
+                    { namePrefix: 'Q' },        // M110S a veces se anuncia como Q199E...
+                    { namePrefix: 'M' },        // General M series
+                    { namePrefix: 'D' },        // General D series
                 ],
-                optionalServices: [
-                    this.serviceUuid,
-                    0xffe0,
-                    '0000ff00-0000-1000-8000-00805f9b34fb',
-                ]
+                optionalServices: this.ALT_SERVICES
             });
 
             console.log('Dispositivo seleccionado:', this.device.name);
@@ -110,12 +122,8 @@ const PRINTER_BLE = {
      * Obtener characteristics del servicio BLE
      */
     async _getCharacteristics() {
-        // Intentar diferentes UUIDs de servicio
-        const servicesToTry = [
-            this.serviceUuid,
-            0xffe0,
-            '0000ff00-0000-1000-8000-00805f9b34fb',
-        ];
+        // Intentar diferentes UUIDs de servicio conocidos
+        const servicesToTry = this.ALT_SERVICES;
 
         let service = null;
         for (const uuid of servicesToTry) {
