@@ -818,18 +818,18 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 3%;
+    top: 7%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 3rem;
+    font-size: 3.5rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
 }
 
 #txt-cliente {
-    top: 18%;
-    left: 52%;
+    top: 21%;
+    left: 50%;
     transform: translateX(-50%);
     font-size: 1.6rem;
     text-transform: uppercase;
@@ -838,39 +838,50 @@ textarea:focus {
 }
 
 #txt-cant {
-    top: 23%;
-    left: 52%;
+    top: 26%;
+    left: 50%;
     transform: translateX(-50%);
     font-size: 1.6rem;
     text-align: center;
     width: 100%;
+    font-weight: bold;
 }
 
 #txt-lote {
-    top: 68%;
-    left: 40%;
-    font-size: 1.6rem;
+    top: 71.5%;
+    left: 31%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    text-align: center;
+    width: 30%;
 }
 
 #txt-cortado {
-    top: 77.5%;
-    left: 37%;
-    font-size: 1.6rem;
+    top: 71.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    text-align: center;
+    width: 30%;
 }
 
 #txt-cad {
-    top: 77.5%;
-    left: 74%;
-    font-size: 1.6rem;
+    top: 71.5%;
+    left: 69%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    text-align: center;
+    width: 30%;
 }
 
 #txt-footer {
-    top: 96%;
+    top: 93.5%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 1.1rem;
     width: 100%;
     text-align: center;
+    text-transform: uppercase;
 }
 
 #login-overlay {
