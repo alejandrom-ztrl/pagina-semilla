@@ -818,7 +818,7 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 2%;
+    top: 1%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.6rem;
@@ -828,7 +828,7 @@ textarea:focus {
 }
 
 #txt-cliente {
-    top: 16%;
+    top: 15%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 1.4rem;
@@ -838,7 +838,7 @@ textarea:focus {
 }
 
 #txt-cant {
-    top: 10%;
+    top: 9.5%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 1.5rem;
