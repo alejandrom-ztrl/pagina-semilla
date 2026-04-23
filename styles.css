@@ -818,30 +818,30 @@ textarea:focus {
 }
 
 #txt-planta {
-    top: 7%;
+    top: 4%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 3.5rem;
+    font-size: 2.6rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
 }
 
 #txt-cliente {
-    top: 21%;
+    top: 19%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     text-transform: uppercase;
     text-align: center;
     width: 100%;
 }
 
 #txt-cant {
-    top: 26%;
+    top: 13%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     text-align: center;
     width: 100%;
     font-weight: bold;
