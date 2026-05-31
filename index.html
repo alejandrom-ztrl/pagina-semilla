@@ -469,6 +469,15 @@
                                 <label>Nº Etiquetas</label>
                                 <input type="number" id="cosecha-copias" value="1" min="1" max="50">
                             </div>
+                            <div class="form-group">
+                                <label>Largo de Etiqueta</label>
+                                <select id="cosecha-largo">
+                                    <option value="60" selected>60 mm (Estándar)</option>
+                                    <option value="70">70 mm</option>
+                                    <option value="80">80 mm (Largo)</option>
+                                    <option value="50">50 mm (Corto)</option>
+                                </select>
+                            </div>
                         </div>
                         <button class="btn btn-info" style="margin-top:15px;" onclick="generarEtiquetaCosecha()"><i
                                 class="fas fa-tags"></i> Generar Etiqueta Cosecha</button>
