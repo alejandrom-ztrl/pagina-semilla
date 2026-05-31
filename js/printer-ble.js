@@ -213,27 +213,10 @@ const PRINTER_BLE = {
                 backgroundColor: '#ffffff'
             });
 
-            // 2. Determinar el largo de la etiqueta (de la UI, por defecto 60mm = 480px)
-            const labelLengthMm = parseInt(document.getElementById('cosecha-largo')?.value) || 60;
-            const MAX_PRINT_HEIGHT = labelLengthMm * 8; // 8 dots/mm @ 203 DPI
-
+            // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX; // 384
-            const sourceWidth = sourceCanvas.width;
-            const sourceHeight = sourceCanvas.height;
-
-            // Mantener proporción exacta de la etiqueta original sin estirarla
-            let scale = MAX_PRINT_HEIGHT / sourceWidth;
-            let targetHeight = MAX_PRINT_HEIGHT;
-            let targetWidthScaled = Math.round(sourceHeight * scale);
-
-            // Si el ancho resultante supera el ancho físico de impresión (384px), reescalamos por el ancho
-            if (targetWidthScaled > targetWidth) {
-                targetWidthScaled = targetWidth;
-                scale = targetWidth / sourceHeight;
-                targetHeight = Math.round(sourceWidth * scale);
-            }
-
-            const xOffset = Math.max(0, Math.floor((targetWidth - targetWidthScaled) / 2));
+            const scale = targetWidth / sourceCanvas.height; 
+            const targetHeight = Math.round(sourceCanvas.width * scale);
 
             const printCanvas = document.createElement('canvas');
             printCanvas.width = targetWidth;
@@ -243,10 +226,10 @@ const PRINTER_BLE = {
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-            // 3. Rotar, Centrar y Dibujar
-            ctx.translate(targetWidth - xOffset, 0);
+            // 3. Rotar y Dibujar
+            ctx.translate(targetWidth, 0);
             ctx.rotate(90 * Math.PI / 180);
-            ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidthScaled);
+            ctx.drawImage(sourceCanvas, 0, 0, targetHeight, targetWidth);
 
             // 4. Convertir a bitmap de 1 bit (monocromo)
             const bitmapData = this.canvasToMonoBitmap(printCanvas);
