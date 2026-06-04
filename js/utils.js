@@ -25,11 +25,6 @@ function generarEtiquetaCosecha() {
         save('lotes');
     }
 
-    // Calcula Caducidad (+8 días)
-    const f = new Date(fCosecha);
-    f.setDate(f.getDate() + 8);
-    const cadFormat = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}`;
-
     const cortadoParts = fCosecha.split('-');
     const cortadoFormat = `${cortadoParts[2]}/${cortadoParts[1]}`;
 
@@ -41,7 +36,7 @@ function generarEtiquetaCosecha() {
     document.getElementById('txt-cliente').innerText = clienteEditado;
     document.getElementById('txt-lote').innerText = loteCod;
     document.getElementById('txt-cortado').innerText = cortadoFormat;
-    document.getElementById('txt-cad').innerText = cadFormat;
+    document.getElementById('txt-cad').innerText = "PRODUCTO NO LAVADO";
     document.getElementById('txt-cant').innerText = cantGramos + unidad;
     
     document.getElementById('card-etiqueta-print').style.display = 'block';
