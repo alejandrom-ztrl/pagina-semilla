@@ -52,7 +52,9 @@ const PRINTER_BLE = {
             widthBytes & 0xff, (widthBytes >> 8) & 0xff,
             heightLines & 0xff, (heightLines >> 8) & 0xff,
         ]),
-        // Footer para finalizar la impresión (solo fin de sesión, permitiendo que el hardware gestione el gap)
+        // Footer para finalizar la impresión
+        // NOTA: NO incluir 0x1f 0xf0 0x05 0x00 (avance de papel) porque el sensor
+        // de gap ya hace el avance automáticamente. El doble avance es lo que saltaba etiquetas.
         FOOTER: new Uint8Array([0x1f, 0xf0, 0x03, 0x00]),
     },
 
@@ -215,9 +217,10 @@ const PRINTER_BLE = {
 
             // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX; // 384
-            const scale = targetWidth / sourceCanvas.height; 
-            // Escalamos a 71.5mm de largo (572px en total) para aprovechar la etiqueta de 80mm sin desbordar con los márgenes físicos
-            const targetHeight = Math.round(sourceCanvas.width * scale * 0.93);
+            const scale = targetWidth / sourceCanvas.height;
+            // 78mm × (203 DPI / 25.4) = ~616px. Mantenemos dentro del gap de 80mm.
+            // No aplicar factor extra para no sobrepasar el gap y evitar saltos.
+            const targetHeight = Math.round(sourceCanvas.width * scale);
 
             const printCanvas = document.createElement('canvas');
             printCanvas.width = targetWidth;
