@@ -52,8 +52,8 @@ const PRINTER_BLE = {
             widthBytes & 0xff, (widthBytes >> 8) & 0xff,
             heightLines & 0xff, (heightLines >> 8) & 0xff,
         ]),
-        // Footer para finalizar la impresión
-        FOOTER: new Uint8Array([0x1f, 0xf0, 0x05, 0x00, 0x1f, 0xf0, 0x03, 0x00]),
+        // Footer para finalizar la impresión (solo fin de sesión, permitiendo que el hardware gestione el gap)
+        FOOTER: new Uint8Array([0x1f, 0xf0, 0x03, 0x00]),
     },
 
     /**

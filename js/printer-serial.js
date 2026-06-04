@@ -22,7 +22,7 @@ const PRINTER_SERIAL = {
             widthBytes & 0xff, (widthBytes >> 8) & 0xff,
             heightLines & 0xff, (heightLines >> 8) & 0xff,
         ]),
-        FOOTER: new Uint8Array([0x1f, 0xf0, 0x05, 0x00, 0x1f, 0xf0, 0x03, 0x00]),
+        FOOTER: new Uint8Array([0x1f, 0xf0, 0x03, 0x00]),
     },
 
     async connect() {
