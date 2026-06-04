@@ -98,8 +98,8 @@ const PRINTER_SERIAL = {
             // 2. Escalar al ancho de la M110S (384px) - ROTADO (Vertical)
             const targetWidth = this.PRINT_WIDTH_PX;
             const scale = targetWidth / sourceCanvas.height;
-            // Reducimos un 10% el largo (targetHeight) para dar margen físico y evitar que salte una etiqueta en blanco
-            const targetHeight = Math.round(sourceCanvas.width * scale * 0.90);
+            // Escalamos a 76mm de largo (608px en total) para aprovechar la etiqueta de 80mm
+            const targetHeight = Math.round(sourceCanvas.width * scale * 0.99);
 
             const printCanvas = document.createElement('canvas');
             printCanvas.width = targetWidth;
